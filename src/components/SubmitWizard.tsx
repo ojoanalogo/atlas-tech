@@ -30,12 +30,42 @@ interface Props {
   municipalities: MunicipalityOption[];
 }
 
-const ENTRY_TYPES: { type: EntryType; label: string; desc: string; icon: typeof Rocket }[] = [
-  { type: "startup", label: "Startup", desc: "Empresa emergente de tecnología", icon: Rocket },
-  { type: "community", label: "Comunidad", desc: "Grupo o comunidad tech", icon: Users },
-  { type: "business", label: "Empresa", desc: "Empresa establecida", icon: Briefcase },
-  { type: "consultory", label: "Consultoría", desc: "Servicios de consultoría tech", icon: GraduationCap },
-  { type: "person", label: "Persona", desc: "Talento tech individual", icon: User },
+const ENTRY_TYPES: {
+  type: EntryType;
+  label: string;
+  desc: string;
+  icon: typeof Rocket;
+}[] = [
+  {
+    type: "startup",
+    label: "Startup",
+    desc: "Empresa emergente de tecnología",
+    icon: Rocket,
+  },
+  {
+    type: "community",
+    label: "Comunidad",
+    desc: "Grupo o comunidad tech",
+    icon: Users,
+  },
+  {
+    type: "business",
+    label: "Empresa",
+    desc: "Empresa establecida",
+    icon: Briefcase,
+  },
+  {
+    type: "consultory",
+    label: "Consultoría",
+    desc: "Servicios de consultoría tech",
+    icon: GraduationCap,
+  },
+  {
+    type: "person",
+    label: "Persona",
+    desc: "Talento tech individual",
+    icon: User,
+  },
 ];
 
 const STEPS = [
@@ -94,10 +124,14 @@ export default function SubmitWizard({ municipalities }: Props) {
 
   function canAdvance(): boolean {
     switch (step) {
-      case 0: return entryType !== "";
-      case 1: return name.trim() !== "" && description.trim() !== "";
-      case 2: return municipality !== "";
-      default: return true;
+      case 0:
+        return entryType !== "";
+      case 1:
+        return name.trim() !== "" && description.trim() !== "";
+      case 2:
+        return municipality !== "";
+      default:
+        return true;
     }
   }
 
@@ -140,7 +174,11 @@ export default function SubmitWizard({ municipalities }: Props) {
       if (telegram) fd.append("telegram", telegram);
 
       // Type-specific fields
-      if (entryType === "startup" || entryType === "business" || entryType === "consultory") {
+      if (
+        entryType === "startup" ||
+        entryType === "business" ||
+        entryType === "consultory"
+      ) {
         if (foundedYear) fd.append("foundedYear", foundedYear);
         if (stage) fd.append("stage", stage);
         if (teamSize) fd.append("teamSize", teamSize);
@@ -194,7 +232,7 @@ export default function SubmitWizard({ municipalities }: Props) {
           directorio pronto.
         </p>
         <a
-          href={`${BASE}directorio`}
+          href={`${BASE}/directorio`}
           className="inline-flex items-center gap-2 px-6 py-3 bg-accent text-accent-foreground font-mono font-semibold text-sm rounded-lg hover:bg-accent/90 transition-colors mt-4"
         >
           VER DIRECTORIO
@@ -368,7 +406,9 @@ export default function SubmitWizard({ municipalities }: Props) {
       {step === 3 && (
         <div className="space-y-4">
           <h2 className="text-xl font-sans font-bold text-primary">Enlaces</h2>
-          <p className="text-sm text-secondary">Todos los campos son opcionales.</p>
+          <p className="text-sm text-secondary">
+            Todos los campos son opcionales.
+          </p>
           <div className="space-y-3">
             <label className="block">
               <span className="text-xs font-mono text-muted uppercase tracking-wider">
@@ -453,9 +493,7 @@ export default function SubmitWizard({ municipalities }: Props) {
       {/* Step 4: Detalles */}
       {step === 4 && (
         <div className="space-y-4">
-          <h2 className="text-xl font-sans font-bold text-primary">
-            Detalles
-          </h2>
+          <h2 className="text-xl font-sans font-bold text-primary">Detalles</h2>
           <p className="text-sm text-secondary">
             Campos específicos según el tipo de proyecto. Todos opcionales.
           </p>
@@ -705,10 +743,16 @@ export default function SubmitWizard({ municipalities }: Props) {
             <h3 className="font-mono text-xs text-muted uppercase tracking-wider mb-3">
               Resumen
             </h3>
-            <SummaryRow label="Tipo" value={ENTRY_TYPES.find((t) => t.type === entryType)?.label} />
+            <SummaryRow
+              label="Tipo"
+              value={ENTRY_TYPES.find((t) => t.type === entryType)?.label}
+            />
             <SummaryRow label="Nombre" value={name} />
             {tagline && <SummaryRow label="Tagline" value={tagline} />}
-            <SummaryRow label="Municipio" value={municipalities.find((m) => m.id === municipality)?.name} />
+            <SummaryRow
+              label="Municipio"
+              value={municipalities.find((m) => m.id === municipality)?.name}
+            />
             {website && <SummaryRow label="Web" value={website} />}
             {tags.length > 0 && (
               <SummaryRow label="Etiquetas" value={tags.join(", ")} />

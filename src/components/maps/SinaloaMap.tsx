@@ -1,4 +1,10 @@
-import { useState, useCallback, useRef, useEffect, type LucideIcon } from "react";
+import {
+  useState,
+  useCallback,
+  useRef,
+  useEffect,
+  type LucideIcon,
+} from "react";
 import { geoIdentity, geoPath } from "d3-geo";
 import { ComposableMap, Geographies, Geography } from "react-simple-maps";
 import {
@@ -17,14 +23,23 @@ import {
 } from "lucide-react";
 
 const BASE = import.meta.env.BASE_URL;
-const TOPO_URL = `${BASE}topo/Sinaloa_municipios.json`;
+const TOPO_URL = `${BASE}/topo/Sinaloa_municipios.json`;
 
 const ACCENT = "var(--color-accent)";
 
 const PATTERN_ICONS: LucideIcon[] = [
-  Rocket, Code, Users, Cpu,
-  Lightbulb, Globe, Terminal, Building2,
-  Wifi, BrainCircuit, Blocks, Handshake,
+  Rocket,
+  Code,
+  Users,
+  Cpu,
+  Lightbulb,
+  Globe,
+  Terminal,
+  Building2,
+  Wifi,
+  BrainCircuit,
+  Blocks,
+  Handshake,
 ];
 
 const CELL = 64;
@@ -341,14 +356,28 @@ export default function SinaloaMap({
       const svgRect = svgEl.getBoundingClientRect();
       const scaleX = svgRect.width / width;
       const scaleY = svgRect.height / height;
-      const px = centroid[0] * scaleX * scale + translate.x + (rect.width - svgRect.width * scale) / 2;
-      const py = centroid[1] * scaleY * scale + translate.y + (rect.height - svgRect.height * scale) / 2;
+      const px =
+        centroid[0] * scaleX * scale +
+        translate.x +
+        (rect.width - svgRect.width * scale) / 2;
+      const py =
+        centroid[1] * scaleY * scale +
+        translate.y +
+        (rect.height - svgRect.height * scale) / 2;
 
       const count = municipalityCounts[id] || 0;
       setTooltip(null);
       setPopup({ x: px, y: py, id, name, count });
     },
-    [compact, municipalityCounts, pathGenerator, scale, translate, width, height],
+    [
+      compact,
+      municipalityCounts,
+      pathGenerator,
+      scale,
+      translate,
+      width,
+      height,
+    ],
   );
 
   // Listen for sidebar municipality selection
@@ -452,15 +481,12 @@ export default function SinaloaMap({
           }}
           className="bg-[var(--color-elevated)] border border-[var(--color-border)] rounded px-2.5 py-1.5 shadow-lg"
         >
-          <div
-            className="text-xs font-mono font-semibold text-accent"
-          >
+          <div className="text-xs font-mono font-semibold text-accent">
             {tooltip.name}
           </div>
           {tooltip.count > 0 && (
             <div className="text-[10px] font-mono text-[var(--color-muted)]">
-              {tooltip.count}{" "}
-              {tooltip.count === 1 ? "proyecto" : "proyectos"}
+              {tooltip.count} {tooltip.count === 1 ? "proyecto" : "proyectos"}
             </div>
           )}
         </div>
@@ -472,8 +498,16 @@ export default function SinaloaMap({
           data-map-popup
           style={{
             position: "absolute",
-            left: clamp(popup.x - 100, 8, (containerRef.current?.offsetWidth ?? 800) - 208),
-            top: clamp(popup.y - 120, 8, (containerRef.current?.offsetHeight ?? 800) - 8),
+            left: clamp(
+              popup.x - 100,
+              8,
+              (containerRef.current?.offsetWidth ?? 800) - 208,
+            ),
+            top: clamp(
+              popup.y - 120,
+              8,
+              (containerRef.current?.offsetHeight ?? 800) - 8,
+            ),
             zIndex: 20,
             width: 200,
           }}
@@ -481,9 +515,7 @@ export default function SinaloaMap({
         >
           {/* Header */}
           <div className="px-3 py-2 border-b border-[var(--color-border)] flex items-center justify-between">
-            <span
-              className="text-sm font-mono font-bold text-accent"
-            >
+            <span className="text-sm font-mono font-bold text-accent">
               {popup.name}
             </span>
             <button
@@ -509,7 +541,7 @@ export default function SinaloaMap({
               </span>
             </div>
             <a
-              href={`${BASE}directorio#municipality=${popup.id}`}
+              href={`${BASE}/directorio#municipality=${popup.id}`}
               className="block w-full text-center text-xs font-mono font-semibold px-3 py-1.5 rounded bg-accent text-accent-foreground hover:bg-accent/80 transition-colors"
             >
               VER COMUNIDAD →
