@@ -10,6 +10,7 @@ interface Props {
 }
 
 const { totalEntries, counts, municipalityCounts = {} } = Astro.props;
+const BASE = import.meta.env.BASE_URL;
 
 const heroStats = [
   { value: counts.startup + counts.business, label: "STARTUPS" },
@@ -72,7 +73,7 @@ const heroStats = [
 
         <div class="flex flex-wrap gap-4">
           <a
-            href="/directorio"
+            href={`${BASE}directorio`}
             class="inline-flex items-center gap-2.5 px-6 py-3.5 bg-accent text-accent-foreground font-mono font-bold text-xs rounded hover:bg-accent/90 transition-colors"
           >
             <svg
@@ -90,7 +91,7 @@ const heroStats = [
             EXPLORAR DIRECTORIO
           </a>
           <a
-            href="/directorio/submit"
+            href={`${BASE}directorio/submit`}
             class="inline-flex items-center gap-2.5 px-6 py-3.5 bg-card border border-border text-primary font-mono font-semibold text-xs rounded hover:border-accent/50 hover:text-accent transition-colors"
           >
             <svg

@@ -16,7 +16,8 @@ import {
   Handshake,
 } from "lucide-react";
 
-const TOPO_URL = "/topo/Sinaloa_municipios.json";
+const BASE = import.meta.env.BASE_URL;
+const TOPO_URL = `${BASE}topo/Sinaloa_municipios.json`;
 
 const ACCENT = "var(--color-accent)";
 
@@ -508,7 +509,7 @@ export default function SinaloaMap({
               </span>
             </div>
             <a
-              href={`/directorio#municipality=${popup.id}`}
+              href={`${BASE}directorio#municipality=${popup.id}`}
               className="block w-full text-center text-xs font-mono font-semibold px-3 py-1.5 rounded bg-accent text-accent-foreground hover:bg-accent/80 transition-colors"
             >
               VER COMUNIDAD →

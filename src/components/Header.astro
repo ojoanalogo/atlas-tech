@@ -8,13 +8,14 @@ interface Props {
 }
 
 const { fullWidth = false, overlay = false } = Astro.props;
+const BASE = import.meta.env.BASE_URL;
 
 const directoryLinks = [
-  { title: "STARTUPS", url: "/directorio#type=startup" },
-  { title: "CONSULTORÍAS", url: "/directorio#type=consultory" },
-  { title: "PERSONAS", url: "/directorio#type=person" },
-  { title: "COMUNIDADES", url: "/directorio#type=community" },
-  { title: "EMPRESAS", url: "/directorio#type=business" },
+  { title: "STARTUPS", url: `${BASE}directorio#type=startup` },
+  { title: "CONSULTORÍAS", url: `${BASE}directorio#type=consultory` },
+  { title: "PERSONAS", url: `${BASE}directorio#type=person` },
+  { title: "COMUNIDADES", url: `${BASE}directorio#type=community` },
+  { title: "EMPRESAS", url: `${BASE}directorio#type=business` },
 ];
 ---
 
@@ -36,7 +37,7 @@ const directoryLinks = [
       >
         {/* Logo */}
         <a
-          href="/"
+          href={BASE}
           class="font-mono font-bold text-primary hover:text-accent transition-colors duration-200 shrink-0"
         >
           SINALOA TECH<span class="text-accent">_</span>ATLAS
@@ -72,7 +73,7 @@ const directoryLinks = [
               class="absolute top-full left-0 mt-2 w-44 py-1 bg-card border border-border rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50"
             >
               <a
-                href="/directorio"
+                href={`${BASE}directorio`}
                 class="block px-3 py-2 text-xs font-mono text-primary hover:text-accent hover:bg-elevated transition-colors"
               >
                 VER TODOS
@@ -92,14 +93,14 @@ const directoryLinks = [
           </div>
 
           <a
-            href="/#map"
+            href={`${BASE}#map`}
             class="text-secondary hover:text-accent transition-all duration-200"
           >
             MAPA
           </a>
 
           <a
-            href="/directorio/submit"
+            href={`${BASE}directorio/submit`}
             class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-accent text-accent-foreground font-mono font-semibold text-xs rounded hover:bg-accent/90 transition-colors"
           >
             AGREGAR PROYECTO
@@ -135,7 +136,7 @@ const directoryLinks = [
 >
   <div class="flex items-center justify-between px-8 py-6">
     <a
-      href="/"
+      href={BASE}
       class="font-mono font-bold text-primary"
     >
       SINALOA TECH<span class="text-accent">_</span>ATLAS
@@ -154,7 +155,7 @@ const directoryLinks = [
 
   <div class="flex-1 flex flex-col justify-center px-8 space-y-2">
     <a
-      href="/directorio"
+      href={`${BASE}directorio`}
       class="block py-3 text-lg font-mono font-semibold text-primary hover:text-accent transition-colors"
     >
       DIRECTORIO
@@ -172,14 +173,14 @@ const directoryLinks = [
       }
     </div>
     <a
-      href="/#map"
+      href={`${BASE}#map`}
       class="block py-3 text-lg font-mono font-semibold text-primary hover:text-accent transition-colors"
     >
       MAPA
     </a>
     <div class="pt-4">
       <a
-        href="/directorio/submit"
+        href={`${BASE}directorio/submit`}
         class="inline-flex items-center gap-2 px-5 py-3 bg-accent text-accent-foreground font-mono font-bold text-sm rounded hover:bg-accent/90 transition-colors"
       >
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -16,7 +16,7 @@
       </p>
       <div class="flex flex-wrap justify-center gap-3">
         <a
-          href="/directorio/submit"
+          href={`${import.meta.env.BASE_URL}directorio/submit`}
           class="inline-flex items-center gap-2 px-6 py-3 bg-accent text-accent-foreground font-mono font-semibold text-sm rounded-lg hover:bg-accent/90 transition-colors"
         >
           AGREGAR PROYECTO
@@ -34,7 +34,7 @@
           </svg>
         </a>
         <a
-          href="/directorio"
+          href={`${import.meta.env.BASE_URL}directorio`}
           class="inline-flex items-center gap-2 px-6 py-3 border border-border text-primary font-mono font-semibold text-sm rounded-lg hover:border-accent/50 hover:text-accent transition-colors"
         >
           EXPLORAR DIRECTORIO

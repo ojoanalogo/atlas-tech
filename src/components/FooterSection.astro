@@ -2,6 +2,7 @@
 import { SITE_TITLE, NAV_LINKS, SOCIAL_LINKS } from "../config";
 
 const currentYear = new Date().getFullYear();
+const BASE = import.meta.env.BASE_URL;
 ---
 
 <footer class="border-t border-border bg-sidebar mt-4">
@@ -46,7 +47,7 @@ const currentYear = new Date().getFullYear();
         <ul class="space-y-2">
           <li>
             <a
-              href="/directorio"
+              href={`${BASE}directorio`}
               class="text-sm text-secondary hover:text-accent transition-colors"
             >
               Explorar
@@ -54,7 +55,7 @@ const currentYear = new Date().getFullYear();
           </li>
           <li>
             <a
-              href="/#map"
+              href={`${BASE}#map`}
               class="text-sm text-secondary hover:text-accent transition-colors"
             >
               Mapa

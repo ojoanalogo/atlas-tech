@@ -7,6 +7,8 @@ import {
 } from "react";
 import { SearchX } from "lucide-react";
 
+const BASE = import.meta.env.BASE_URL;
+
 interface MunicipalityInfo {
   id: string;
   name: string;
@@ -117,11 +119,11 @@ export default function DirectoryFilter({
 
   function updateHash(type: string, municipality: string) {
     if (type) {
-      window.history.pushState(null, "", `/directorio#type=${type}`);
+      window.history.pushState(null, "", `${BASE}directorio#type=${type}`);
     } else if (municipality) {
-      window.history.pushState(null, "", `/directorio#municipality=${municipality}`);
+      window.history.pushState(null, "", `${BASE}directorio#municipality=${municipality}`);
     } else {
-      window.history.pushState(null, "", "/directorio");
+      window.history.pushState(null, "", `${BASE}directorio`);
     }
   }
 
@@ -159,7 +161,7 @@ export default function DirectoryFilter({
     <div>
       {/* Breadcrumb */}
       <nav className="text-xs font-mono text-muted mb-4">
-        <a href="/" className="hover:text-accent transition-colors">
+        <a href={BASE} className="hover:text-accent transition-colors">
           INICIO
         </a>
         <span className="mx-2">/</span>
@@ -193,7 +195,7 @@ export default function DirectoryFilter({
       {/* Type filter tabs */}
       <div className="flex flex-wrap gap-2 mb-8">
         <a
-          href="/directorio"
+          href={`${BASE}directorio`}
           onClick={(e) => {
             e.preventDefault();
             clearFilters();
@@ -209,7 +211,7 @@ export default function DirectoryFilter({
         {Object.entries(typeLabels).map(([type, label]) => (
           <a
             key={type}
-            href={`/directorio#type=${type}`}
+            href={`${BASE}directorio#type=${type}`}
             onClick={(e) => {
               e.preventDefault();
               handleTypeClick(type);
