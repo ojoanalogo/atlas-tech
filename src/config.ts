@@ -33,11 +33,11 @@ export const URL_CATEGORY_MAP: Record<string, AtlasEntryType> =
     Object.entries(CATEGORY_URL_MAP).map(([k, v]) => [v, k as AtlasEntryType]),
   ) as Record<string, AtlasEntryType>;
 
-export function getEntryUrl(entryType: AtlasEntryType, slug: string): string {
-  return `${import.meta.env.BASE_URL}${CATEGORY_URL_MAP[entryType]}/${slug}`;
-}
-
 const BASE = import.meta.env.BASE_URL;
+
+export function getEntryUrl(entryType: AtlasEntryType, slug: string): string {
+  return `${BASE}/${CATEGORY_URL_MAP[entryType]}/${slug}`;
+}
 
 export const NAV_LINKS: NavLink[] = [
   {
