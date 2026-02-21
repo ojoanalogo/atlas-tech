@@ -1,0 +1,41 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SubmitWizard from "../../components/SubmitWizard";
+import { SINALOA_MUNICIPALITIES } from "../../config";
+
+const municipalities = [
+  { id: "global", name: "Global (sin ubicacion especifica)" },
+  ...SINALOA_MUNICIPALITIES.map((m) => ({ id: m.id, name: m.name })),
+];
+---
+
+<BaseLayout title="Agregar Proyecto — TECH_ATLAS" fullWidth={true}>
+  <section class="py-4 px-4">
+    <div class="max-w-2xl mx-auto">
+      {/* Breadcrumb */}
+      <nav class="text-xs font-mono text-muted mb-6">
+        <a href="/" class="hover:text-accent transition-colors">INICIO</a>
+        <span class="mx-2">/</span>
+        <a href="/directorio" class="hover:text-accent transition-colors"
+          >DIRECTORIO</a
+        >
+        <span class="mx-2">/</span>
+        <span class="text-primary">AGREGAR PROYECTO</span>
+      </nav>
+
+      <h1 class="text-3xl md:text-4xl font-sans font-bold text-primary mb-2">
+        Agregar proyecto
+      </h1>
+      <p class="text-secondary mb-8">
+        Registra tu startup, consultora, comunidad o perfil en el directorio
+        tech de Sinaloa.
+      </p>
+
+      <div
+        class="bg-card/90 backdrop-blur-sm border border-border rounded-lg p-6 md:p-8"
+      >
+        <SubmitWizard client:load municipalities={municipalities} />
+      </div>
+    </div>
+  </section>
+</BaseLayout>

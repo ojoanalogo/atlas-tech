@@ -1,0 +1,73 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import EntryCard from "../../components/EntryCard.astro";
+import DirectoryFilter from "../../components/DirectoryFilter";
+import { SINALOA_MUNICIPALITIES } from "../../config";
+
+const allEntries = await getCollection("atlas");
+
+const typeLabels: Record<string, string> = {
+  startup: "Startups",
+  consultory: "Consultoras",
+  community: "Comunidades",
+  person: "Personas",
+  business: "Empresas",
+};
+
+const municipalityCounts: Record<string, number> = {};
+allEntries.forEach((entry) => {
+  const mun = entry.data.municipality;
+  municipalityCounts[mun] = (municipalityCounts[mun] || 0) + 1;
+});
+
+const globalCount = municipalityCounts["global"] || 0;
+
+const municipalities = [
+  ...(globalCount > 0
+    ? [{ id: "global", name: "Global", count: globalCount }]
+    : []),
+  ...SINALOA_MUNICIPALITIES.map((m) => ({
+    id: m.id,
+    name: m.name,
+    count: municipalityCounts[m.id] || 0,
+  })),
+];
+---
+
+<BaseLayout title="Directorio — TECH_ATLAS" fullWidth={true}>
+  <section class="py-4 px-4">
+    <div class="max-w-7xl mx-auto">
+      <DirectoryFilter
+        client:load
+        typeLabels={typeLabels}
+        municipalities={municipalities}
+        totalCount={allEntries.length}
+      >
+        <div id="entries-grid" class="grid sm:grid-cols-2 xl:grid-cols-3 gap-4">
+          {
+            allEntries.map((entry) => (
+              <div
+                class="entry-item"
+                data-type={entry.data.entryType}
+                data-municipality={entry.data.municipality}
+              >
+                <EntryCard
+                  slug={entry.slug}
+                  name={entry.data.name}
+                  tagline={entry.data.tagline}
+                  entryType={entry.data.entryType}
+                  logo={entry.data.logo}
+                  coverImage={entry.data.coverImage}
+                  municipality={entry.data.municipality}
+                  city={entry.data.city}
+                  tags={entry.data.tags}
+                />
+              </div>
+            ))
+          }
+        </div>
+      </DirectoryFilter>
+    </div>
+  </section>
+</BaseLayout>

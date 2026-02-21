@@ -1,0 +1,42 @@
+{
+  "name": "alfon-so",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "astro dev",
+    "start:dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/react": "^4.4.2",
+    "@astrojs/sitemap": "3.7.0",
+    "@astrojs/tailwind": "6.0.2",
+    "@lucide/astro": "^0.575.0",
+    "astro": "5.17.1",
+    "d3-geo": "^3.1.1",
+    "dayjs": "1.11.19",
+    "lucide-react": "^0.575.0",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "react-simple-maps": "^3.0.0",
+    "reading-time": "1.5.0",
+    "sharp": "0.34.5",
+    "tailwindcss": "3.4.19"
+  },
+  "devDependencies": {
+    "@tailwindcss/typography": "0.5.19",
+    "@types/d3-geo": "^3.1.0",
+    "@types/node": "24.10.9",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3"
+  },
+  "pnpm": {
+    "overrides": {
+      "react": "$react",
+      "react-dom": "$react-dom"
+    }
+  },
+  "packageManager": "pnpm@10.5.2+sha512.da9dc28cd3ff40d0592188235ab25d3202add8a207afbedc682220e4a0029ffbff4562102b9e6e46b4e3f9e8bd53e6d05de48544b0c57d4b0179e22c76d1199b"
+}

@@ -1,0 +1,42 @@
+---
+import type { AtlasEntryType } from "../config";
+
+interface Props {
+  total: number;
+  counts: Record<AtlasEntryType, number>;
+  municipalities: number;
+}
+
+const { total, counts, municipalities } = Astro.props;
+
+const stats = [
+  { label: "Total registros", value: total, accent: true },
+  { label: "Startups", value: counts.startup + counts.business },
+  { label: "Comunidades", value: counts.community },
+  { label: "Municipios", value: municipalities },
+];
+---
+
+<section class="py-4 px-4">
+  <div class="max-w-7xl mx-auto">
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      {
+        stats.map((stat) => (
+          <div class="bg-card/90 backdrop-blur-sm border border-border rounded-lg p-5 text-center hover:border-accent/30 transition-colors">
+            <div
+              class:list={[
+                "text-3xl md:text-4xl font-mono font-bold",
+                stat.accent ? "text-accent" : "text-primary",
+              ]}
+            >
+              {stat.value}
+            </div>
+            <div class="text-sm text-muted font-mono mt-1 uppercase tracking-wider">
+              {stat.label}
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>

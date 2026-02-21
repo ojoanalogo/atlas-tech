@@ -1,0 +1,18 @@
+---
+import { CATEGORY_URL_MAP, URL_CATEGORY_MAP } from "../../config";
+
+export function getStaticPaths() {
+  return Object.entries(URL_CATEGORY_MAP).map(([urlSlug, entryType]) => ({
+    params: { category: urlSlug },
+    props: { entryType },
+  }));
+}
+
+const { entryType } = Astro.props;
+const redirectUrl = `/directorio#type=${entryType}`;
+---
+
+<meta http-equiv="refresh" content={`0;url=${redirectUrl}`} />
+<script define:vars={{ redirectUrl }}>
+  window.location.replace(redirectUrl);
+</script>

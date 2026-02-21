@@ -1,0 +1,247 @@
+---
+import ThemeToggle from "./ThemeToggle.astro";
+import "../styles/tooltip.css";
+
+interface Props {
+  fullWidth?: boolean;
+  overlay?: boolean;
+}
+
+const { fullWidth = false, overlay = false } = Astro.props;
+
+const directoryLinks = [
+  { title: "STARTUPS", url: "/directorio#type=startup" },
+  { title: "CONSULTORÍAS", url: "/directorio#type=consultory" },
+  { title: "PERSONAS", url: "/directorio#type=person" },
+  { title: "COMUNIDADES", url: "/directorio#type=community" },
+  { title: "EMPRESAS", url: "/directorio#type=business" },
+];
+---
+
+<header
+  id="main-header"
+  class:list={[
+    "px-4 py-4 z-50",
+    overlay ? "absolute top-0 left-0 right-0" : "relative",
+  ]}
+>
+  <div class:list={["mx-auto", fullWidth ? "max-w-7xl" : ""]}>
+    <div
+      class="bg-white/70 dark:bg-black/10 backdrop-blur-lg border rounded-lg font-mono text-sm transition-all duration-300 border-gray-400/50 dark:border-gray-400/30 hover:shadow-sm dark:hover:shadow-md dark:hover:shadow-black/20"
+    >
+      <nav
+        id="navigation-menu"
+        aria-label="Main menu"
+        class="flex items-center justify-between gap-4 px-4 py-3"
+      >
+        {/* Logo */}
+        <a
+          href="/"
+          class="font-mono font-bold text-primary hover:text-accent transition-colors duration-200 shrink-0"
+        >
+          SINALOA TECH<span class="text-accent">_</span>ATLAS
+        </a>
+
+        {/* Desktop nav links */}
+        <div
+          class="hidden sm:flex items-center gap-4 text-xs overflow-visible"
+        >
+          {/* Directory dropdown */}
+          <div class="relative group" id="directory-dropdown">
+            <button
+              type="button"
+              class="flex items-center gap-1 text-secondary hover:text-accent transition-all duration-200"
+              aria-expanded="false"
+              aria-haspopup="true"
+            >
+              DIRECTORIO
+              <svg
+                class="w-3 h-3 transition-transform duration-200 group-hover:rotate-180"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </button>
+            <div
+              class="absolute top-full left-0 mt-2 w-44 py-1 bg-card border border-border rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50"
+            >
+              <a
+                href="/directorio"
+                class="block px-3 py-2 text-xs font-mono text-primary hover:text-accent hover:bg-elevated transition-colors"
+              >
+                VER TODOS
+              </a>
+              <div class="border-t border-border my-1"></div>
+              {
+                directoryLinks.map((link) => (
+                  <a
+                    href={link.url}
+                    class="block px-3 py-2 text-xs font-mono text-secondary hover:text-accent hover:bg-elevated transition-colors"
+                  >
+                    {link.title}
+                  </a>
+                ))
+              }
+            </div>
+          </div>
+
+          <a
+            href="/#map"
+            class="text-secondary hover:text-accent transition-all duration-200"
+          >
+            MAPA
+          </a>
+
+          <a
+            href="/directorio/submit"
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-accent text-accent-foreground font-mono font-semibold text-xs rounded hover:bg-accent/90 transition-colors"
+          >
+            AGREGAR PROYECTO
+          </a>
+
+          <ThemeToggle />
+        </div>
+
+        {/* Mobile: theme toggle + hamburger */}
+        <div class="flex items-center gap-2 sm:hidden">
+          <ThemeToggle />
+          <button
+            id="mobile-menu-toggle"
+            type="button"
+            class="p-1.5 text-secondary hover:text-accent transition-colors"
+            aria-expanded="false"
+            aria-label="Abrir menú"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+        </div>
+      </nav>
+    </div>
+  </div>
+</header>
+
+{/* Mobile fullscreen menu overlay */}
+<div
+  id="mobile-menu"
+  class="fixed inset-0 z-[100] bg-background flex flex-col opacity-0 invisible transition-all duration-300 sm:hidden"
+>
+  <div class="flex items-center justify-between px-8 py-6">
+    <a
+      href="/"
+      class="font-mono font-bold text-primary"
+    >
+      SINALOA TECH<span class="text-accent">_</span>ATLAS
+    </a>
+    <button
+      id="mobile-menu-close"
+      type="button"
+      class="p-1.5 text-secondary hover:text-accent transition-colors"
+      aria-label="Cerrar menú"
+    >
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+  </div>
+
+  <div class="flex-1 flex flex-col justify-center px-8 space-y-2">
+    <a
+      href="/directorio"
+      class="block py-3 text-lg font-mono font-semibold text-primary hover:text-accent transition-colors"
+    >
+      DIRECTORIO
+    </a>
+    <div class="pl-4 space-y-1 border-l-2 border-border">
+      {
+        directoryLinks.map((link) => (
+          <a
+            href={link.url}
+            class="block py-2 text-sm font-mono text-secondary hover:text-accent transition-colors"
+          >
+            {link.title}
+          </a>
+        ))
+      }
+    </div>
+    <a
+      href="/#map"
+      class="block py-3 text-lg font-mono font-semibold text-primary hover:text-accent transition-colors"
+    >
+      MAPA
+    </a>
+    <div class="pt-4">
+      <a
+        href="/directorio/submit"
+        class="inline-flex items-center gap-2 px-5 py-3 bg-accent text-accent-foreground font-mono font-bold text-sm rounded hover:bg-accent/90 transition-colors"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+        </svg>
+        AGREGAR PROYECTO
+      </a>
+    </div>
+  </div>
+</div>
+
+<script>
+  const menuToggle = document.getElementById("mobile-menu-toggle");
+  const menuClose = document.getElementById("mobile-menu-close");
+  const mobileMenu = document.getElementById("mobile-menu");
+
+  function openMenu() {
+    if (!mobileMenu) return;
+    mobileMenu.classList.remove("opacity-0", "invisible");
+    mobileMenu.classList.add("opacity-100", "visible");
+    document.body.style.overflow = "hidden";
+    menuToggle?.setAttribute("aria-expanded", "true");
+  }
+
+  function closeMenu() {
+    if (!mobileMenu) return;
+    mobileMenu.classList.add("opacity-0", "invisible");
+    mobileMenu.classList.remove("opacity-100", "visible");
+    document.body.style.overflow = "";
+    menuToggle?.setAttribute("aria-expanded", "false");
+  }
+
+  menuToggle?.addEventListener("click", openMenu);
+  menuClose?.addEventListener("click", closeMenu);
+
+  // Close menu when clicking a link
+  mobileMenu?.querySelectorAll("a").forEach((link) => {
+    link.addEventListener("click", closeMenu);
+  });
+
+  // Keep dropdown open when moving to it (touch + click support)
+  const dropdown = document.getElementById("directory-dropdown");
+  if (dropdown) {
+    const btn = dropdown.querySelector("button");
+    const menu = dropdown.querySelector("div");
+    if (btn && menu) {
+      btn.addEventListener("click", () => {
+        const isOpen = menu.classList.contains("!opacity-100");
+        if (isOpen) {
+          menu.classList.remove("!opacity-100", "!visible");
+          btn.setAttribute("aria-expanded", "false");
+        } else {
+          menu.classList.add("!opacity-100", "!visible");
+          btn.setAttribute("aria-expanded", "true");
+        }
+      });
+      document.addEventListener("click", (e) => {
+        if (!dropdown.contains(e.target as Node)) {
+          menu.classList.remove("!opacity-100", "!visible");
+          btn.setAttribute("aria-expanded", "false");
+        }
+      });
+    }
+  }
+</script>

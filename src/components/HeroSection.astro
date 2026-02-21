@@ -1,0 +1,145 @@
+---
+import type { AtlasEntryType } from "../config";
+import MatrixBackground from "./MatrixBackground.astro";
+import SinaloaMap from "./maps/SinaloaMap";
+
+interface Props {
+  totalEntries: number;
+  counts: Record<AtlasEntryType, number>;
+  municipalityCounts?: Record<string, number>;
+}
+
+const { totalEntries, counts, municipalityCounts = {} } = Astro.props;
+
+const heroStats = [
+  { value: counts.startup + counts.business, label: "STARTUPS" },
+  { value: counts.community, label: "COMUNIDADES" },
+  { value: counts.consultory, label: "CONSULTORAS" },
+];
+---
+
+<section class="relative pt-32 md:pt-40 pb-20 md:pb-28 px-4 overflow-hidden">
+  <MatrixBackground
+    highlightColor="rgba(0, 255, 136, 0.08)"
+    boxSize={40}
+    movementSpeed={0.1}
+    movementDirection="up-left"
+  />
+  <div class="max-w-7xl mx-auto relative z-10">
+    <div class="flex flex-col lg:flex-row gap-16 items-center">
+      {/* Left: Text content */}
+      <div class="space-y-6 flex-1">
+        <div
+          class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-accent/10 border border-accent/20"
+        >
+          <svg
+            class="w-3.5 h-3.5 text-accent"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+            ></path>
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+          </svg>
+          <span
+            class="text-xs font-mono font-semibold text-accent tracking-wide"
+            >// SINALOA, MÉXICO</span
+          >
+        </div>
+
+        <h1
+          class="text-4xl md:text-5xl lg:text-[52px] font-sans font-bold text-primary leading-[1.1] tracking-tight"
+        >
+          DESCUBRE EL ECOSISTEMA<br />
+          TECNOLÓGICO DE SINALOA
+        </h1>
+
+        <p
+          class="text-sm md:text-base font-mono text-muted leading-relaxed max-w-[500px]"
+        >
+          Un directorio completo de startups, consultorías tech, talento y
+          comunidades construyendo el futuro en nuestro estado.
+        </p>
+
+        <div class="flex flex-wrap gap-4">
+          <a
+            href="/directorio"
+            class="inline-flex items-center gap-2.5 px-6 py-3.5 bg-accent text-accent-foreground font-mono font-bold text-xs rounded hover:bg-accent/90 transition-colors"
+          >
+            <svg
+              class="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+            EXPLORAR DIRECTORIO
+          </a>
+          <a
+            href="/directorio/submit"
+            class="inline-flex items-center gap-2.5 px-6 py-3.5 bg-card border border-border text-primary font-mono font-semibold text-xs rounded hover:border-accent/50 hover:text-accent transition-colors"
+          >
+            <svg
+              class="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 4v16m8-8H4"></path>
+            </svg>
+            AGREGAR PROYECTO
+          </a>
+        </div>
+      </div>
+
+      {/* Right: Hero Map Card */}
+      <div class="hidden lg:block w-full lg:w-[500px] shrink-0">
+        <div
+          class="bg-card border border-border rounded-lg p-6 flex flex-col gap-4 h-[60vh]"
+        >
+          {/* Map header */}
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-mono font-medium text-muted tracking-wide"
+              >// SINALOA_ESTADO.GEO</span
+            >
+            <div class="flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-accent animate-pulse"></span>
+              <span class="text-xs font-mono font-semibold text-accent"
+                >[18 municipios]</span
+              >
+            </div>
+          </div>
+
+          {/* Map container */}
+          <div
+            class="flex-1 bg-elevated border border-border rounded overflow-hidden"
+          >
+            <SinaloaMap
+              compact
+              municipalityCounts={municipalityCounts}
+              client:load
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

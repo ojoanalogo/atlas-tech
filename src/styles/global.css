@@ -1,0 +1,78 @@
+html {
+  font-size: 16px;
+}
+
+/* Theme CSS Custom Properties */
+:root {
+  /* Light theme (default) */
+  --color-background: #f7f4ef;
+  --color-surface: #fffaf5;
+  --color-primary: #18181b;
+  --color-secondary: #3f3f46;
+  --color-accent: #059669;
+  --color-muted: #71717a;
+  --color-border: #d4d4d8;
+  --color-card: #ffffff;
+  --color-elevated: #f4f4f5;
+  --color-sidebar: #fafaf9;
+  --color-accent-foreground: #ffffff;
+  --color-selection-bg: #059669;
+  --color-selection-text: #ffffff;
+}
+
+:root.dark {
+  /* Dark theme */
+  --color-background: #0C0C0C;
+  --color-surface: #0A0A0A;
+  --color-primary: #FFFFFF;
+  --color-secondary: #8a8a8a;
+  --color-accent: #00FF88;
+  --color-muted: #8a8a8a;
+  --color-border: #2f2f2f;
+  --color-card: #0A0A0A;
+  --color-elevated: #141414;
+  --color-sidebar: #080808;
+  --color-accent-foreground: #000000;
+  --color-selection-bg: #00FF88;
+  --color-selection-text: #000000;
+}
+
+/* Directory filter animations */
+@keyframes entry-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.entry-item.animate-in {
+  animation: entry-fade-in 250ms ease-out both;
+}
+
+/* Hide scrollbar but keep scroll functionality */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+noise {
+  pointer-events: none;
+  z-index: -1;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeat center center url("/noise.svg");
+  background-size: auto;
+  background-size: 32%;
+  opacity: 0.05;
+  mix-blend-mode: luminosity;
+}
