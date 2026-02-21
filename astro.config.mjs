@@ -5,11 +5,8 @@ import { defineConfig } from "astro/config";
 
 // https://astro.build/config
 export default defineConfig({
-  integrations: [
-    react(),
-    sitemap(),
-    tailwind(),
-  ],
-  site: "https://techatlas.mx",
+  integrations: [react(), sitemap(), tailwind()],
+  site: "https://ojoanalogo.github.io",
+  base: "/atlas-tech",
   compressHTML: true,
 });
