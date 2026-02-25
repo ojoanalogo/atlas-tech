@@ -121,11 +121,7 @@ export default function DirectoryFilter({
     if (type) {
       window.history.pushState(null, "", `${BASE}/directorio#type=${type}`);
     } else if (municipality) {
-      window.history.pushState(
-        null,
-        "",
-        `${BASE}/directorio#municipality=${municipality}`,
-      );
+      window.history.pushState(null, "", `${BASE}/directorio#municipality=${municipality}`);
     } else {
       window.history.pushState(null, "", `${BASE}/directorio`);
     }
@@ -165,7 +161,7 @@ export default function DirectoryFilter({
     <div>
       {/* Breadcrumb */}
       <nav className="text-xs font-mono text-muted mb-4">
-        <a href={BASE} className="hover:text-accent transition-colors">
+        <a href={BASE}/ className="hover:text-accent transition-colors">
           INICIO
         </a>
         <span className="mx-2">/</span>
