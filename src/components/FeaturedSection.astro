@@ -7,7 +7,6 @@ interface Props {
 }
 
 const { entries } = Astro.props;
-const BASE = import.meta.env.BASE_URL;
 ---
 
 {
@@ -24,7 +23,7 @@ const BASE = import.meta.env.BASE_URL;
             </p>
           </div>
           <a
-            href={`${BASE}directorio`}
+            href="/directorio"
             class="hidden sm:inline-flex items-center gap-2 text-sm font-mono text-accent hover:underline"
           >
             VER TODOS

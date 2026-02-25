@@ -33,40 +33,38 @@ export const URL_CATEGORY_MAP: Record<string, AtlasEntryType> = Object.fromEntri
 ) as Record<string, AtlasEntryType>;
 
 export function getEntryUrl(entryType: AtlasEntryType, slug: string): string {
-  return `${import.meta.env.BASE_URL}${CATEGORY_URL_MAP[entryType]}/${slug}`;
+  return `/${CATEGORY_URL_MAP[entryType]}/${slug}`;
 }
-
-const BASE = import.meta.env.BASE_URL;
 
 export const NAV_LINKS: NavLink[] = [
   {
     title: "STARTUPS",
     id: "startups",
-    url: `${BASE}directorio#type=startup`,
+    url: "/directorio#type=startup",
     tooltip: "Startups de Sinaloa",
   },
   {
     title: "CONSULTORAS",
     id: "consultoras",
-    url: `${BASE}directorio#type=consultory`,
+    url: "/directorio#type=consultory",
     tooltip: "Consultorías tech",
   },
   {
     title: "PERSONAS",
     id: "personas",
-    url: `${BASE}directorio#type=person`,
+    url: "/directorio#type=person",
     tooltip: "Talento local",
   },
   {
     title: "COMUNIDADES",
     id: "comunidades",
-    url: `${BASE}directorio#type=community`,
+    url: "/directorio#type=community",
     tooltip: "Comunidades tech",
   },
   {
     title: "MAPA",
     id: "mapa",
-    url: `${BASE}#map`,
+    url: "/#map",
     tooltip: "Mapa interactivo",
   },
 ];

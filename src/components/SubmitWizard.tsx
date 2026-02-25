@@ -1,6 +1,4 @@
 import { useState, useRef } from "react";
-const BASE = import.meta.env.BASE_URL;
-
 import {
   Rocket,
   Users,
@@ -194,7 +192,7 @@ export default function SubmitWizard({ municipalities }: Props) {
           directorio pronto.
         </p>
         <a
-          href={`${BASE}directorio`}
+          href="/directorio"
           className="inline-flex items-center gap-2 px-6 py-3 bg-accent text-accent-foreground font-mono font-semibold text-sm rounded-lg hover:bg-accent/90 transition-colors mt-4"
         >
           VER DIRECTORIO
