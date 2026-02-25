@@ -1,6 +1,13 @@
 import type { CollectionEntry } from "astro:content";
 import type { AtlasEntryType } from "../config";
 
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
+
 export interface TechEvent {
   title: string;
   organizer: string;
@@ -124,13 +131,13 @@ function parseCSVRows(csv: string): string[][] {
 
 export function filterAtlasByType(
   entries: CollectionEntry<"atlas">[],
-  type: AtlasEntryType
+  type: AtlasEntryType,
 ) {
   return entries.filter((entry) => entry.data.entryType === type);
 }
 
 export function groupByMunicipality(
-  entries: CollectionEntry<"atlas">[]
+  entries: CollectionEntry<"atlas">[],
 ): Record<string, number> {
   return entries.reduce(
     (acc, entry) => {
@@ -138,7 +145,7 @@ export function groupByMunicipality(
       acc[municipality] = (acc[municipality] || 0) + 1;
       return acc;
     },
-    {} as Record<string, number>
+    {} as Record<string, number>,
   );
 }
 
@@ -148,8 +155,31 @@ export function getFeaturedEntries(entries: CollectionEntry<"atlas">[]) {
     .sort((a, b) => a.data.name.localeCompare(b.data.name));
 }
 
+export function countByTypeAndMunicipality(
+  entries: CollectionEntry<"atlas">[],
+): Record<string, Record<AtlasEntryType, number>> {
+  return entries.reduce(
+    (acc, entry) => {
+      const mun = entry.data.municipality;
+      const type = entry.data.entryType;
+      if (!acc[mun]) {
+        acc[mun] = {
+          startup: 0,
+          community: 0,
+          business: 0,
+          consultory: 0,
+          person: 0,
+        };
+      }
+      acc[mun][type] = (acc[mun][type] || 0) + 1;
+      return acc;
+    },
+    {} as Record<string, Record<AtlasEntryType, number>>,
+  );
+}
+
 export function countByType(
-  entries: CollectionEntry<"atlas">[]
+  entries: CollectionEntry<"atlas">[],
 ): Record<AtlasEntryType, number> {
   return entries.reduce(
     (acc, entry) => {
@@ -163,6 +193,6 @@ export function countByType(
       business: 0,
       consultory: 0,
       person: 0,
-    } as Record<AtlasEntryType, number>
+    } as Record<AtlasEntryType, number>,
   );
 }

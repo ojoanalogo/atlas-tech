@@ -7,7 +7,6 @@ module.exports = {
     extend: {
       colors: {
         background: "var(--color-background)",
-        surface: "var(--color-surface)",
         primary: "var(--color-primary)",
         secondary: "var(--color-secondary)",
         accent: "var(--color-accent)",
@@ -15,7 +14,6 @@ module.exports = {
         border: "var(--color-border)",
         card: "var(--color-card)",
         elevated: "var(--color-elevated)",
-        sidebar: "var(--color-sidebar)",
         "accent-foreground": "var(--color-accent-foreground)",
       },
       fontFamily: {

@@ -1,12 +1,29 @@
 ---
 import type { CollectionEntry } from "astro:content";
 import EntryCard from "./EntryCard.astro";
+import FeaturedCarousel from "./ui/react/FeaturedCarousel";
+import { getMunicipalityName } from "../config";
 
 interface Props {
   entries: CollectionEntry<"atlas">[];
 }
 
 const { entries } = Astro.props;
+
+const displayEntries = entries.slice(0, 6);
+
+const carouselEntries = displayEntries.map((entry) => ({
+  slug: entry.slug,
+  name: entry.data.name,
+  tagline: entry.data.tagline,
+  entryType: entry.data.entryType,
+  logoSrc: entry.data.logo?.src,
+  coverSrc: entry.data.coverImage?.src,
+  municipality: entry.data.municipality,
+  city: entry.data.city,
+  municipalityName: getMunicipalityName(entry.data.municipality),
+  tags: entry.data.tags || [],
+}));
 ---
 
 {
@@ -43,8 +60,14 @@ const { entries } = Astro.props;
           </a>
         </div>
 
-        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {entries.slice(0, 6).map((entry) => (
+        {/* Mobile carousel */}
+        <div class="sm:hidden">
+          <FeaturedCarousel entries={carouselEntries} client:visible />
+        </div>
+
+        {/* Desktop grid */}
+        <div class="hidden sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {displayEntries.map((entry) => (
             <EntryCard
               slug={entry.slug}
               name={entry.data.name}

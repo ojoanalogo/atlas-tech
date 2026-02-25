@@ -9,16 +9,14 @@ const {
   image,
   title = SITE_TITLE,
   description = SITE_DESCRIPTION,
-  fullWidth = false,
   showFooter = true,
-  overlayHeader = false,
 } = Astro.props;
 ---
 
 <!doctype html>
 <html
   lang="es"
-  class="bg-background text-secondary selection:bg-[var(--color-selection-bg)] selection:text-[var(--color-selection-text)]"
+  class="bg-background text-secondary selection:bg-accent selection:text-accent-foreground"
 >
   <head>
     <BaseHead title={title} description={description} image={image} />
@@ -34,14 +32,9 @@ const {
       })();
     </script>
   </head>
-  <body
-    class:list={[
-      "mx-auto font-sans relative",
-      fullWidth ? "w-full" : "xl:w-[55rem] lg:w-4/5 w-full sm:px-2 md:px-4",
-    ]}
-  >
-    <Header fullWidth={fullWidth} overlay={overlayHeader} />
-    <main id="main" class:list={[fullWidth ? "" : "px-2 md:px-6 pb-12"]}>
+  <body class:list={["mx-auto font-sans", "w-full"]}>
+    <Header />
+    <main id="main">
       <slot />
     </main>
     {showFooter && <FooterSection />}

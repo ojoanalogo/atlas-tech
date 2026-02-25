@@ -7,6 +7,5 @@ import { defineConfig } from "astro/config";
 export default defineConfig({
   integrations: [react(), sitemap(), tailwind()],
   site: "https://ojoanalogo.github.io",
-  base: "/atlas-tech",
   compressHTML: true,
 });

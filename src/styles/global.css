@@ -5,36 +5,28 @@ html {
 /* Theme CSS Custom Properties */
 :root {
   /* Light theme (default) */
-  --color-background: #f7f4ef;
-  --color-surface: #fffaf5;
+  --color-background: #f3f2ef;
   --color-primary: #18181b;
   --color-secondary: #3f3f46;
-  --color-accent: #059669;
+  --color-accent: #1a7a4f;
   --color-muted: #71717a;
   --color-border: #d4d4d8;
   --color-card: #ffffff;
-  --color-elevated: #f4f4f5;
-  --color-sidebar: #fafaf9;
+  --color-elevated: #f3f2ef;
   --color-accent-foreground: #ffffff;
-  --color-selection-bg: #059669;
-  --color-selection-text: #ffffff;
 }
 
 :root.dark {
   /* Dark theme */
-  --color-background: #0C0C0C;
-  --color-surface: #0A0A0A;
-  --color-primary: #FFFFFF;
+  --color-background: #101010;
+  --color-primary: #ffffff;
   --color-secondary: #8a8a8a;
-  --color-accent: #00FF88;
+  --color-accent: #42ab7a;
   --color-muted: #8a8a8a;
   --color-border: #2f2f2f;
-  --color-card: #0A0A0A;
+  --color-card: #0a0a0a;
   --color-elevated: #141414;
-  --color-sidebar: #080808;
-  --color-accent-foreground: #000000;
-  --color-selection-bg: #00FF88;
-  --color-selection-text: #000000;
+  --color-accent-foreground: #f5f8f7;
 }
 
 /* Directory filter animations */

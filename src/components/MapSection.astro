@@ -1,117 +1,345 @@
 ---
 import { SINALOA_MUNICIPALITIES } from "../config";
+import type { AtlasEntryType } from "../config";
 import SinaloaMap from "./maps/SinaloaMap";
+import { MapPin, Rocket, Users, Briefcase, User, Globe, Search, ArrowRight, ChevronsDown } from "lucide-astro";
 
 interface Props {
   municipalityCounts: Record<string, number>;
+  municipalityTypeCounts: Record<string, Record<AtlasEntryType, number>>;
 }
 
-const { municipalityCounts } = Astro.props;
+const { municipalityCounts, municipalityTypeCounts } = Astro.props;
+
+// Sort municipalities: ones with entries first, then alphabetically
+const sortedMunicipalities = [...SINALOA_MUNICIPALITIES].sort((a, b) => {
+  const countA = municipalityCounts[a.id] || 0;
+  const countB = municipalityCounts[b.id] || 0;
+  if (countA && !countB) return -1;
+  if (!countA && countB) return 1;
+  return a.name.localeCompare(b.name);
+});
 ---
 
 <section id="map" class="py-8 px-4">
   <div class="max-w-7xl mx-auto">
-    <div class="text-center mb-10">
-      <h2 class="text-2xl md:text-3xl font-sans font-bold text-primary">
-        Mapa del ecosistema
-      </h2>
-      <p class="mt-2 text-secondary">
-        Visualiza la distribución del talento tech en Sinaloa
-      </p>
-    </div>
+    <div class="grid lg:grid-cols-9 gap-4">
+      {/* Left: Municipalities (4 cols) */}
+      <div class="lg:col-span-4 space-y-4">
+        <div>
+          <div class="flex items-center gap-2 mb-1">
+            <MapPin class="w-5 h-5 text-accent" />
+            <h2 class="text-xl md:text-2xl font-sans font-bold text-primary">
+              Mira por municipio
+            </h2>
+          </div>
+          <p class="text-sm text-secondary pl-7">
+            Selecciona un municipio para ver su ecosistema tech
+          </p>
+        </div>
 
-    <div class="grid lg:grid-cols-[280px_1fr] gap-4">
-      {/* Sidebar - Municipalities */}
-      <div
-        class="bg-card/90 backdrop-blur-sm border border-border rounded-lg p-4 space-y-2 lg:max-h-[500px] overflow-y-auto"
-      >
-        <button
-          id="municipalities-toggle"
-          type="button"
-          class="w-full flex items-center justify-between lg:pointer-events-none"
+        {/* Stats panel — always visible, shows placeholder or data */}
+        <div
+          id="municipality-stats"
+          class="bg-card border border-border rounded-lg p-4 transition-all duration-200"
         >
-          <h3 class="font-mono text-xs text-muted uppercase tracking-wider">
-            Municipios
-          </h3>
-          <svg
-            class="w-4 h-4 text-muted transition-transform duration-200 lg:hidden"
-            id="municipalities-chevron"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
+          {/* Placeholder (shown when no municipality selected) */}
+          <div id="stats-placeholder" class="flex items-center gap-3 py-3 justify-center text-muted">
+            <MapPin class="w-5 h-5" />
+            <span class="text-sm font-mono">Selecciona un municipio de la lista</span>
+          </div>
+          {/* Stats content (hidden initially) */}
+          <div id="stats-content" class="hidden">
+            <div class="flex items-center justify-between mb-3">
+              <h3 id="stats-title" class="font-sans font-bold text-primary text-lg"></h3>
+              <button
+                id="stats-close"
+                type="button"
+                class="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded hover:bg-elevated transition-colors text-muted hover:text-primary"
+                aria-label="Cerrar resumen"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+              <div class="flex items-center gap-3 p-3 bg-elevated rounded-lg">
+                <Rocket class="w-4 h-4 text-accent shrink-0" />
+                <div>
+                  <div id="stat-startups" class="text-xl font-mono font-bold text-primary">0</div>
+                  <div class="text-[11px] text-muted font-mono uppercase tracking-wider">Startups</div>
+                </div>
+              </div>
+              <div class="flex items-center gap-3 p-3 bg-elevated rounded-lg">
+                <Users class="w-4 h-4 text-accent shrink-0" />
+                <div>
+                  <div id="stat-communities" class="text-xl font-mono font-bold text-primary">0</div>
+                  <div class="text-[11px] text-muted font-mono uppercase tracking-wider">Comunidades</div>
+                </div>
+              </div>
+              <div class="flex items-center gap-3 p-3 bg-elevated rounded-lg">
+                <Briefcase class="w-4 h-4 text-accent shrink-0" />
+                <div>
+                  <div id="stat-consultories" class="text-xl font-mono font-bold text-primary">0</div>
+                  <div class="text-[11px] text-muted font-mono uppercase tracking-wider">Consultoras</div>
+                </div>
+              </div>
+              <div class="flex items-center gap-3 p-3 bg-elevated rounded-lg">
+                <User class="w-4 h-4 text-accent shrink-0" />
+                <div>
+                  <div id="stat-persons" class="text-xl font-mono font-bold text-primary">0</div>
+                  <div class="text-[11px] text-muted font-mono uppercase tracking-wider">Personas</div>
+                </div>
+              </div>
+            </div>
+            <a
+              id="stats-link"
+              href="#"
+              class="mt-3 flex items-center justify-center gap-2 w-full text-center text-xs font-mono font-semibold px-3 py-3 min-h-[44px] rounded-lg bg-accent text-accent-foreground hover:bg-accent/90 transition-colors"
+            >
+              VER COMUNIDAD
+              <ArrowRight class="w-3.5 h-3.5" />
+            </a>
+          </div>
+        </div>
+
+        {/* Municipality list */}
+        <div class="bg-card border border-border rounded-lg p-4 space-y-3" id="municipalities-container">
+          {/* Search */}
+          <div class="relative">
+            <Search class="w-4 h-4 text-muted absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <input
+              id="municipality-search"
+              type="text"
+              placeholder="Buscar municipio..."
+              autocomplete="off"
+              class="w-full pl-9 pr-3 py-2 text-sm bg-elevated border border-border rounded-lg text-primary placeholder:text-muted focus:outline-none focus:border-accent/50 transition-colors"
+            />
+          </div>
+
+          {/* Mobile toggle */}
+          <button
+            id="municipalities-toggle"
+            type="button"
+            class="w-full flex items-center justify-between min-h-[44px] lg:hidden"
           >
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-          </svg>
-        </button>
-        <div id="municipalities-list" class="hidden lg:block space-y-1">
-          {
-            SINALOA_MUNICIPALITIES.map((mun) => {
-              const count = municipalityCounts[mun.id] || 0;
-              return (
-                <button
-                  type="button"
-                  data-municipality={mun.id}
-                  class="w-full flex items-center justify-between py-2 px-3 rounded hover:bg-elevated transition-colors text-left cursor-pointer data-[active]:bg-elevated data-[active]:border-l-2 data-[active]:border-accent"
-                >
-                  <span class="text-sm text-primary">{mun.name}</span>
-                  <span class="text-xs font-mono text-muted">{count}</span>
-                </button>
-              );
-            })
-          }
+            <span class="font-mono text-xs text-muted uppercase tracking-wider">Municipios</span>
+            <svg
+              class="w-4 h-4 text-muted transition-transform duration-200"
+              id="municipalities-chevron"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+
+          {/* List */}
+          <div class="relative hidden lg:block" id="municipalities-list-wrapper">
+            <div id="municipalities-list" class="space-y-0.5 lg:max-h-[380px] overflow-y-auto scrollbar-hide">
+              <p id="no-results" class="hidden w-full text-center text-sm text-muted py-2 font-mono">Sin resultados</p>
+              {
+                sortedMunicipalities.map((mun) => {
+                  const count = municipalityCounts[mun.id] || 0;
+                  const typeData = municipalityTypeCounts[mun.id] || { startup: 0, community: 0, business: 0, consultory: 0, person: 0 };
+                  return (
+                    <button
+                      type="button"
+                      data-municipality={mun.id}
+                      data-stats={JSON.stringify(typeData)}
+                      data-name={mun.name}
+                      class:list={[
+                        "w-full flex items-center gap-3 py-2.5 px-3 rounded-lg transition-all text-left cursor-pointer",
+                        "hover:bg-elevated",
+                        "data-[active]:bg-elevated data-[active]:border data-[active]:border-accent/30 data-[active]:shadow-sm",
+                        count === 0 && "opacity-50",
+                      ]}
+                    >
+                      <MapPin class="w-4 h-4 text-muted shrink-0" />
+                      <span class="text-sm text-primary flex-1">{mun.name}</span>
+                      {count > 0 && (
+                        <span class="text-xs font-mono text-accent bg-accent/10 px-2 py-0.5 rounded-full">
+                          {count}
+                        </span>
+                      )}
+                    </button>
+                  );
+                })
+              }
+            </div>
+            {/* Scroll indicator */}
+            <div id="scroll-indicator" class="absolute bottom-0 left-0 right-0 flex flex-col items-center pointer-events-none transition-opacity duration-300">
+              <div class="h-12 w-full bg-gradient-to-t from-card to-transparent"></div>
+              <div class="-mt-2 flex items-center gap-1 text-muted animate-bounce">
+                <ChevronsDown class="w-4 h-4" />
+                <span class="text-[10px] font-mono uppercase tracking-wider">Más municipios</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Map */}
-      <div
-        class="h-[500px] bg-card border border-border rounded-lg overflow-hidden"
-      >
-        <SinaloaMap municipalityCounts={municipalityCounts} client:visible />
+      {/* Right: Map (5 cols) */}
+      <div class="lg:col-span-5 flex">
+        <div class="bg-card border border-border rounded-lg p-5 flex flex-col w-full">
+          <div class="mb-4">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-0.5">
+              <div class="flex items-center gap-2">
+                <Globe class="w-5 h-5 text-accent" />
+                <h2 class="text-lg font-sans font-bold text-primary">
+                  Mapa del ecosistema
+                </h2>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-accent animate-pulse"></span>
+                <span class="text-xs font-mono text-accent">{Object.keys(municipalityCounts).length} municipios</span>
+              </div>
+            </div>
+            <p class="text-sm text-secondary pl-7">
+              Distribución del talento tech en Sinaloa
+            </p>
+          </div>
+          <div class="flex-1 min-h-[400px] bg-elevated border border-border rounded-lg overflow-hidden">
+            <SinaloaMap municipalityCounts={municipalityCounts} client:visible />
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
 <script>
-  // Municipalities collapsible toggle
+  // Municipality toggle (mobile)
   const munToggle = document.getElementById("municipalities-toggle");
-  const munList = document.getElementById("municipalities-list");
+  const munListWrapper = document.getElementById("municipalities-list-wrapper");
   const munChevron = document.getElementById("municipalities-chevron");
 
-  if (munToggle && munList && munChevron) {
+  if (munToggle && munListWrapper && munChevron) {
     munToggle.addEventListener("click", () => {
-      const isOpen = !munList.classList.contains("hidden");
+      const isOpen = !munListWrapper.classList.contains("hidden");
       if (isOpen) {
-        munList.classList.add("hidden");
-        munList.classList.remove("lg:block");
+        munListWrapper.classList.add("hidden");
         munChevron.classList.remove("rotate-180");
       } else {
-        munList.classList.remove("hidden");
-        munList.classList.add("lg:block");
+        munListWrapper.classList.remove("hidden");
         munChevron.classList.add("rotate-180");
       }
     });
   }
 
+  // Scroll indicator
+  const munList = document.getElementById("municipalities-list");
+  const scrollIndicator = document.getElementById("scroll-indicator");
+
+  function updateScrollIndicator() {
+    if (!munList || !scrollIndicator) return;
+    const atBottom = munList.scrollTop + munList.clientHeight >= munList.scrollHeight - 20;
+    scrollIndicator.style.opacity = atBottom ? "0" : "1";
+  }
+
+  munList?.addEventListener("scroll", updateScrollIndicator);
+  // Initial check (list might not overflow)
+  if (munList && scrollIndicator) {
+    requestAnimationFrame(() => {
+      const overflows = munList.scrollHeight > munList.clientHeight;
+      scrollIndicator.style.opacity = overflows ? "1" : "0";
+    });
+  }
+
+  // Search filter
+  const searchInput = document.getElementById("municipality-search") as HTMLInputElement | null;
+  const noResults = document.getElementById("no-results");
   const buttons = document.querySelectorAll<HTMLButtonElement>("[data-municipality]");
+
+  searchInput?.addEventListener("input", () => {
+    const query = searchInput.value.toLowerCase().trim();
+    // Normalize: remove accents for matching
+    const normalize = (s: string) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+    const normalizedQuery = normalize(query);
+
+    let visibleCount = 0;
+    buttons.forEach((btn) => {
+      const name = normalize(btn.dataset.name || "");
+      const match = !query || name.includes(normalizedQuery);
+      btn.style.display = match ? "" : "none";
+      if (match) visibleCount++;
+    });
+
+    if (noResults) {
+      noResults.style.display = visibleCount === 0 ? "" : "none";
+      noResults.classList.toggle("hidden", visibleCount > 0);
+    }
+
+    // Re-check scroll indicator after filtering
+    requestAnimationFrame(updateScrollIndicator);
+  });
+
+  // Stats panel
+  const statsPlaceholder = document.getElementById("stats-placeholder");
+  const statsContent = document.getElementById("stats-content");
+  const statsTitle = document.getElementById("stats-title");
+  const statsClose = document.getElementById("stats-close");
+  const statStartups = document.getElementById("stat-startups");
+  const statCommunities = document.getElementById("stat-communities");
+  const statConsultories = document.getElementById("stat-consultories");
+  const statPersons = document.getElementById("stat-persons");
+  const statsLink = document.getElementById("stats-link") as HTMLAnchorElement | null;
+
+  function showStats(name: string, id: string, stats: Record<string, number>) {
+    if (!statsContent || !statsTitle || !statsPlaceholder) return;
+    statsTitle.textContent = name;
+    if (statsLink) statsLink.href = `/directorio#municipality=${id}`;
+    if (statStartups) statStartups.textContent = String((stats.startup || 0) + (stats.business || 0));
+    if (statCommunities) statCommunities.textContent = String(stats.community || 0);
+    if (statConsultories) statConsultories.textContent = String(stats.consultory || 0);
+    if (statPersons) statPersons.textContent = String(stats.person || 0);
+    statsPlaceholder.classList.add("hidden");
+    statsContent.classList.remove("hidden");
+  }
+
+  function hideStats() {
+    statsContent?.classList.add("hidden");
+    statsPlaceholder?.classList.remove("hidden");
+  }
+
+  statsClose?.addEventListener("click", () => {
+    hideStats();
+    buttons.forEach((b) => b.removeAttribute("data-active"));
+  });
+
+  // Municipality buttons
   buttons.forEach((btn) => {
     btn.addEventListener("click", () => {
       const id = btn.dataset.municipality;
-      // Toggle active state
       const wasActive = btn.hasAttribute("data-active");
+
       buttons.forEach((b) => b.removeAttribute("data-active"));
-      if (!wasActive) {
+
+      if (wasActive) {
+        hideStats();
+      } else {
         btn.setAttribute("data-active", "");
+        const name = btn.dataset.name || id || "";
+        const stats = JSON.parse(btn.dataset.stats || "{}");
+        showStats(name, id || "", stats);
         window.dispatchEvent(new CustomEvent("select-municipality", { detail: { id } }));
       }
     });
   });
 
-  // Clear active state when map popup is closed
+  // Clear on outside click
   window.addEventListener("click", (e) => {
     const target = e.target as HTMLElement;
-    if (!target.closest("[data-municipality]") && !target.closest("[data-map-popup]")) {
+    if (
+      !target.closest("[data-municipality]") &&
+      !target.closest("#municipality-stats") &&
+      !target.closest("[data-map-popup]") &&
+      !target.closest("#municipality-search")
+    ) {
       buttons.forEach((b) => b.removeAttribute("data-active"));
+      hideStats();
     }
   });
 </script>

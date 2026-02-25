@@ -5,28 +5,35 @@ import HeroSection from "../components/HeroSection.astro";
 import CategorySection from "../components/CategorySection.astro";
 import MapSection from "../components/MapSection.astro";
 import FeaturedSection from "../components/FeaturedSection.astro";
-import StatsSection from "../components/StatsSection.astro";
 import CalendarSection from "../components/CalendarSection.astro";
 import CtaSection from "../components/CtaSection.astro";
-import { countByType, getFeaturedEntries, groupByMunicipality } from "../utils";
+import {
+  countByType,
+  countByTypeAndMunicipality,
+  getFeaturedEntries,
+  groupByMunicipality,
+} from "../utils";
 
 const allEntries = await getCollection("atlas");
 const counts = countByType(allEntries);
 const featured = getFeaturedEntries(allEntries);
 const municipalityCounts = groupByMunicipality(allEntries);
-const uniqueMunicipalities = Object.keys(municipalityCounts).length;
+const municipalityTypeCounts = countByTypeAndMunicipality(allEntries);
 ---
 
-<BaseLayout fullWidth={true} overlayHeader={true}>
-  <HeroSection
-    totalEntries={allEntries.length}
-    counts={counts}
-    municipalityCounts={municipalityCounts}
-  />
-  <div class="bg-surface">
+<BaseLayout>
+  <div class="bg-background">
+    <HeroSection
+      totalEntries={allEntries.length}
+      counts={counts}
+      municipalityCounts={municipalityCounts}
+    />
     <CategorySection counts={counts} />
-    <MapSection municipalityCounts={municipalityCounts} />
     <FeaturedSection entries={featured} />
+    <MapSection
+      municipalityCounts={municipalityCounts}
+      municipalityTypeCounts={municipalityTypeCounts}
+    />
     <CalendarSection />
     <CtaSection />
   </div>

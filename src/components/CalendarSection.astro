@@ -3,6 +3,7 @@ import { EVENTS_SHEET_CSV_URL } from "../config";
 import { parseEventsCSV } from "../utils";
 import type { TechEvent } from "../utils";
 import EventCalendar from "./EventCalendar";
+import { CalendarDays, Clock, MapPin, ArrowRight } from "lucide-astro";
 
 let events: TechEvent[] = [];
 
@@ -22,19 +23,109 @@ for (const ev of events) {
   if (!eventsByDate[ev.date]) eventsByDate[ev.date] = [];
   eventsByDate[ev.date].push(ev);
 }
+
+// Next 5 upcoming events (from today onwards)
+const today = new Date().toISOString().slice(0, 10);
+const upcomingEvents = events
+  .filter((ev) => ev.date >= today)
+  .sort((a, b) => a.date.localeCompare(b.date) || a.startTime.localeCompare(b.startTime))
+  .slice(0, 5);
+
+function formatDate(dateStr: string): string {
+  const [y, m, d] = dateStr.split("-").map(Number);
+  const date = new Date(y, m - 1, d);
+  return date.toLocaleDateString("es-MX", { day: "numeric", month: "short" });
+}
 ---
 
 <section class="py-8 px-4">
   <div class="max-w-7xl mx-auto">
-    <div class="text-center mb-10">
-      <h2 class="text-2xl md:text-3xl font-sans font-bold text-primary">
-        Calendario de eventos
-      </h2>
-      <p class="mt-2 text-secondary">
-        Próximos eventos del ecosistema tech en Sinaloa
-      </p>
-    </div>
+    <div class="grid lg:grid-cols-9 gap-4">
+      {/* Left: Calendar (5 cols) */}
+      <div class="lg:col-span-5">
+        <div class="bg-card border border-border rounded-lg p-4">
+          <EventCalendar eventsByDate={eventsByDate} client:visible />
+        </div>
+      </div>
 
-    <EventCalendar eventsByDate={eventsByDate} client:visible />
+      {/* Right: Upcoming events sidebar (4 cols) */}
+      <div class="lg:col-span-4 space-y-4">
+        <div>
+          <div class="flex items-center gap-2 mb-1">
+            <CalendarDays class="w-5 h-5 text-accent" />
+            <h2 class="text-xl md:text-2xl font-sans font-bold text-primary">
+              Próximos eventos
+            </h2>
+          </div>
+          <p class="text-sm text-secondary pl-7">
+            Lo que viene en el ecosistema tech de Sinaloa
+          </p>
+        </div>
+
+        <div class="space-y-2">
+          {upcomingEvents.length > 0 ? (
+            upcomingEvents.map((ev) => (
+              <button
+                type="button"
+                data-event-detail={JSON.stringify(ev)}
+                class:list={[
+                  "block w-full text-left bg-card border border-border rounded-lg p-4 transition-all duration-200",
+                  "hover:border-accent/30 hover:shadow-sm group cursor-pointer",
+                ]}
+              >
+                <div class="flex items-start justify-between gap-3">
+                  <div class="flex-1 min-w-0">
+                    <h3 class="text-sm font-sans font-semibold text-primary group-hover:text-accent transition-colors truncate">
+                      {ev.title}
+                    </h3>
+                    <div class="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1.5">
+                      <span class="inline-flex items-center gap-1 text-xs text-muted font-mono">
+                        <CalendarDays class="w-3 h-3" />
+                        {formatDate(ev.date)}
+                      </span>
+                      {(ev.startTime) && (
+                        <span class="inline-flex items-center gap-1 text-xs text-muted font-mono">
+                          <Clock class="w-3 h-3" />
+                          {ev.startTime}{ev.endTime ? `–${ev.endTime}` : ""}
+                        </span>
+                      )}
+                      {ev.location && (
+                        <span class="inline-flex items-center gap-1 text-xs text-muted font-mono truncate max-w-[180px]">
+                          <MapPin class="w-3 h-3 shrink-0" />
+                          {ev.location}
+                        </span>
+                      )}
+                    </div>
+                    {ev.organizer && (
+                      <p class="text-xs text-secondary mt-1">{ev.organizer}</p>
+                    )}
+                  </div>
+                  <div class="shrink-0 mt-1">
+                    <ArrowRight class="w-4 h-4 text-muted group-hover:text-accent transition-colors" />
+                  </div>
+                </div>
+              </button>
+            ))
+          ) : (
+            <div class="bg-card border border-border rounded-lg p-6 text-center">
+              <p class="text-sm text-muted font-mono">Sin eventos próximos</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
   </div>
 </section>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>("[data-event-detail]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const data = btn.dataset.eventDetail;
+      if (!data) return;
+      try {
+        const event = JSON.parse(data);
+        window.dispatchEvent(new CustomEvent("open-event-detail", { detail: event }));
+      } catch {}
+    });
+  });
+</script>

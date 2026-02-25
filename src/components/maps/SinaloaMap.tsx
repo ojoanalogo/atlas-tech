@@ -1,4 +1,10 @@
-import { useState, useCallback, useRef, useEffect, type LucideIcon } from "react";
+import {
+  useState,
+  useCallback,
+  useRef,
+  useEffect,
+  type LucideIcon,
+} from "react";
 import { geoIdentity, geoPath } from "d3-geo";
 import { ComposableMap, Geographies, Geography } from "react-simple-maps";
 import {
@@ -14,6 +20,11 @@ import {
   BrainCircuit,
   Blocks,
   Handshake,
+  ZoomIn,
+  ZoomOut,
+  RotateCcw,
+  Lock,
+  Unlock,
 } from "lucide-react";
 
 const TOPO_URL = "/topo/Sinaloa_municipios.json";
@@ -21,9 +32,18 @@ const TOPO_URL = "/topo/Sinaloa_municipios.json";
 const ACCENT = "var(--color-accent)";
 
 const PATTERN_ICONS: LucideIcon[] = [
-  Rocket, Code, Users, Cpu,
-  Lightbulb, Globe, Terminal, Building2,
-  Wifi, BrainCircuit, Blocks, Handshake,
+  Rocket,
+  Code,
+  Users,
+  Cpu,
+  Lightbulb,
+  Globe,
+  Terminal,
+  Building2,
+  Wifi,
+  BrainCircuit,
+  Blocks,
+  Handshake,
 ];
 
 const CELL = 64;
@@ -156,6 +176,9 @@ export default function SinaloaMap({
   const [isDragging, setIsDragging] = useState(false);
   const [tooltip, setTooltip] = useState<TooltipState | null>(null);
   const [popup, setPopup] = useState<PopupState | null>(null);
+  const [interactionEnabled, setInteractionEnabled] = useState(false);
+  const [showMobileLockOverlay, setShowMobileLockOverlay] = useState(false);
+  const mobileLockTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const dragStart = useRef({ x: 0, y: 0 });
   const translateStart = useRef({ x: 0, y: 0 });
   const didDrag = useRef(false);
@@ -192,13 +215,14 @@ export default function SinaloaMap({
   const handlePointerDown = useCallback(
     (e: React.PointerEvent) => {
       if (e.button !== 0) return;
+      if (!interactionEnabled) return;
       setIsDragging(true);
       didDrag.current = false;
       dragStart.current = { x: e.clientX, y: e.clientY };
       translateStart.current = { ...translate };
       (e.target as HTMLElement).setPointerCapture(e.pointerId);
     },
-    [translate],
+    [translate, interactionEnabled],
   );
 
   const handlePointerMove = useCallback(
@@ -224,9 +248,26 @@ export default function SinaloaMap({
     setIsDragging(false);
   }, []);
 
+  // Show lock overlay on touch (mobile only — desktop uses CSS hover)
+  const handleLockedInteraction = useCallback(() => {
+    if (interactionEnabled || compact) return;
+    setShowMobileLockOverlay(true);
+    if (mobileLockTimer.current) clearTimeout(mobileLockTimer.current);
+    mobileLockTimer.current = setTimeout(() => setShowMobileLockOverlay(false), 3000);
+  }, [interactionEnabled, compact]);
+
+  // Hide overlay when unlocking
+  useEffect(() => {
+    if (interactionEnabled) {
+      setShowMobileLockOverlay(false);
+      if (mobileLockTimer.current) clearTimeout(mobileLockTimer.current);
+    }
+  }, [interactionEnabled]);
+
   // Wheel zoom
   const handleWheel = useCallback(
     (e: WheelEvent) => {
+      if (!interactionEnabled) return;
       e.preventDefault();
       const factor = e.deltaY < 0 ? 1.15 : 1 / 1.15;
       setScale((s) => {
@@ -235,7 +276,7 @@ export default function SinaloaMap({
         return newScale;
       });
     },
-    [constrainTranslate],
+    [constrainTranslate, interactionEnabled],
   );
 
   useEffect(() => {
@@ -340,14 +381,28 @@ export default function SinaloaMap({
       const svgRect = svgEl.getBoundingClientRect();
       const scaleX = svgRect.width / width;
       const scaleY = svgRect.height / height;
-      const px = centroid[0] * scaleX * scale + translate.x + (rect.width - svgRect.width * scale) / 2;
-      const py = centroid[1] * scaleY * scale + translate.y + (rect.height - svgRect.height * scale) / 2;
+      const px =
+        centroid[0] * scaleX * scale +
+        translate.x +
+        (rect.width - svgRect.width * scale) / 2;
+      const py =
+        centroid[1] * scaleY * scale +
+        translate.y +
+        (rect.height - svgRect.height * scale) / 2;
 
       const count = municipalityCounts[id] || 0;
       setTooltip(null);
       setPopup({ x: px, y: py, id, name, count });
     },
-    [compact, municipalityCounts, pathGenerator, scale, translate, width, height],
+    [
+      compact,
+      municipalityCounts,
+      pathGenerator,
+      scale,
+      translate,
+      width,
+      height,
+    ],
   );
 
   // Listen for sidebar municipality selection
@@ -367,10 +422,17 @@ export default function SinaloaMap({
   return (
     <div
       ref={containerRef}
-      className="relative w-full h-full overflow-hidden"
-      style={{ cursor: isDragging ? "grabbing" : "grab", touchAction: "none" }}
+      className={`relative w-full h-full overflow-hidden ${!interactionEnabled && !compact ? "group/map" : ""}`}
+      style={{
+        cursor: !interactionEnabled
+          ? "default"
+          : isDragging
+            ? "grabbing"
+            : "grab",
+        touchAction: interactionEnabled ? "none" : "auto",
+      }}
+      onTouchStart={handleLockedInteraction}
     >
-      <IconPatternBg />
       <div
         style={{
           transform: `translate(${translate.x}px, ${translate.y}px) scale(${scale})`,
@@ -451,15 +513,12 @@ export default function SinaloaMap({
           }}
           className="bg-[var(--color-elevated)] border border-[var(--color-border)] rounded px-2.5 py-1.5 shadow-lg"
         >
-          <div
-            className="text-xs font-mono font-semibold text-accent"
-          >
+          <div className="text-xs font-mono font-semibold text-accent">
             {tooltip.name}
           </div>
           {tooltip.count > 0 && (
             <div className="text-[10px] font-mono text-[var(--color-muted)]">
-              {tooltip.count}{" "}
-              {tooltip.count === 1 ? "proyecto" : "proyectos"}
+              {tooltip.count} {tooltip.count === 1 ? "proyecto" : "proyectos"}
             </div>
           )}
         </div>
@@ -471,8 +530,16 @@ export default function SinaloaMap({
           data-map-popup
           style={{
             position: "absolute",
-            left: clamp(popup.x - 100, 8, (containerRef.current?.offsetWidth ?? 800) - 208),
-            top: clamp(popup.y - 120, 8, (containerRef.current?.offsetHeight ?? 800) - 8),
+            left: clamp(
+              popup.x - 100,
+              8,
+              (containerRef.current?.offsetWidth ?? 800) - 208,
+            ),
+            top: clamp(
+              popup.y - 120,
+              8,
+              (containerRef.current?.offsetHeight ?? 800) - 8,
+            ),
             zIndex: 20,
             width: 200,
           }}
@@ -480,9 +547,7 @@ export default function SinaloaMap({
         >
           {/* Header */}
           <div className="px-3 py-2 border-b border-[var(--color-border)] flex items-center justify-between">
-            <span
-              className="text-sm font-mono font-bold text-accent"
-            >
+            <span className="text-sm font-mono font-bold text-accent">
               {popup.name}
             </span>
             <button
@@ -517,29 +582,68 @@ export default function SinaloaMap({
         </div>
       )}
 
+      {/* Lock overlay — visible on hover (desktop) or touch (mobile) */}
+      {!interactionEnabled && !compact && (
+        <div
+          className={`absolute inset-0 z-30 flex items-center justify-center transition-opacity duration-200 bg-black/20 backdrop-blur-[1px] ${
+            showMobileLockOverlay ? "opacity-100" : "opacity-0 group-hover/map:opacity-100"
+          }`}
+        >
+          <button
+            onClick={() => {
+              setInteractionEnabled(true);
+              setShowMobileLockOverlay(false);
+            }}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-[var(--color-card)] border border-[var(--color-border)] shadow-xl text-sm font-mono font-semibold text-[var(--color-primary)] hover:border-accent transition-colors"
+          >
+            <Lock size={14} className="text-[var(--color-muted)]" />
+            Interactuar con el mapa
+          </button>
+        </div>
+      )}
+
       {/* Zoom controls */}
       {!compact && (
         <div className="absolute bottom-4 right-4 flex flex-col gap-1.5">
           <button
+            onClick={() => setInteractionEnabled((v) => !v)}
+            className={`w-9 h-9 rounded-lg border flex items-center justify-center transition-colors ${
+              interactionEnabled
+                ? "bg-accent text-[var(--color-accent-foreground)] border-accent"
+                : "bg-[var(--color-elevated)] border-[var(--color-border)] text-[var(--color-muted)] hover:text-accent hover:border-accent"
+            }`}
+            aria-label={
+              interactionEnabled ? "Bloquear mapa" : "Desbloquear mapa"
+            }
+            title={
+              interactionEnabled ? "Bloquear pan/zoom" : "Desbloquear pan/zoom"
+            }
+          >
+            {interactionEnabled ? <Unlock size={16} /> : <Lock size={16} />}
+          </button>
+          <button
             onClick={handleZoomIn}
-            className="w-7 h-7 rounded bg-[var(--color-elevated)] border border-[var(--color-border)] text-[var(--color-primary)] hover:text-accent hover:border-accent transition-colors flex items-center justify-center font-mono text-xs"
+            disabled={!interactionEnabled}
+            className="w-9 h-9 rounded-lg bg-[var(--color-elevated)] border border-[var(--color-border)] text-[var(--color-primary)] hover:text-accent hover:border-accent disabled:opacity-40 disabled:pointer-events-none transition-colors flex items-center justify-center"
             aria-label="Acercar"
           >
-            +
+            <ZoomIn size={16} />
           </button>
           <button
             onClick={handleZoomOut}
-            className="w-7 h-7 rounded bg-[var(--color-elevated)] border border-[var(--color-border)] text-[var(--color-primary)] hover:text-accent hover:border-accent transition-colors flex items-center justify-center font-mono text-xs"
+            disabled={!interactionEnabled}
+            className="w-9 h-9 rounded-lg bg-[var(--color-elevated)] border border-[var(--color-border)] text-[var(--color-primary)] hover:text-accent hover:border-accent disabled:opacity-40 disabled:pointer-events-none transition-colors flex items-center justify-center"
             aria-label="Alejar"
           >
-            −
+            <ZoomOut size={16} />
           </button>
           <button
             onClick={handleReset}
-            className="w-7 h-7 rounded bg-[var(--color-elevated)] border border-[var(--color-border)] text-[var(--color-primary)] hover:text-accent hover:border-accent transition-colors flex items-center justify-center font-mono text-[10px]"
+            disabled={!interactionEnabled}
+            className="w-9 h-9 rounded-lg bg-[var(--color-elevated)] border border-[var(--color-border)] text-[var(--color-primary)] hover:text-accent hover:border-accent disabled:opacity-40 disabled:pointer-events-none transition-colors flex items-center justify-center"
             aria-label="Resetear zoom"
           >
-            ⟲
+            <RotateCcw size={16} />
           </button>
         </div>
       )}

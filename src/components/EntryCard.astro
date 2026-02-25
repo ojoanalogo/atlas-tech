@@ -1,6 +1,10 @@
 ---
 import { Image } from "astro:assets";
-import { getMunicipalityName, getEntryUrl, type AtlasEntryType } from "../config";
+import {
+  getMunicipalityName,
+  getEntryUrl,
+  type AtlasEntryType,
+} from "../config";
 import EntryBadge from "./EntryBadge.astro";
 import { MapPin } from "@lucide/astro";
 
@@ -31,7 +35,7 @@ const {
 
 <a
   href={getEntryUrl(entryType, slug)}
-  class="group block bg-card/90 backdrop-blur-sm border border-border rounded-lg overflow-hidden hover:border-accent/50 transition-all duration-300"
+  class="group block bg-card border border-border rounded-lg overflow-hidden hover:border-accent/50 transition-all duration-300"
 >
   {/* Cover image */}
   <div class="h-36 bg-elevated relative overflow-hidden">
@@ -44,7 +48,7 @@ const {
           class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
         />
       ) : (
-        <div class="w-full h-full flex items-center justify-center">
+        <div class="w-full h-full bg-accent flex items-center justify-center">
           {logo ? (
             <Image
               src={logo}
@@ -54,7 +58,7 @@ const {
               class="w-16 h-16 object-contain"
             />
           ) : (
-            <span class="text-4xl font-mono text-muted/30 font-bold">
+            <span class="text-5xl font-mono text-elevated font-bold">
               {name.charAt(0).toUpperCase()}
             </span>
           )}
@@ -89,7 +93,13 @@ const {
     {tagline && <p class="text-sm text-secondary line-clamp-2">{tagline}</p>}
     <div class="flex items-center gap-1 text-xs text-muted">
       <MapPin class="w-3 h-3 shrink-0" />
-      <span>{municipality === "global" ? city : `${city}, ${getMunicipalityName(municipality)}`}</span>
+      <span
+        >{
+          municipality === "global"
+            ? city
+            : `${city}, ${getMunicipalityName(municipality)}`
+        }</span
+      >
     </div>
     {
       tags.length > 0 && (

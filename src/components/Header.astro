@@ -2,13 +2,6 @@
 import ThemeToggle from "./ThemeToggle.astro";
 import "../styles/tooltip.css";
 
-interface Props {
-  fullWidth?: boolean;
-  overlay?: boolean;
-}
-
-const { fullWidth = false, overlay = false } = Astro.props;
-
 const directoryLinks = [
   { title: "STARTUPS", url: "/directorio#type=startup" },
   { title: "CONSULTORÍAS", url: "/directorio#type=consultory" },
@@ -18,14 +11,8 @@ const directoryLinks = [
 ];
 ---
 
-<header
-  id="main-header"
-  class:list={[
-    "px-4 py-4 z-50",
-    overlay ? "absolute top-0 left-0 right-0" : "relative",
-  ]}
->
-  <div class:list={["mx-auto", fullWidth ? "max-w-7xl" : ""]}>
+<header id="main-header" class="px-4 py-4">
+  <div class:list={["mx-auto", "max-w-7xl"]}>
     <div
       class="bg-white/70 dark:bg-black/10 backdrop-blur-lg border rounded-lg font-mono text-sm transition-all duration-300 border-gray-400/50 dark:border-gray-400/30 hover:shadow-sm dark:hover:shadow-md dark:hover:shadow-black/20"
     >
@@ -37,15 +24,13 @@ const directoryLinks = [
         {/* Logo */}
         <a
           href="/"
-          class="font-mono font-bold text-primary hover:text-accent transition-colors duration-200 shrink-0"
+          class="font-sans font-bold text-primary hover:text-accent transition-colors duration-200 shrink-0"
         >
           SINALOA TECH<span class="text-accent">_</span>ATLAS
         </a>
 
         {/* Desktop nav links */}
-        <div
-          class="hidden sm:flex items-center gap-4 text-xs overflow-visible"
-        >
+        <div class="hidden sm:flex items-center gap-4 text-xs overflow-visible">
           {/* Directory dropdown */}
           <div class="relative group" id="directory-dropdown">
             <button
@@ -73,7 +58,7 @@ const directoryLinks = [
             >
               <a
                 href="/directorio"
-                class="block px-3 py-2 text-xs font-mono text-primary hover:text-accent hover:bg-elevated transition-colors"
+                class="block px-3 py-2.5 text-xs font-mono text-primary hover:text-accent hover:bg-elevated transition-colors"
               >
                 VER TODOS
               </a>
@@ -82,7 +67,7 @@ const directoryLinks = [
                 directoryLinks.map((link) => (
                   <a
                     href={link.url}
-                    class="block px-3 py-2 text-xs font-mono text-secondary hover:text-accent hover:bg-elevated transition-colors"
+                    class="block px-3 py-2.5 text-xs font-mono text-secondary hover:text-accent hover:bg-elevated transition-colors"
                   >
                     {link.title}
                   </a>
@@ -100,7 +85,7 @@ const directoryLinks = [
 
           <a
             href="/directorio/submit"
-            class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-accent text-accent-foreground font-mono font-semibold text-xs rounded hover:bg-accent/90 transition-colors"
+            class="inline-flex items-center gap-1.5 px-3 py-2.5 min-h-[44px] bg-accent text-accent-foreground font-mono font-semibold text-xs rounded hover:bg-accent/90 transition-colors"
           >
             AGREGAR PROYECTO
           </a>
@@ -114,12 +99,21 @@ const directoryLinks = [
           <button
             id="mobile-menu-toggle"
             type="button"
-            class="p-1.5 text-secondary hover:text-accent transition-colors"
+            class="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-secondary hover:text-accent transition-colors"
             aria-expanded="false"
             aria-label="Abrir menú"
           >
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 6h16M4 12h16M4 18h16"></path>
             </svg>
           </button>
         </div>
@@ -134,20 +128,26 @@ const directoryLinks = [
   class="fixed inset-0 z-[100] bg-background flex flex-col opacity-0 invisible transition-all duration-300 sm:hidden"
 >
   <div class="flex items-center justify-between px-8 py-6">
-    <a
-      href="/"
-      class="font-mono font-bold text-primary"
-    >
+    <a href="/" class="font-mono font-bold text-primary">
       SINALOA TECH<span class="text-accent">_</span>ATLAS
     </a>
     <button
       id="mobile-menu-close"
       type="button"
-      class="p-1.5 text-secondary hover:text-accent transition-colors"
+      class="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-secondary hover:text-accent transition-colors"
       aria-label="Cerrar menú"
     >
-      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+      <svg
+        class="w-6 h-6"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M6 18L18 6M6 6l12 12"></path>
       </svg>
     </button>
   </div>
@@ -182,8 +182,17 @@ const directoryLinks = [
         href="/directorio/submit"
         class="inline-flex items-center gap-2 px-5 py-3 bg-accent text-accent-foreground font-mono font-bold text-sm rounded hover:bg-accent/90 transition-colors"
       >
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+        <svg
+          class="w-4 h-4"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 4v16m8-8H4"></path>
         </svg>
         AGREGAR PROYECTO
       </a>
