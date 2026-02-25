@@ -11,11 +11,11 @@ const { fullWidth = false, overlay = false } = Astro.props;
 const BASE = import.meta.env.BASE_URL;
 
 const directoryLinks = [
-  { title: "STARTUPS", url: `${BASE}/directorio#type=startup` },
-  { title: "CONSULTORÍAS", url: `${BASE}/directorio#type=consultory` },
-  { title: "PERSONAS", url: `${BASE}/directorio#type=person` },
-  { title: "COMUNIDADES", url: `${BASE}/directorio#type=community` },
-  { title: "EMPRESAS", url: `${BASE}/directorio#type=business` },
+  { title: "STARTUPS", url: `${BASE}directorio#type=startup` },
+  { title: "CONSULTORÍAS", url: `${BASE}directorio#type=consultory` },
+  { title: "PERSONAS", url: `${BASE}directorio#type=person` },
+  { title: "COMUNIDADES", url: `${BASE}directorio#type=community` },
+  { title: "EMPRESAS", url: `${BASE}directorio#type=business` },
 ];
 ---
 
@@ -44,7 +44,9 @@ const directoryLinks = [
         </a>
 
         {/* Desktop nav links */}
-        <div class="hidden sm:flex items-center gap-4 text-xs overflow-visible">
+        <div
+          class="hidden sm:flex items-center gap-4 text-xs overflow-visible"
+        >
           {/* Directory dropdown */}
           <div class="relative group" id="directory-dropdown">
             <button
@@ -71,7 +73,7 @@ const directoryLinks = [
               class="absolute top-full left-0 mt-2 w-44 py-1 bg-card border border-border rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50"
             >
               <a
-                href={`${BASE}/directorio`}
+                href={`${BASE}directorio`}
                 class="block px-3 py-2 text-xs font-mono text-primary hover:text-accent hover:bg-elevated transition-colors"
               >
                 VER TODOS
@@ -91,14 +93,14 @@ const directoryLinks = [
           </div>
 
           <a
-            href={`${BASE}/#map`}
+            href={`${BASE}#map`}
             class="text-secondary hover:text-accent transition-all duration-200"
           >
             MAPA
           </a>
 
           <a
-            href={`${BASE}/directorio/submit`}
+            href={`${BASE}directorio/submit`}
             class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-accent text-accent-foreground font-mono font-semibold text-xs rounded hover:bg-accent/90 transition-colors"
           >
             AGREGAR PROYECTO
@@ -117,17 +119,8 @@ const directoryLinks = [
             aria-expanded="false"
             aria-label="Abrir menú"
           >
-            <svg
-              class="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M4 6h16M4 12h16M4 18h16"></path>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           </button>
         </div>
@@ -142,7 +135,10 @@ const directoryLinks = [
   class="fixed inset-0 z-[100] bg-background flex flex-col opacity-0 invisible transition-all duration-300 sm:hidden"
 >
   <div class="flex items-center justify-between px-8 py-6">
-    <a href={BASE} class="font-mono font-bold text-primary">
+    <a
+      href={BASE}
+      class="font-mono font-bold text-primary"
+    >
       SINALOA TECH<span class="text-accent">_</span>ATLAS
     </a>
     <button
@@ -151,24 +147,15 @@ const directoryLinks = [
       class="p-1.5 text-secondary hover:text-accent transition-colors"
       aria-label="Cerrar menú"
     >
-      <svg
-        class="w-6 h-6"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M6 18L18 6M6 6l12 12"></path>
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
       </svg>
     </button>
   </div>
 
   <div class="flex-1 flex flex-col justify-center px-8 space-y-2">
     <a
-      href={`${BASE}/directorio`}
+      href={`${BASE}directorio`}
       class="block py-3 text-lg font-mono font-semibold text-primary hover:text-accent transition-colors"
     >
       DIRECTORIO
@@ -186,27 +173,18 @@ const directoryLinks = [
       }
     </div>
     <a
-      href={`${BASE}/#map`}
+      href={`${BASE}#map`}
       class="block py-3 text-lg font-mono font-semibold text-primary hover:text-accent transition-colors"
     >
       MAPA
     </a>
     <div class="pt-4">
       <a
-        href={`${BASE}/directorio/submit`}
+        href={`${BASE}directorio/submit`}
         class="inline-flex items-center gap-2 px-5 py-3 bg-accent text-accent-foreground font-mono font-bold text-sm rounded hover:bg-accent/90 transition-colors"
       >
-        <svg
-          class="w-4 h-4"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M12 4v16m8-8H4"></path>
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
         </svg>
         AGREGAR PROYECTO
       </a>
