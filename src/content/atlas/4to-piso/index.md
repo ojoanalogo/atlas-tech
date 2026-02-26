@@ -19,8 +19,8 @@ tags:
     "aceleración",
   ]
 verified: true
-website: "https://www.peis.com.mx"
-publishDate: 2024-03-01
+instagram: emprendimientotecsin
+publishDate: 2026-03-01
 featured: true
 meetupFrequency: "Permanente"
 ---

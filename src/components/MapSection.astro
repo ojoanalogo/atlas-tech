@@ -2,7 +2,7 @@
 import { SINALOA_MUNICIPALITIES } from "../config";
 import type { AtlasEntryType } from "../config";
 import SinaloaMap from "./maps/SinaloaMap";
-import { MapPin, Rocket, Users, Briefcase, User, Globe, Search, ArrowRight, ChevronsDown } from "lucide-astro";
+import { MapPin, Rocket, Users, Briefcase, User, Globe, Search, ArrowRight, ChevronsDown, Plus } from "lucide-astro";
 
 interface Props {
   municipalityCounts: Record<string, number>;
@@ -19,6 +19,9 @@ const sortedMunicipalities = [...SINALOA_MUNICIPALITIES].sort((a, b) => {
   if (!countA && countB) return 1;
   return a.name.localeCompare(b.name);
 });
+
+const withRecords = sortedMunicipalities.filter((m) => (municipalityCounts[m.id] || 0) > 0);
+const withoutRecords = sortedMunicipalities.filter((m) => !(municipalityCounts[m.id] || 0));
 ---
 
 <section id="map" class="py-8 px-4">
@@ -141,7 +144,7 @@ const sortedMunicipalities = [...SINALOA_MUNICIPALITIES].sort((a, b) => {
             <div id="municipalities-list" class="space-y-0.5 lg:max-h-[380px] overflow-y-auto scrollbar-hide">
               <p id="no-results" class="hidden w-full text-center text-sm text-muted py-2 font-mono">Sin resultados</p>
               {
-                sortedMunicipalities.map((mun) => {
+                withRecords.map((mun) => {
                   const count = municipalityCounts[mun.id] || 0;
                   const typeData = municipalityTypeCounts[mun.id] || { startup: 0, community: 0, business: 0, consultory: 0, person: 0 };
                   return (
@@ -150,24 +153,55 @@ const sortedMunicipalities = [...SINALOA_MUNICIPALITIES].sort((a, b) => {
                       data-municipality={mun.id}
                       data-stats={JSON.stringify(typeData)}
                       data-name={mun.name}
-                      class:list={[
-                        "w-full flex items-center gap-3 py-2.5 px-3 rounded-lg transition-all text-left cursor-pointer",
-                        "hover:bg-elevated",
-                        "data-[active]:bg-elevated data-[active]:border data-[active]:border-accent/30 data-[active]:shadow-sm",
-                        count === 0 && "opacity-50",
-                      ]}
+                      class="w-full flex items-center gap-3 py-2.5 px-3 rounded-lg transition-all text-left cursor-pointer hover:bg-elevated data-[active]:bg-elevated data-[active]:border data-[active]:border-accent/30 data-[active]:shadow-sm"
                     >
                       <MapPin class="w-4 h-4 text-muted shrink-0" />
                       <span class="text-sm text-primary flex-1">{mun.name}</span>
-                      {count > 0 && (
-                        <span class="text-xs font-mono text-accent bg-accent/10 px-2 py-0.5 rounded-full">
-                          {count}
-                        </span>
-                      )}
+                      <span class="text-xs font-mono text-accent bg-accent/10 px-2 py-0.5 rounded-full">
+                        {count}
+                      </span>
                     </button>
                   );
                 })
               }
+              {/* Separator */}
+              {withoutRecords.length > 0 && (
+                <div data-separator class="flex items-center gap-3 py-3 px-3">
+                  <div class="flex-1 border-t border-border"></div>
+                  <span class="text-[10px] font-mono text-muted uppercase tracking-wider shrink-0">Sin registros</span>
+                  <div class="flex-1 border-t border-border"></div>
+                </div>
+              )}
+              {
+                withoutRecords.map((mun) => {
+                  const typeData = { startup: 0, community: 0, business: 0, consultory: 0, person: 0 };
+                  return (
+                    <button
+                      type="button"
+                      data-municipality={mun.id}
+                      data-stats={JSON.stringify(typeData)}
+                      data-name={mun.name}
+                      class="w-full flex items-center gap-3 py-2.5 px-3 rounded-lg transition-all text-left cursor-pointer opacity-50 hover:bg-elevated hover:opacity-100 data-[active]:bg-elevated data-[active]:border data-[active]:border-accent/30 data-[active]:shadow-sm data-[active]:opacity-100"
+                    >
+                      <MapPin class="w-4 h-4 text-muted shrink-0" />
+                      <span class="text-sm text-primary flex-1">{mun.name}</span>
+                    </button>
+                  );
+                })
+              }
+              {/* CTA */}
+              <div data-list-cta class="pt-3 mt-2 border-t border-border space-y-1.5">
+                <a
+                  href="/directorio/submit"
+                  class="flex items-center justify-center gap-2 w-full text-center text-xs font-mono font-semibold px-3 py-3 min-h-[44px] rounded-lg border border-dashed border-accent/40 text-accent hover:bg-accent/10 transition-colors"
+                >
+                  <Plus class="w-3.5 h-3.5" />
+                  REGISTRAR MI PERFIL
+                </a>
+                <p class="text-[10px] text-muted text-center font-mono">
+                  Startups, personas, consultorías, comunidades y empresas
+                </p>
+              </div>
             </div>
             {/* Scroll indicator */}
             <div id="scroll-indicator" class="absolute bottom-0 left-0 right-0 flex flex-col items-center pointer-events-none transition-opacity duration-300">
@@ -252,6 +286,8 @@ const sortedMunicipalities = [...SINALOA_MUNICIPALITIES].sort((a, b) => {
   const searchInput = document.getElementById("municipality-search") as HTMLInputElement | null;
   const noResults = document.getElementById("no-results");
   const buttons = document.querySelectorAll<HTMLButtonElement>("[data-municipality]");
+  const separator = document.querySelector<HTMLElement>("[data-separator]");
+  const listCta = document.querySelector<HTMLElement>("[data-list-cta]");
 
   searchInput?.addEventListener("input", () => {
     const query = searchInput.value.toLowerCase().trim();
@@ -271,6 +307,10 @@ const sortedMunicipalities = [...SINALOA_MUNICIPALITIES].sort((a, b) => {
       noResults.style.display = visibleCount === 0 ? "" : "none";
       noResults.classList.toggle("hidden", visibleCount > 0);
     }
+
+    // Hide separator and CTA when searching
+    if (separator) separator.style.display = query ? "none" : "";
+    if (listCta) listCta.style.display = query ? "none" : "";
 
     // Re-check scroll indicator after filtering
     requestAnimationFrame(updateScrollIndicator);

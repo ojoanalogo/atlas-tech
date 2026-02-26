@@ -1,0 +1,61 @@
+---
+import { ExternalLink } from "@lucide/astro";
+
+interface Props {
+  x?: string;
+}
+
+const { x } = Astro.props;
+const theme = "dark";
+---
+
+{
+  x && (
+    <div class="bg-card/90 backdrop-blur-sm border border-border rounded-lg p-6">
+      <h2 class="font-mono text-xs text-muted uppercase tracking-wider mb-4">
+        Actividad
+      </h2>
+      <div>
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center gap-2">
+            <svg
+              class="w-4 h-4 text-muted"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+            >
+              <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+            </svg>
+            <span class="text-xs font-mono text-muted uppercase tracking-wider">
+              @{x}
+            </span>
+          </div>
+          <a
+            href={`https://x.com/${x}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="flex items-center gap-1 text-xs font-mono text-accent hover:underline"
+          >
+            Ver perfil
+            <ExternalLink class="w-3 h-3" />
+          </a>
+        </div>
+        <div class="rounded-lg border border-border overflow-hidden bg-elevated max-h-[500px] overflow-y-auto">
+          <a
+            class="twitter-timeline"
+            data-theme={theme}
+            data-chrome="noheader nofooter noborders transparent"
+            href={`https://twitter.com/${x}`}
+          >
+            Tweets de @{x}
+          </a>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+{
+  x && (
+    <script is:inline async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+  )
+}

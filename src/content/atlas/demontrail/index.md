@@ -1,44 +1,37 @@
 ---
 entryType: "startup"
 name: "Demontrail"
-tagline: "Ecosistema de emprendimiento e innovación en Sinaloa"
+tagline: "Hacemos juegos que se sienten. PC • Móvil • VR | Co-Dev Orgullosamente sinaloenses, con visión global."
 description: "Espacio de emprendimiento ubicado en el cuarto piso del Parque de Emprendimiento e Innovación Sinaloa (PEIS) en el Tec de Monterrey Campus Sinaloa. Ofrece coworking, makerspace, laboratorio de Design Thinking y programas de aceleración para emprendedores."
 municipality: "culiacan"
+logo: logo.png
+coverImage: screamers.jpg
 city: "Culiacán"
 state: "Sinaloa"
 country: "México"
-tags:
-  [
-    "emprendimiento",
-    "innovación",
-    "coworking",
-    "makerspace",
-    "design-thinking",
-    "aceleración",
-  ]
+tags: ["videojuegos", "estudio", "animacion"]
 verified: true
-website: "https://www.peis.com.mx"
-publishDate: 2024-03-01
+website: "https://demontrail.com"
+instagram: demontrail_official
+x: demontrail_mx
+publishDate: 2026-03-01
 featured: true
-meetupFrequency: "Permanente"
 ---
 
-4to Piso es el espacio de emprendimiento ubicado en el cuarto nivel del Parque de Emprendimiento e Innovación Sinaloa (PEIS), dentro del Tec de Monterrey Campus Sinaloa en Blvd. Pedro Infante 3773, Culiacán. Operado por el Instituto de Emprendimiento Eugenio Garza Lagüera (IEEGL), busca crear un entorno ideal para el ecosistema emprendedor sinaloense.
+# Demon Trail
 
-## Espacios
+Donde las ideas cobran vida pixelada
 
-- **Fractal Lounge**: Espacio flexible para conferencias, talleres y eventos de emprendimiento
-- **Coworking**: Áreas de trabajo colaborativo para emprendedores y aliados estratégicos
-- **Makerspace**: Espacio abierto de colaboración con herramientas, recursos y conexiones profesionales compartidas
-- **Laboratorio de Design Thinking**: Espacio dedicado a estrategias, capacitaciones y talleres con esta metodología
-- **Terrazas**: Áreas al aire libre para trabajo y eventos
-- **Sala de juntas**: Espacios cerrados para reuniones de hasta 10 personas
-- **Área de cafetería**: Servicio de alimentos y catering para eventos
+Desde Culiacán, Sinaloa, Demon Trail es más que un estudio de videojuegos—es un laboratorio de diversión donde la creatividad sinaloense se encuentra con la pasión por el gaming. Somos un equipo experimentado que cree que los mejores juegos son aquellos que te hacen sonreír en la primera partida y te mantienen enganchado hasta la madrugada.
 
-## Programas
+## Nuestro Universo
 
-El IEEGL ofrece la **Ruta del Emprendedor**, un programa de acompañamiento que guía a emprendedores desde el desarrollo de la idea inicial hasta el posicionamiento de un negocio establecido. El PEIS es el único centro certificado por el INADEM (Instituto Nacional del Emprendedor) en la región.
+Hemos construido un catálogo bien variado que va desde muffins esquivando velas hasta robots de cuerda conquistando plataformas. Cada juego lleva nuestra firma: mecánicas adictivas envueltas en mundos coloridos y personajes carismáticos. Ya sea que estés reclutando empleados mientras filtras impostores en Hire N Wire, defendiendo tu colonia en Antinvader, o simplemente tratando de sobrevivir en el caos dulce de Muffin Blast, nuestros títulos comparten algo en común: son fáciles de aprender, difíciles de dominar, e imposibles de soltar.
 
-## Comunidad
+## Más Allá del Juego
 
-4to Piso está abierto a estudiantes, egresados (EXATEC), profesores y la comunidad emprendedora en general. Los egresados del Tec de Monterrey pueden acceder al espacio de coworking sin costo a través de la asociación EXATEC.
+No solo hacemos nuestros propios juegos—somos aliados de otros creadores. Ofrecemos desde co-desarrollo hasta experiencias VR/AR, creación de assets, porteo multiplataforma y consultoría. Si tienes una idea loca o un proyecto ambicioso, nosotros tenemos las herramientas, la experiencia y las ganas de hacerlo realidad.
+
+## La Filosofía Demon Trail
+
+Creemos que hacer videojuegos es un arte, pero también es diversión pura. Trabajamos duro, jugamos más duro, y siempre buscamos ese momento mágico donde un jugador dice "una más y ya" (spoiler: nunca es solo una más).

@@ -28,9 +28,10 @@ export const CATEGORY_URL_MAP: Record<AtlasEntryType, string> = {
   business: "empresas",
 };
 
-export const URL_CATEGORY_MAP: Record<string, AtlasEntryType> = Object.fromEntries(
-  Object.entries(CATEGORY_URL_MAP).map(([k, v]) => [v, k as AtlasEntryType]),
-) as Record<string, AtlasEntryType>;
+export const URL_CATEGORY_MAP: Record<string, AtlasEntryType> =
+  Object.fromEntries(
+    Object.entries(CATEGORY_URL_MAP).map(([k, v]) => [v, k as AtlasEntryType]),
+  ) as Record<string, AtlasEntryType>;
 
 export function getEntryUrl(entryType: AtlasEntryType, slug: string): string {
   return `/${CATEGORY_URL_MAP[entryType]}/${slug}`;
@@ -106,38 +107,32 @@ export const ATLAS_CATEGORIES: AtlasCategory[] = [
 export interface Municipality {
   id: string;
   name: string;
-  lat: number;
-  lng: number;
 }
 
 export const SINALOA_MUNICIPALITIES: Municipality[] = [
-  { id: "ahome", name: "Ahome", lat: 25.7903, lng: -108.994 },
-  { id: "angostura", name: "Angostura", lat: 25.3667, lng: -108.183 },
-  { id: "badiraguato", name: "Badiraguato", lat: 25.3667, lng: -107.55 },
-  { id: "choix", name: "Choix", lat: 26.7, lng: -108.317 },
-  { id: "concordia", name: "Concordia", lat: 23.2833, lng: -105.833 },
-  { id: "cosala", name: "Cosalá", lat: 24.4167, lng: -106.683 },
-  { id: "culiacan", name: "Culiacán", lat: 24.7994, lng: -107.394 },
-  { id: "el-fuerte", name: "El Fuerte", lat: 26.4167, lng: -108.617 },
-  { id: "elota", name: "Elota", lat: 23.95, lng: -106.667 },
-  { id: "escuinapa", name: "Escuinapa", lat: 22.85, lng: -105.767 },
-  { id: "guasave", name: "Guasave", lat: 25.5667, lng: -108.467 },
-  { id: "mazatlan", name: "Mazatlán", lat: 23.2494, lng: -106.411 },
-  { id: "mocorito", name: "Mocorito", lat: 25.4833, lng: -107.917 },
-  { id: "navolato", name: "Navolato", lat: 24.7667, lng: -107.7 },
-  { id: "rosario", name: "Rosario", lat: 22.9903, lng: -105.857 },
+  { id: "ahome", name: "Ahome" },
+  { id: "angostura", name: "Angostura" },
+  { id: "badiraguato", name: "Badiraguato" },
+  { id: "choix", name: "Choix" },
+  { id: "concordia", name: "Concordia" },
+  { id: "cosala", name: "Cosalá" },
+  { id: "culiacan", name: "Culiacán" },
+  { id: "el-fuerte", name: "El Fuerte" },
+  { id: "elota", name: "Elota" },
+  { id: "escuinapa", name: "Escuinapa" },
+  { id: "guasave", name: "Guasave" },
+  { id: "mazatlan", name: "Mazatlán" },
+  { id: "mocorito", name: "Mocorito" },
+  { id: "navolato", name: "Navolato" },
+  { id: "rosario", name: "Rosario" },
   {
     id: "salvador-alvarado",
     name: "Salvador Alvarado",
-    lat: 25.4667,
-    lng: -108.083,
   },
-  { id: "san-ignacio", name: "San Ignacio", lat: 23.7333, lng: -106.417 },
+  { id: "san-ignacio", name: "San Ignacio" },
   {
     id: "sinaloa-de-leyva",
     name: "Sinaloa de Leyva",
-    lat: 25.8333,
-    lng: -108.217,
   },
 ];
 
@@ -152,7 +147,7 @@ export function getMunicipalityName(id: string): string {
   return SINALOA_MUNICIPALITIES.find((m) => m.id === id)?.name ?? id;
 }
 
-export type SocialPlatform = "twitter" | "github" | "instagram" | "linkedin";
+export type SocialPlatform = "x" | "github" | "instagram" | "linkedin";
 
 export interface SocialLink {
   platform: SocialPlatform;
@@ -162,8 +157,8 @@ export interface SocialLink {
 
 export const SOCIAL_LINKS: SocialLink[] = [
   {
-    platform: "twitter",
-    url: "https://twitter.com/techatlas_mx",
+    platform: "x",
+    url: "https://x.com/techatlas_mx",
     label: "X",
   },
   {

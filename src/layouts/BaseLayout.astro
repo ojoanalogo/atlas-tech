@@ -22,22 +22,22 @@ const {
     <BaseHead title={title} description={description} image={image} />
     <script is:inline>
       (function () {
-        const theme = localStorage.getItem("theme");
+        var t = localStorage.getItem("theme");
         if (
-          theme === "dark" ||
-          (!theme && window.matchMedia("(prefers-color-scheme: dark)").matches)
+          t === "dark" ||
+          (t !== "light" &&
+            window.matchMedia("(prefers-color-scheme: dark)").matches)
         ) {
           document.documentElement.classList.add("dark");
         }
       })();
     </script>
   </head>
-  <body class:list={["mx-auto font-sans", "w-full"]}>
+  <body class:list={["mx-auto font-sans", "w-full min-h-screen flex flex-col"]}>
     <Header />
-    <main id="main">
+    <main id="main" class="flex-1">
       <slot />
     </main>
     {showFooter && <FooterSection />}
-    <noise> </noise>
   </body>
 </html>

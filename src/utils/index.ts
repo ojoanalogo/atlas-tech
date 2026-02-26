@@ -1,5 +1,6 @@
 import type { CollectionEntry } from "astro:content";
 import type { AtlasEntryType } from "../config";
+import { MUNICIPALITY_IDS } from "../config";
 
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
@@ -139,14 +140,18 @@ export function filterAtlasByType(
 export function groupByMunicipality(
   entries: CollectionEntry<"atlas">[],
 ): Record<string, number> {
-  return entries.reduce(
-    (acc, entry) => {
-      const municipality = entry.data.municipality;
-      acc[municipality] = (acc[municipality] || 0) + 1;
-      return acc;
-    },
-    {} as Record<string, number>,
-  );
+  const result: Record<string, number> = {};
+  for (const entry of entries) {
+    const mun = entry.data.municipality;
+    if (mun === "global") {
+      for (const id of MUNICIPALITY_IDS) {
+        result[id] = (result[id] || 0) + 1;
+      }
+    } else {
+      result[mun] = (result[mun] || 0) + 1;
+    }
+  }
+  return result;
 }
 
 export function getFeaturedEntries(entries: CollectionEntry<"atlas">[]) {
@@ -158,24 +163,29 @@ export function getFeaturedEntries(entries: CollectionEntry<"atlas">[]) {
 export function countByTypeAndMunicipality(
   entries: CollectionEntry<"atlas">[],
 ): Record<string, Record<AtlasEntryType, number>> {
-  return entries.reduce(
-    (acc, entry) => {
-      const mun = entry.data.municipality;
-      const type = entry.data.entryType;
-      if (!acc[mun]) {
-        acc[mun] = {
-          startup: 0,
-          community: 0,
-          business: 0,
-          consultory: 0,
-          person: 0,
-        };
+  const result: Record<string, Record<AtlasEntryType, number>> = {};
+  const emptyTypes = (): Record<AtlasEntryType, number> => ({
+    startup: 0,
+    community: 0,
+    business: 0,
+    consultory: 0,
+    person: 0,
+  });
+
+  for (const entry of entries) {
+    const mun = entry.data.municipality;
+    const type = entry.data.entryType;
+    if (mun === "global") {
+      for (const id of MUNICIPALITY_IDS) {
+        if (!result[id]) result[id] = emptyTypes();
+        result[id][type] = (result[id][type] || 0) + 1;
       }
-      acc[mun][type] = (acc[mun][type] || 0) + 1;
-      return acc;
-    },
-    {} as Record<string, Record<AtlasEntryType, number>>,
-  );
+    } else {
+      if (!result[mun]) result[mun] = emptyTypes();
+      result[mun][type] = (result[mun][type] || 0) + 1;
+    }
+  }
+  return result;
 }
 
 export function countByType(

@@ -167,9 +167,9 @@ export default function SinaloaMap({
   compact = false,
   municipalityCounts = {},
 }: SinaloaMapProps) {
-  const width = compact ? 500 : 800;
-  const height = compact ? 400 : 800;
-  const padding = compact ? 15 : 40;
+  const width = compact ? 380 : 800;
+  const height = compact ? 450 : 800;
+  const padding = compact ? 5 : 40;
 
   const [scale, setScale] = useState(1);
   const [translate, setTranslate] = useState({ x: 0, y: 0 });
@@ -253,7 +253,10 @@ export default function SinaloaMap({
     if (interactionEnabled || compact) return;
     setShowMobileLockOverlay(true);
     if (mobileLockTimer.current) clearTimeout(mobileLockTimer.current);
-    mobileLockTimer.current = setTimeout(() => setShowMobileLockOverlay(false), 3000);
+    mobileLockTimer.current = setTimeout(
+      () => setShowMobileLockOverlay(false),
+      3000,
+    );
   }, [interactionEnabled, compact]);
 
   // Hide overlay when unlocking
@@ -422,7 +425,7 @@ export default function SinaloaMap({
   return (
     <div
       ref={containerRef}
-      className={`relative w-full h-full overflow-hidden ${!interactionEnabled && !compact ? "group/map" : ""}`}
+      className="relative w-full h-full overflow-hidden"
       style={{
         cursor: !interactionEnabled
           ? "default"
@@ -586,7 +589,7 @@ export default function SinaloaMap({
       {!interactionEnabled && !compact && (
         <div
           className={`absolute inset-0 z-30 flex items-center justify-center transition-opacity duration-200 bg-black/20 backdrop-blur-[1px] ${
-            showMobileLockOverlay ? "opacity-100" : "opacity-0 group-hover/map:opacity-100"
+            showMobileLockOverlay ? "opacity-100" : "opacity-0"
           }`}
         >
           <button

@@ -1,6 +1,4 @@
 ---
-import "../styles/tooltip.css";
-
 interface Props {
   class?: string;
 }
@@ -8,87 +6,116 @@ interface Props {
 const { class: className = "" } = Astro.props;
 ---
 
-<button
-  type="button"
-  aria-label="Toggle dark mode"
-  data-tooltip="Cambiar tema"
-  class:list={["theme-toggle tooltip p-1 text-secondary hover:text-accent transition-all duration-200", className]}
->
-  <svg
-    class="sun-icon w-4 h-4 hidden"
-    fill="none"
-    stroke="currentColor"
-    viewBox="0 0 24 24"
-    xmlns="http://www.w3.org/2000/svg"
+<div class:list={["relative", className]} data-dropdown>
+  <button
+    type="button"
+    data-dropdown-toggle
+    aria-label="Cambiar tema"
+    aria-haspopup="true"
+    aria-expanded="false"
+    class="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-secondary hover:text-accent transition-all duration-200 rounded-lg hover:bg-elevated"
   >
-    <path
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      stroke-width="2"
-      d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
-    ></path>
-  </svg>
-  <svg
-    class="moon-icon w-4 h-4 hidden"
-    fill="none"
-    stroke="currentColor"
-    viewBox="0 0 24 24"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <path
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      stroke-width="2"
-      d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
-    ></path>
-  </svg>
-</button>
+    <svg class="theme-icon-light w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+    </svg>
+    <svg class="theme-icon-dark w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+    </svg>
+    <svg class="theme-icon-system w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+    </svg>
+  </button>
+
+  <div data-dropdown-menu class="hidden absolute right-0 top-full mt-2 w-40 py-1 bg-white dark:bg-[#0a0a0a] border border-border rounded-lg shadow-xl z-50">
+    <button type="button" data-theme-option="light" class="w-full flex items-center gap-2.5 px-3 py-2.5 text-xs font-mono text-secondary hover:text-accent hover:bg-elevated transition-colors">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+      </svg>
+      Claro
+      <svg class="theme-check w-3 h-3 ml-auto hidden text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+      </svg>
+    </button>
+    <button type="button" data-theme-option="dark" class="w-full flex items-center gap-2.5 px-3 py-2.5 text-xs font-mono text-secondary hover:text-accent hover:bg-elevated transition-colors">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+      </svg>
+      Oscuro
+      <svg class="theme-check w-3 h-3 ml-auto hidden text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+      </svg>
+    </button>
+    <button type="button" data-theme-option="system" class="w-full flex items-center gap-2.5 px-3 py-2.5 text-xs font-mono text-secondary hover:text-accent hover:bg-elevated transition-colors">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+      </svg>
+      Sistema
+      <svg class="theme-check w-3 h-3 ml-auto hidden text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+      </svg>
+    </button>
+  </div>
+</div>
 
 <script>
-  function updateThemeIcons() {
-    const isDark = document.documentElement.classList.contains('dark');
-    const sunIcons = document.querySelectorAll('.sun-icon');
-    const moonIcons = document.querySelectorAll('.moon-icon');
+  // Theme logic only — dropdown open/close handled by generic system in Header
+  type ThemeSetting = "light" | "dark" | "system";
 
-    sunIcons.forEach(icon => {
-      if (isDark) {
-        icon.classList.remove('hidden');
-      } else {
-        icon.classList.add('hidden');
-      }
-    });
+  function getThemeSetting(): ThemeSetting {
+    const stored = localStorage.getItem("theme");
+    if (stored === "light" || stored === "dark") return stored;
+    return "system";
+  }
 
-    moonIcons.forEach(icon => {
-      if (isDark) {
-        icon.classList.add('hidden');
-      } else {
-        icon.classList.remove('hidden');
-      }
+  function applyTheme(setting: ThemeSetting) {
+    const isDark =
+      setting === "dark" ||
+      (setting === "system" &&
+        window.matchMedia("(prefers-color-scheme: dark)").matches);
+    document.documentElement.classList.toggle("dark", isDark);
+  }
+
+  function updateUI(setting: ThemeSetting) {
+    document.querySelectorAll(".theme-icon-light").forEach((el) =>
+      el.classList.toggle("hidden", setting !== "light"));
+    document.querySelectorAll(".theme-icon-dark").forEach((el) =>
+      el.classList.toggle("hidden", setting !== "dark"));
+    document.querySelectorAll(".theme-icon-system").forEach((el) =>
+      el.classList.toggle("hidden", setting !== "system"));
+
+    document.querySelectorAll<HTMLElement>("[data-theme-option]").forEach((btn) => {
+      const check = btn.querySelector(".theme-check");
+      if (check) check.classList.toggle("hidden", btn.dataset.themeOption !== setting);
     });
   }
 
-  function toggleTheme() {
-    const isDark = document.documentElement.classList.toggle('dark');
-    localStorage.setItem('theme', isDark ? 'dark' : 'light');
-    updateThemeIcons();
+  function setTheme(setting: ThemeSetting) {
+    localStorage.setItem("theme", setting);
+    applyTheme(setting);
+    updateUI(setting);
+    // Close dropdown after selection
+    document.querySelectorAll("[data-dropdown-menu]").forEach((m) => m.classList.add("hidden"));
+    document.querySelectorAll("[data-dropdown-toggle]").forEach((t) => t.setAttribute("aria-expanded", "false"));
   }
 
-  function setupThemeToggles() {
-    document.querySelectorAll('.theme-toggle').forEach(button => {
-      button.addEventListener('click', toggleTheme);
+  // Option buttons
+  document.querySelectorAll<HTMLElement>("[data-theme-option]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const value = btn.dataset.themeOption as ThemeSetting;
+      if (value) setTheme(value);
     });
-    updateThemeIcons();
-  }
+  });
 
-  setupThemeToggles();
+  // Init
+  applyTheme(getThemeSetting());
+  updateUI(getThemeSetting());
 
-  document.addEventListener('astro:after-swap', () => {
-    const theme = localStorage.getItem('theme');
-    if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-    setupThemeToggles();
+  window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
+    if (getThemeSetting() === "system") applyTheme("system");
+  });
+
+  document.addEventListener("astro:after-swap", () => {
+    applyTheme(getThemeSetting());
+    updateUI(getThemeSetting());
   });
 </script>

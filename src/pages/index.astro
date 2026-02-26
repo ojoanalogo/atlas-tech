@@ -23,11 +23,7 @@ const municipalityTypeCounts = countByTypeAndMunicipality(allEntries);
 
 <BaseLayout>
   <div class="bg-background">
-    <HeroSection
-      totalEntries={allEntries.length}
-      counts={counts}
-      municipalityCounts={municipalityCounts}
-    />
+    <HeroSection municipalityCounts={municipalityCounts} />
     <CategorySection counts={counts} />
     <FeaturedSection entries={featured} />
     <MapSection
