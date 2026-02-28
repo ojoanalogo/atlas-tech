@@ -520,7 +520,7 @@ export default function SinaloaMap({
             {tooltip.name}
           </div>
           {tooltip.count > 0 && (
-            <div className="text-[10px] font-mono text-[var(--color-muted)]">
+            <div className="text-2xs font-mono text-[var(--color-muted)]">
               {tooltip.count} {tooltip.count === 1 ? "proyecto" : "proyectos"}
             </div>
           )}
@@ -576,7 +576,7 @@ export default function SinaloaMap({
               </span>
             </div>
             <a
-              href={`/directorio#municipality=${popup.id}`}
+              href={`/directorio/${popup.id}`}
               className="block w-full text-center text-xs font-mono font-semibold px-3 py-1.5 rounded bg-accent text-accent-foreground hover:bg-accent/80 transition-colors"
             >
               VER COMUNIDAD →
@@ -588,7 +588,7 @@ export default function SinaloaMap({
       {/* Lock overlay — visible on hover (desktop) or touch (mobile) */}
       {!interactionEnabled && !compact && (
         <div
-          className={`absolute inset-0 z-30 flex items-center justify-center transition-opacity duration-200 bg-black/20 backdrop-blur-[1px] ${
+          className={`absolute inset-0 z-30 flex items-center justify-center transition-opacity duration-200 bg-black/20 backdrop-blur-px ${
             showMobileLockOverlay ? "opacity-100" : "opacity-0"
           }`}
         >

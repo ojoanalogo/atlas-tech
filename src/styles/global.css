@@ -1,3 +1,29 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme inline {
+  --color-background: var(--color-background);
+  --color-primary: var(--color-primary);
+  --color-secondary: var(--color-secondary);
+  --color-accent: var(--color-accent);
+  --color-muted: var(--color-muted);
+  --color-border: var(--color-border);
+  --color-card: var(--color-card);
+  --color-elevated: var(--color-elevated);
+  --color-accent-foreground: var(--color-accent-foreground);
+}
+
+@theme {
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  --font-sans: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --breakpoint-xs: 30rem;
+  --text-2xs: 0.625rem;
+  --text-2xs--line-height: 1.2;
+  --text-hero: 3.25rem;
+  --text-hero--line-height: 1.1;
+}
+
 html {
   font-size: 16px;
 }

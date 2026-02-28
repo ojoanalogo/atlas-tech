@@ -6,41 +6,13 @@ import {
   CarouselItem,
   CarouselPrevious,
   CarouselNext,
-} from "./Carousel";
-import { cn } from "../../../utils";
-
-const badgeConfig = {
-  startup: {
-    label: "Startup",
-    color: "bg-emerald-500/90 text-emerald-50 border-emerald-500/60",
-  },
-  community: {
-    label: "Comunidad",
-    color: "bg-blue-500/90 text-blue-50 border-blue-500/60",
-  },
-  business: {
-    label: "Empresa",
-    color: "bg-purple-500/90 text-purple-50 border-purple-500/60",
-  },
-  consultory: {
-    label: "Consultora",
-    color: "bg-amber-500/90 text-amber-50 border-amber-500/60",
-  },
-  person: {
-    label: "Persona",
-    color: "bg-pink-500/90 text-pink-50 border-pink-500/60",
-  },
-} as const;
-
-const CATEGORY_URL_MAP: Record<string, string> = {
-  startup: "startups",
-  consultory: "consultoras",
-  community: "comunidades",
-  person: "personas",
-  business: "empresas",
-};
-
-type AtlasEntryType = keyof typeof badgeConfig;
+} from "../ui/Carousel";
+import { cn } from "../../utils";
+import {
+  ENTRY_TYPE_CONFIG,
+  CATEGORY_URL_MAP,
+  type AtlasEntryType,
+} from "../../config";
 
 export interface FeaturedEntry {
   slug: string;
@@ -74,7 +46,7 @@ export default function FeaturedCarousel({
     >
       <CarouselContent className="-ml-3">
         {entries.map((entry) => {
-          const badge = badgeConfig[entry.entryType];
+          const config = ENTRY_TYPE_CONFIG[entry.entryType];
           const url = `/${CATEGORY_URL_MAP[entry.entryType]}/${entry.slug}`;
           const location =
             entry.municipality === "global"
@@ -84,7 +56,7 @@ export default function FeaturedCarousel({
           return (
             <CarouselItem
               key={entry.slug}
-              className="pl-3 basis-[80%] min-[480px]:basis-[65%]"
+              className="pl-3 basis-[80%] xs:basis-[65%]"
             >
               <a
                 href={url}
@@ -118,10 +90,10 @@ export default function FeaturedCarousel({
                     <span
                       className={cn(
                         "inline-flex items-center px-2 py-0.5 rounded text-xs font-mono border",
-                        badge.color,
+                        config.badgeColor,
                       )}
                     >
-                      {badge.label}
+                      {config.label}
                     </span>
                   </div>
                 </div>
@@ -154,7 +126,7 @@ export default function FeaturedCarousel({
                       {entry.tags.slice(0, 3).map((tag) => (
                         <span
                           key={tag}
-                          className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-elevated text-muted"
+                          className="text-2xs font-mono px-1.5 py-0.5 rounded bg-elevated text-muted"
                         >
                           {tag}
                         </span>
@@ -169,11 +141,11 @@ export default function FeaturedCarousel({
       </CarouselContent>
       <div className="flex items-center justify-center gap-2 mt-4">
         <CarouselPrevious
-          className="static translate-y-0 min-h-[44px] min-w-[44px]"
+          className="static translate-y-0 min-h-11 min-w-11"
           size="icon"
         />
         <CarouselNext
-          className="static translate-y-0 min-h-[44px] min-w-[44px]"
+          className="static translate-y-0 min-h-11 min-w-11"
           size="icon"
         />
       </div>

@@ -1,5 +1,5 @@
 {
-  "name": "alfon-so",
+  "name": "atlas-tech",
   "type": "module",
   "version": "0.0.1",
   "scripts": {
@@ -10,35 +10,34 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/react": "^4.4.2",
+    "@astrojs/react": "4.4.2",
     "@astrojs/sitemap": "3.7.0",
-    "@astrojs/tailwind": "6.0.2",
-    "@lucide/astro": "^0.575.0",
-    "astro": "5.17.1",
-    "class-variance-authority": "^0.7.1",
-    "clsx": "^2.1.1",
-    "d3-geo": "^3.1.1",
+    "@lucide/astro": "0.575.0",
+    "astro": "5.18.0",
+    "class-variance-authority": "0.7.1",
+    "clsx": "2.1.1",
+    "d3-geo": "3.1.1",
     "dayjs": "1.11.19",
-    "embla-carousel-auto-scroll": "^8.6.0",
-    "embla-carousel-react": "^8.6.0",
-    "lucide-astro": "^0.556.0",
-    "lucide-react": "^0.575.0",
-    "radix-ui": "^1.4.3",
-    "react": "^19.2.4",
-    "react-dom": "^19.2.4",
-    "react-simple-maps": "^3.0.0",
+    "embla-carousel-auto-scroll": "8.6.0",
+    "embla-carousel-react": "8.6.0",
+    "lucide-react": "0.575.0",
+    "radix-ui": "1.4.3",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "react-simple-maps": "3.0.0",
     "reading-time": "1.5.0",
-    "shadcn": "^3.8.5",
     "sharp": "0.34.5",
-    "tailwind-merge": "^3.5.0",
-    "tailwindcss": "3.4.19"
+    "tailwind-merge": "3.5.0"
   },
   "devDependencies": {
     "@tailwindcss/typography": "0.5.19",
-    "@types/d3-geo": "^3.1.0",
-    "@types/node": "24.10.9",
-    "@types/react": "^19.2.14",
-    "@types/react-dom": "^19.2.3"
+    "@tailwindcss/vite": "4.2.1",
+    "@types/d3-geo": "3.1.0",
+    "@types/node": "24.10.15",
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
+    "@types/react-simple-maps": "^3.0.6",
+    "tailwindcss": "4.2.1"
   },
   "pnpm": {
     "overrides": {

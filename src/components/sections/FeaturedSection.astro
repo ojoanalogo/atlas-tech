@@ -1,8 +1,8 @@
 ---
 import type { CollectionEntry } from "astro:content";
-import EntryCard from "./EntryCard.astro";
-import FeaturedCarousel from "./ui/react/FeaturedCarousel";
-import { getMunicipalityName } from "../config";
+import EntryCard from "../entries/EntryCard.astro";
+import FeaturedCarousel from "../entries/FeaturedCarousel";
+import { getMunicipalityName } from "../../config";
 
 interface Props {
   entries: CollectionEntry<"atlas">[];

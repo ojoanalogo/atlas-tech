@@ -1,19 +1,15 @@
 ---
 import { getCollection } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import EntryCard from "../../components/EntryCard.astro";
-import DirectoryFilter from "../../components/DirectoryFilter";
-import { SINALOA_MUNICIPALITIES } from "../../config";
+import EntryCard from "../../components/entries/EntryCard.astro";
+import DirectoryFilter from "../../components/entries/DirectoryFilter";
+import { SINALOA_MUNICIPALITIES, ENTRY_TYPE_CONFIG } from "../../config";
 
 const allEntries = await getCollection("atlas");
 
-const typeLabels: Record<string, string> = {
-  startup: "Startups",
-  consultory: "Consultoras",
-  community: "Comunidades",
-  person: "Personas",
-  business: "Empresas",
-};
+const typeLabels: Record<string, string> = Object.fromEntries(
+  Object.entries(ENTRY_TYPE_CONFIG).map(([k, v]) => [k, v.labelPlural]),
+);
 
 const municipalityCounts: Record<string, number> = {};
 allEntries.forEach((entry) => {

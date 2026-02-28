@@ -1,6 +1,6 @@
 ---
 import { ClientRouter } from "astro:transitions";
-import "../styles/global.css";
+import "../../styles/global.css";
 
 export interface Props {
   title: string;
@@ -9,7 +9,12 @@ export interface Props {
   article?: boolean;
 }
 
-const { title, description, image = "/share.jpg", article = false } = Astro.props;
+const {
+  title,
+  description,
+  image = "/share.jpg",
+  article = false,
+} = Astro.props;
 
 const isProd = import.meta.env.PROD;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
@@ -22,7 +27,12 @@ const siteName = "Tech Atlas — Directorio del ecosistema tech de Sinaloa";
 <meta name="generator" content={Astro.generator} />
 
 <!-- Preload map data for hero -->
-<link rel="preload" href="/topo/Sinaloa_municipios.json" as="fetch" crossorigin />
+<link
+  rel="preload"
+  href="/topo/Sinaloa_municipios.json"
+  as="fetch"
+  crossorigin
+/>
 
 <!-- Google Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -39,7 +49,10 @@ const siteName = "Tech Atlas — Directorio del ecosistema tech de Sinaloa";
 <meta http-equiv="content-language" content="es-MX" />
 
 <!-- Robots -->
-<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+<meta
+  name="robots"
+  content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
+/>
 
 <!-- Author -->
 <meta name="author" content="Tech Atlas" />
@@ -75,7 +88,8 @@ const siteName = "Tech Atlas — Directorio del ecosistema tech de Sinaloa";
 
 {
   isProd && (
-    <script is:inline
+    <script
+      is:inline
       async
       src="https://analytics.molecula.digital/script.js"
       data-website-id="1b018a85-d69c-4ff9-a716-9bf7ae546331"

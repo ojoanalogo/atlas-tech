@@ -6,19 +6,17 @@ import DirectoryFilter from "../../components/entries/DirectoryFilter";
 import {
   SINALOA_MUNICIPALITIES,
   ENTRY_TYPE_CONFIG,
-  URL_CATEGORY_MAP,
-  type AtlasEntryType,
+  getMunicipalityName,
 } from "../../config";
 
 export function getStaticPaths() {
-  return Object.entries(URL_CATEGORY_MAP).map(([urlSlug, entryType]) => ({
-    params: { category: urlSlug },
-    props: { entryType },
+  return SINALOA_MUNICIPALITIES.map((m) => ({
+    params: { municipality: m.id },
+    props: { municipalityId: m.id, municipalityName: m.name },
   }));
 }
 
-const { entryType } = Astro.props as { entryType: AtlasEntryType };
-const config = ENTRY_TYPE_CONFIG[entryType];
+const { municipalityId, municipalityName } = Astro.props;
 
 const allEntries = await getCollection("atlas");
 
@@ -46,7 +44,7 @@ const municipalities = [
 ];
 ---
 
-<BaseLayout title={`${config.labelPlural} — TECH_ATLAS`}>
+<BaseLayout title={`${municipalityName} — TECH_ATLAS`}>
   <section class="py-4 px-4">
     <div class="max-w-7xl mx-auto">
       <DirectoryFilter
@@ -54,7 +52,7 @@ const municipalities = [
         typeLabels={typeLabels}
         municipalities={municipalities}
         totalCount={allEntries.length}
-        initialType={entryType}
+        initialMunicipality={municipalityId}
       >
         <div id="entries-grid" class="grid sm:grid-cols-2 xl:grid-cols-3 gap-4">
           {

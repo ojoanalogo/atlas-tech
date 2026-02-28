@@ -1,18 +1,19 @@
 ---
 import { getCollection } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
-import HeroSection from "../components/HeroSection.astro";
-import CategorySection from "../components/CategorySection.astro";
-import MapSection from "../components/MapSection.astro";
-import FeaturedSection from "../components/FeaturedSection.astro";
-import CalendarSection from "../components/CalendarSection.astro";
-import CtaSection from "../components/CtaSection.astro";
 import {
   countByType,
   countByTypeAndMunicipality,
   getFeaturedEntries,
   groupByMunicipality,
 } from "../utils";
+import CalendarSection from "../components/sections/CalendarSection.astro";
+import CtaSection from "../components/sections/CtaSection.astro";
+import HeroSection from "../components/sections/HeroSection.astro";
+import MapSection from "../components/sections/MapSection.tsx";
+import CategorySection from "../components/sections/CategorySection.astro";
+import FeaturedSection from "../components/sections/FeaturedSection.astro";
+import MatrixBackground from "../components/layout/MatrixBackground.astro";
 
 const allEntries = await getCollection("atlas");
 const counts = countByType(allEntries);
@@ -22,15 +23,20 @@ const municipalityTypeCounts = countByTypeAndMunicipality(allEntries);
 ---
 
 <BaseLayout>
-  <div class="bg-background">
-    <HeroSection municipalityCounts={municipalityCounts} />
-    <CategorySection counts={counts} />
-    <FeaturedSection entries={featured} />
-    <MapSection
-      municipalityCounts={municipalityCounts}
-      municipalityTypeCounts={municipalityTypeCounts}
-    />
-    <CalendarSection />
-    <CtaSection />
-  </div>
+  <MatrixBackground
+    movementDirection="up-left"
+    movementSpeed={0.04}
+    highlight={false}
+    slot="bg"
+  />
+  <HeroSection municipalityCounts={municipalityCounts} />
+  <CategorySection counts={counts} />
+  <FeaturedSection entries={featured} />
+  <MapSection
+    municipalityCounts={municipalityCounts}
+    municipalityTypeCounts={municipalityTypeCounts}
+    client:load
+  />
+  <CalendarSection />
+  <CtaSection />
 </BaseLayout>

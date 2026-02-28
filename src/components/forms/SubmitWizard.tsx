@@ -3,7 +3,6 @@ import {
   Rocket,
   Users,
   Briefcase,
-  GraduationCap,
   User,
   ArrowLeft,
   ArrowRight,
@@ -14,10 +13,15 @@ import {
   AlertCircle,
   Loader2,
 } from "lucide-react";
+import {
+  ENTRY_TYPES as ALL_ENTRY_TYPES,
+  ENTRY_TYPE_CONFIG,
+  type AtlasEntryType,
+} from "../../config";
 
 const FORMCARRY_URL = "https://formcarry.com/s/0SLLJVV-2qL";
 
-type EntryType = "startup" | "community" | "business" | "consultory" | "person";
+type EntryType = AtlasEntryType;
 
 interface MunicipalityOption {
   id: string;
@@ -28,43 +32,19 @@ interface Props {
   municipalities: MunicipalityOption[];
 }
 
-const ENTRY_TYPES: {
-  type: EntryType;
-  label: string;
-  desc: string;
-  icon: typeof Rocket;
-}[] = [
-  {
-    type: "startup",
-    label: "Startup",
-    desc: "Empresa emergente de tecnología",
-    icon: Rocket,
-  },
-  {
-    type: "community",
-    label: "Comunidad",
-    desc: "Grupo o comunidad tech",
-    icon: Users,
-  },
-  {
-    type: "business",
-    label: "Empresa",
-    desc: "Empresa establecida",
-    icon: Briefcase,
-  },
-  {
-    type: "consultory",
-    label: "Consultoría",
-    desc: "Servicios de consultoría tech",
-    icon: GraduationCap,
-  },
-  {
-    type: "person",
-    label: "Persona",
-    desc: "Talento tech individual",
-    icon: User,
-  },
-];
+const ICON_MAP: Record<string, typeof Rocket> = {
+  rocket: Rocket,
+  users: Users,
+  briefcase: Briefcase,
+  user: User,
+};
+
+const ENTRY_TYPES = ALL_ENTRY_TYPES.map((type) => ({
+  type,
+  label: ENTRY_TYPE_CONFIG[type].label,
+  desc: ENTRY_TYPE_CONFIG[type].description,
+  icon: ICON_MAP[ENTRY_TYPE_CONFIG[type].icon] || Rocket,
+}));
 
 const STEPS = [
   "Tipo",
@@ -339,7 +319,7 @@ export default function SubmitWizard({ municipalities }: Props) {
                 onChange={(e) => setName(e.target.value)}
                 required
                 placeholder="Nombre del proyecto"
-                className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-none focus:border-accent transition-colors"
+                className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-hidden focus:border-accent transition-colors"
               />
             </label>
             <label className="block">
@@ -351,7 +331,7 @@ export default function SubmitWizard({ municipalities }: Props) {
                 value={tagline}
                 onChange={(e) => setTagline(e.target.value)}
                 placeholder="Una frase corta que describe tu proyecto"
-                className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-none focus:border-accent transition-colors"
+                className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-hidden focus:border-accent transition-colors"
               />
             </label>
             <label className="block">
@@ -364,7 +344,7 @@ export default function SubmitWizard({ municipalities }: Props) {
                 required
                 rows={4}
                 placeholder="Describe tu proyecto en detalle"
-                className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-none focus:border-accent transition-colors resize-y"
+                className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-hidden focus:border-accent transition-colors resize-y"
               />
             </label>
           </div>
@@ -386,7 +366,7 @@ export default function SubmitWizard({ municipalities }: Props) {
                 value={municipality}
                 onChange={(e) => setMunicipality(e.target.value)}
                 required
-                className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm focus:outline-none focus:border-accent transition-colors"
+                className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm focus:outline-hidden focus:border-accent transition-colors"
               >
                 <option value="">Selecciona un municipio</option>
                 {municipalities.map((m) => (
@@ -417,7 +397,7 @@ export default function SubmitWizard({ municipalities }: Props) {
                 value={website}
                 onChange={(e) => setWebsite(e.target.value)}
                 placeholder="https://tu-sitio.com"
-                className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-none focus:border-accent transition-colors"
+                className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-hidden focus:border-accent transition-colors"
               />
             </label>
             <label className="block">
@@ -429,7 +409,7 @@ export default function SubmitWizard({ municipalities }: Props) {
                 value={x}
                 onChange={(e) => setX(e.target.value)}
                 placeholder="@usuario"
-                className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-none focus:border-accent transition-colors"
+                className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-hidden focus:border-accent transition-colors"
               />
             </label>
             <label className="block">
@@ -441,7 +421,7 @@ export default function SubmitWizard({ municipalities }: Props) {
                 value={linkedin}
                 onChange={(e) => setLinkedin(e.target.value)}
                 placeholder="https://linkedin.com/in/usuario"
-                className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-none focus:border-accent transition-colors"
+                className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-hidden focus:border-accent transition-colors"
               />
             </label>
             <label className="block">
@@ -453,7 +433,7 @@ export default function SubmitWizard({ municipalities }: Props) {
                 value={github}
                 onChange={(e) => setGithub(e.target.value)}
                 placeholder="usuario"
-                className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-none focus:border-accent transition-colors"
+                className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-hidden focus:border-accent transition-colors"
               />
             </label>
             {entryType === "community" && (
@@ -467,7 +447,7 @@ export default function SubmitWizard({ municipalities }: Props) {
                     value={discord}
                     onChange={(e) => setDiscord(e.target.value)}
                     placeholder="https://discord.gg/..."
-                    className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-none focus:border-accent transition-colors"
+                    className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-hidden focus:border-accent transition-colors"
                   />
                 </label>
                 <label className="block">
@@ -479,7 +459,7 @@ export default function SubmitWizard({ municipalities }: Props) {
                     value={telegram}
                     onChange={(e) => setTelegram(e.target.value)}
                     placeholder="https://t.me/..."
-                    className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-none focus:border-accent transition-colors"
+                    className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-hidden focus:border-accent transition-colors"
                   />
                 </label>
               </>
@@ -511,7 +491,7 @@ export default function SubmitWizard({ municipalities }: Props) {
                     placeholder="2024"
                     min="1900"
                     max="2100"
-                    className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-none focus:border-accent transition-colors"
+                    className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-hidden focus:border-accent transition-colors"
                   />
                 </label>
                 <label className="block">
@@ -521,7 +501,7 @@ export default function SubmitWizard({ municipalities }: Props) {
                   <select
                     value={stage}
                     onChange={(e) => setStage(e.target.value)}
-                    className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm focus:outline-none focus:border-accent transition-colors"
+                    className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm focus:outline-hidden focus:border-accent transition-colors"
                   >
                     <option value="">Selecciona</option>
                     <option value="Idea">Idea</option>
@@ -539,7 +519,7 @@ export default function SubmitWizard({ municipalities }: Props) {
                   <select
                     value={teamSize}
                     onChange={(e) => setTeamSize(e.target.value)}
-                    className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm focus:outline-none focus:border-accent transition-colors"
+                    className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm focus:outline-hidden focus:border-accent transition-colors"
                   >
                     <option value="">Selecciona</option>
                     <option value="1-5">1-5</option>
@@ -558,7 +538,7 @@ export default function SubmitWizard({ municipalities }: Props) {
                     value={sector}
                     onChange={(e) => setSector(e.target.value)}
                     placeholder="ej. Fintech, SaaS, Edtech"
-                    className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-none focus:border-accent transition-colors"
+                    className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-hidden focus:border-accent transition-colors"
                   />
                 </label>
               </>
@@ -574,7 +554,7 @@ export default function SubmitWizard({ municipalities }: Props) {
                     value={memberCount}
                     onChange={(e) => setMemberCount(e.target.value)}
                     placeholder="100"
-                    className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-none focus:border-accent transition-colors"
+                    className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-hidden focus:border-accent transition-colors"
                   />
                 </label>
                 <label className="block">
@@ -586,7 +566,7 @@ export default function SubmitWizard({ municipalities }: Props) {
                     value={meetupFrequency}
                     onChange={(e) => setMeetupFrequency(e.target.value)}
                     placeholder="ej. Semanal, Mensual, Permanente"
-                    className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-none focus:border-accent transition-colors"
+                    className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-hidden focus:border-accent transition-colors"
                   />
                 </label>
               </>
@@ -602,7 +582,7 @@ export default function SubmitWizard({ municipalities }: Props) {
                     value={role}
                     onChange={(e) => setRole(e.target.value)}
                     placeholder="ej. Frontend Developer, CTO"
-                    className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-none focus:border-accent transition-colors"
+                    className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-hidden focus:border-accent transition-colors"
                   />
                 </label>
                 <label className="block">
@@ -614,7 +594,7 @@ export default function SubmitWizard({ municipalities }: Props) {
                     value={company}
                     onChange={(e) => setCompany(e.target.value)}
                     placeholder="Empresa actual"
-                    className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-none focus:border-accent transition-colors"
+                    className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-hidden focus:border-accent transition-colors"
                   />
                 </label>
                 <label className="block">
@@ -626,7 +606,7 @@ export default function SubmitWizard({ municipalities }: Props) {
                     value={skills}
                     onChange={(e) => setSkills(e.target.value)}
                     placeholder="ej. React, Node.js, Python (separadas por coma)"
-                    className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-none focus:border-accent transition-colors"
+                    className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-hidden focus:border-accent transition-colors"
                   />
                 </label>
                 <label className="block">
@@ -638,7 +618,7 @@ export default function SubmitWizard({ municipalities }: Props) {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="tu@email.com"
-                    className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-none focus:border-accent transition-colors"
+                    className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-hidden focus:border-accent transition-colors"
                   />
                 </label>
               </>
@@ -668,7 +648,7 @@ export default function SubmitWizard({ municipalities }: Props) {
                 }
               }}
               placeholder="Escribe y presiona Enter"
-              className="flex-1 px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-none focus:border-accent transition-colors"
+              className="flex-1 px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-hidden focus:border-accent transition-colors"
             />
             <button
               type="button"

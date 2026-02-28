@@ -194,7 +194,7 @@ export default function EventCalendar({ eventsByDate }: Props) {
           {Array.from({ length: startWeekday }).map((_, i) => (
             <div
               key={`empty-${i}`}
-              className="min-h-[100px] border-b border-r border-[var(--color-border)] bg-[var(--color-elevated)]/30"
+              className="min-h-25 border-b border-r border-[var(--color-border)] bg-[var(--color-elevated)]/30"
             />
           ))}
 
@@ -209,7 +209,7 @@ export default function EventCalendar({ eventsByDate }: Props) {
             return (
               <div
                 key={day}
-                className={`min-h-[100px] border-b border-r border-[var(--color-border)] p-1.5 ${
+                className={`min-h-25 border-b border-r border-[var(--color-border)] p-1.5 ${
                   isToday ? "bg-[var(--color-accent)]/5" : ""
                 }`}
               >
@@ -228,14 +228,14 @@ export default function EventCalendar({ eventsByDate }: Props) {
                     <button
                       key={idx}
                       onClick={() => setSelectedEvent(ev)}
-                      className="w-full text-left px-1.5 py-0.5 text-[10px] font-sans font-medium rounded bg-[var(--color-accent)]/15 text-[var(--color-accent)] truncate hover:bg-[var(--color-accent)]/25 transition-colors cursor-pointer"
+                      className="w-full text-left px-1.5 py-0.5 text-2xs font-sans font-medium rounded bg-[var(--color-accent)]/15 text-[var(--color-accent)] truncate hover:bg-[var(--color-accent)]/25 transition-colors cursor-pointer"
                       title={ev.title}
                     >
                       {ev.title}
                     </button>
                   ))}
                   {overflow > 0 && (
-                    <span className="block text-[10px] font-mono text-[var(--color-muted)] pl-1.5">
+                    <span className="block text-2xs font-mono text-[var(--color-muted)] pl-1.5">
                       +{overflow} más
                     </span>
                   )}
@@ -360,7 +360,7 @@ export default function EventCalendar({ eventsByDate }: Props) {
                   <span>
                     {selectedEvent.location}
                     {selectedEvent.isInPerson && (
-                      <span className="ml-2 inline-block text-[10px] font-mono font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded bg-[var(--color-accent)]/15 text-[var(--color-accent)]">
+                      <span className="ml-2 inline-block text-2xs font-mono font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded bg-[var(--color-accent)]/15 text-[var(--color-accent)]">
                         Presencial
                       </span>
                     )}

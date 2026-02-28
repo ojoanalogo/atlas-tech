@@ -1,8 +1,8 @@
 ---
-import type { AtlasEntryType } from "../config";
-import { ATLAS_CATEGORIES } from "../config";
-import { Rocket, Briefcase, Users, User } from "lucide-astro";
-import CategoryCarousel from "./ui/react/CategoryCarousel";
+import type { AtlasEntryType } from "../../config";
+import { ATLAS_CATEGORIES } from "../../config";
+import { Rocket, Briefcase, Users, User } from "@lucide/astro";
+import CategoryCarousel from "../entries/CategoryCarousel";
 
 interface Props {
   counts: Record<AtlasEntryType, number>;
@@ -14,7 +14,7 @@ const iconMap: Record<string, typeof Rocket> = {
   rocket: Rocket,
   briefcase: Briefcase,
   users: Users,
-  heart: User,
+  user: User,
 };
 
 const carouselCategories = ATLAS_CATEGORIES.map((category) => ({
@@ -22,6 +22,7 @@ const carouselCategories = ATLAS_CATEGORIES.map((category) => ({
   label: category.label,
   description: category.description,
   icon: category.icon,
+  slug: category.slug,
   count: counts[category.type] || 0,
 }));
 ---
@@ -49,7 +50,7 @@ const carouselCategories = ATLAS_CATEGORIES.map((category) => ({
           const Icon = iconMap[category.icon];
           return (
             <a
-              href={`/directorio#type=${category.type}`}
+              href={`/${category.slug}`}
               class="group bg-card border border-border rounded-lg p-5 hover:border-accent/50 transition-all duration-300"
             >
               <div class="flex items-center gap-3 mb-3">

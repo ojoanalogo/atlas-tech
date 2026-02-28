@@ -1,11 +1,6 @@
-import {
-  useState,
-  useEffect,
-  useCallback,
-  useRef,
-  type ReactNode,
-} from "react";
+import { useState, useEffect, useCallback, type ReactNode } from "react";
 import { SearchX } from "lucide-react";
+import { CATEGORY_URL_MAP, type AtlasEntryType } from "../../config";
 
 interface MunicipalityInfo {
   id: string;
@@ -17,30 +12,27 @@ interface Props {
   typeLabels: Record<string, string>;
   municipalities: MunicipalityInfo[];
   totalCount: number;
+  initialType?: string;
+  initialMunicipality?: string;
   children?: ReactNode;
 }
 
-function parseHash(): { type: string; municipality: string } {
-  if (typeof window === "undefined") return { type: "", municipality: "" };
-  const hash = window.location.hash.slice(1);
-  if (!hash) return { type: "", municipality: "" };
-  const params = new URLSearchParams(hash);
-  return {
-    type: params.get("type") || "",
-    municipality: params.get("municipality") || "",
-  };
+function typeToPath(type: string): string {
+  const slug = CATEGORY_URL_MAP[type as AtlasEntryType];
+  return slug ? `/${slug}` : "/directorio";
 }
 
 export default function DirectoryFilter({
   typeLabels,
   municipalities,
   totalCount,
+  initialType = "",
+  initialMunicipality = "",
   children,
 }: Props) {
-  const [activeType, setActiveType] = useState("");
-  const [activeMunicipality, setActiveMunicipality] = useState("");
   const [visibleCount, setVisibleCount] = useState(totalCount);
-  const isInitialMount = useRef(true);
+  const activeType = initialType;
+  const activeMunicipality = initialMunicipality;
 
   const applyDOMFilter = useCallback(
     (type: string, municipality: string, animate: boolean) => {
@@ -81,25 +73,10 @@ export default function DirectoryFilter({
     [],
   );
 
-  // Sync from URL hash on mount + hashchange
+  // Apply filter on mount
   useEffect(() => {
-    function syncFromHash() {
-      const { type, municipality } = parseHash();
-      setActiveType(type);
-      setActiveMunicipality(municipality);
-      applyDOMFilter(type, municipality, !isInitialMount.current);
-      isInitialMount.current = false;
-    }
-    syncFromHash();
-    window.addEventListener("hashchange", syncFromHash);
-    return () => window.removeEventListener("hashchange", syncFromHash);
-  }, [applyDOMFilter]);
-
-  // Apply filter when state changes from user interaction
-  useEffect(() => {
-    if (isInitialMount.current) return;
-    applyDOMFilter(activeType, activeMunicipality, true);
-  }, [activeType, activeMunicipality, applyDOMFilter]);
+    applyDOMFilter(activeType, activeMunicipality, false);
+  }, [applyDOMFilter, activeType, activeMunicipality]);
 
   // Update document title
   useEffect(() => {
@@ -115,34 +92,28 @@ export default function DirectoryFilter({
     }
   }, [activeType, activeMunicipality, municipalities, typeLabels]);
 
-  function updateHash(type: string, municipality: string) {
+  function navigate(type: string, municipality: string) {
     if (type) {
-      window.history.pushState(null, "", `/directorio#type=${type}`);
+      window.location.href = typeToPath(type);
     } else if (municipality) {
-      window.history.pushState(null, "", `/directorio#municipality=${municipality}`);
+      window.location.href = `/directorio/${municipality}`;
     } else {
-      window.history.pushState(null, "", "/directorio");
+      window.location.href = "/directorio";
     }
   }
 
   function handleTypeClick(type: string) {
     const newType = type === activeType ? "" : type;
-    setActiveType(newType);
-    setActiveMunicipality("");
-    updateHash(newType, "");
+    navigate(newType, "");
   }
 
   function handleMunicipalityClick(id: string) {
     const newMun = id === activeMunicipality ? "" : id;
-    setActiveMunicipality(newMun);
-    setActiveType("");
-    updateHash("", newMun);
+    navigate("", newMun);
   }
 
   function clearFilters() {
-    setActiveType("");
-    setActiveMunicipality("");
-    updateHash("", "");
+    navigate("", "");
   }
 
   const activeMunName = municipalities.find(
@@ -186,8 +157,9 @@ export default function DirectoryFilter({
         {heading}
       </h1>
       <p className="mt-2 text-secondary mb-8">
-        {visibleCount} {visibleCount === 1 ? "resultado" : "resultados"}{" "}
-        encontrados
+        <span className="font-bold">{visibleCount}</span>{" "}
+        {visibleCount === 1 ? "resultado" : "resultados"}{" "}
+        {visibleCount === 1 ? "encontrado" : "encontrados"}
       </p>
 
       {/* Type filter tabs */}
@@ -209,7 +181,7 @@ export default function DirectoryFilter({
         {Object.entries(typeLabels).map(([type, label]) => (
           <a
             key={type}
-            href={`/directorio#type=${type}`}
+            href={typeToPath(type)}
             onClick={(e) => {
               e.preventDefault();
               handleTypeClick(type);
@@ -228,7 +200,7 @@ export default function DirectoryFilter({
       {/* Main content with municipality sidebar */}
       <div className="grid lg:grid-cols-[220px_1fr] gap-6">
         {/* Municipality sidebar */}
-        <aside className="bg-card/90 backdrop-blur-sm border border-border rounded-lg p-4 h-fit lg:max-h-[600px] lg:overflow-y-auto order-2 lg:order-1">
+        <aside className="bg-card/90 backdrop-blur-sm border border-border rounded-lg p-4 h-fit lg:max-h-150 lg:overflow-y-auto order-2 lg:order-1">
           <h3 className="font-mono text-xs text-muted uppercase tracking-wider mb-3">
             Municipios
           </h3>

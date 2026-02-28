@@ -4,7 +4,7 @@ import {
   getMunicipalityName,
   getEntryUrl,
   type AtlasEntryType,
-} from "../config";
+} from "../../config";
 import EntryBadge from "./EntryBadge.astro";
 import { MapPin } from "@lucide/astro";
 
@@ -105,7 +105,7 @@ const {
       tags.length > 0 && (
         <div class="flex flex-wrap gap-1 pt-1">
           {tags.slice(0, 3).map((tag) => (
-            <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-elevated text-muted">
+            <span class="text-2xs font-mono px-1.5 py-0.5 rounded bg-elevated text-muted">
               {tag}
             </span>
           ))}

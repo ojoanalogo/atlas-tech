@@ -1,6 +1,6 @@
 ---
-import type { AtlasEntryType } from "../config";
-import { Database, Rocket, Users, MapPin } from "lucide-astro";
+import { ENTRY_TYPE_CONFIG, type AtlasEntryType } from "../../config";
+import { Database, Rocket, Users, MapPin } from "@lucide/astro";
 
 interface Props {
   total: number;
@@ -12,8 +12,16 @@ const { total, counts, municipalities } = Astro.props;
 
 const stats = [
   { label: "Total registros", value: total, accent: true, icon: Database },
-  { label: "Startups", value: counts.startup + counts.business, icon: Rocket },
-  { label: "Comunidades", value: counts.community, icon: Users },
+  {
+    label: ENTRY_TYPE_CONFIG.startup.labelPlural,
+    value: counts.startup + counts.business,
+    icon: Rocket,
+  },
+  {
+    label: ENTRY_TYPE_CONFIG.community.labelPlural,
+    value: counts.community,
+    icon: Users,
+  },
   { label: "Municipios", value: municipalities, icon: MapPin },
 ];
 ---

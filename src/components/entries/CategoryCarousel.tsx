@@ -6,13 +6,13 @@ import {
   CarouselItem,
   CarouselPrevious,
   CarouselNext,
-} from "./Carousel";
+} from "../ui/Carousel";
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   rocket: Rocket,
   briefcase: Briefcase,
   users: Users,
-  heart: User,
+  user: User,
 };
 
 export interface CategoryData {
@@ -20,6 +20,7 @@ export interface CategoryData {
   label: string;
   description: string;
   icon: string;
+  slug: string;
   count: number;
 }
 
@@ -46,10 +47,10 @@ export default function CategoryCarousel({
           return (
             <CarouselItem
               key={category.type}
-              className="pl-3 basis-[75%] min-[480px]:basis-[50%]"
+              className="pl-3 basis-[75%] xs:basis-[50%]"
             >
               <a
-                href={`/directorio#type=${category.type}`}
+                href={`/${category.slug}`}
                 className="group block bg-card border border-border rounded-lg p-5 hover:border-accent/50 transition-all duration-300 h-full"
               >
                 <div className="flex items-center gap-3 mb-3">
@@ -73,11 +74,11 @@ export default function CategoryCarousel({
       </CarouselContent>
       <div className="flex items-center justify-center gap-2 mt-4">
         <CarouselPrevious
-          className="static translate-y-0 min-h-[44px] min-w-[44px]"
+          className="static translate-y-0 min-h-11 min-w-11"
           size="icon"
         />
         <CarouselNext
-          className="static translate-y-0 min-h-[44px] min-w-[44px]"
+          className="static translate-y-0 min-h-11 min-w-11"
           size="icon"
         />
       </div>

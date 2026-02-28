@@ -1,20 +1,18 @@
 ---
-import ThemeToggle from "./ThemeToggle.astro";
-import "../styles/tooltip.css";
+import ThemeToggle from "../ui/ThemeToggle.tsx";
+import "../../styles/tooltip.css";
+import { ENTRY_TYPE_CONFIG, ENTRY_TYPES } from "../../config";
 
-const directoryLinks = [
-  { title: "STARTUPS", url: "/directorio#type=startup" },
-  { title: "CONSULTORÍAS", url: "/directorio#type=consultory" },
-  { title: "PERSONAS", url: "/directorio#type=person" },
-  { title: "COMUNIDADES", url: "/directorio#type=community" },
-  { title: "EMPRESAS", url: "/directorio#type=business" },
-];
+const directoryLinks = ENTRY_TYPES.map((type) => ({
+  title: ENTRY_TYPE_CONFIG[type].labelPlural.toUpperCase(),
+  url: `/${ENTRY_TYPE_CONFIG[type].slug}`,
+}));
 ---
 
 <header id="main-header" class="px-4 py-4">
   <div class:list={["mx-auto", "max-w-7xl"]}>
     <div
-      class="bg-white dark:bg-[#0a0a0a] border rounded-lg font-mono text-sm transition-all duration-300 border-gray-400/50 dark:border-gray-400/30 hover:shadow-sm dark:hover:shadow-md dark:hover:shadow-black/20"
+      class="bg-white dark:bg-[#0a0a0a] border rounded-lg font-mono text-sm transition-all duration-300 border-gray-400/50 dark:border-gray-400/30 hover:shadow-xs dark:hover:shadow-md dark:hover:shadow-black/20"
     >
       <nav
         id="navigation-menu"
@@ -58,7 +56,9 @@ const directoryLinks = [
               data-dropdown-menu
               class="absolute top-full left-0 pt-2 w-44 hidden z-50"
             >
-              <div class="py-1 bg-white dark:bg-[#0a0a0a] border border-border rounded-lg shadow-xl">
+              <div
+                class="py-1 bg-white dark:bg-[#0a0a0a] border border-border rounded-lg shadow-xl"
+              >
                 <a
                   href="/directorio"
                   class="block px-3 py-2.5 text-xs font-mono text-primary hover:text-accent hover:bg-elevated transition-colors"
@@ -89,21 +89,21 @@ const directoryLinks = [
 
           <a
             href="/directorio/submit"
-            class="inline-flex items-center gap-1.5 px-3 py-2.5 min-h-[44px] bg-accent text-accent-foreground font-mono font-semibold text-xs rounded hover:bg-accent/90 transition-colors"
+            class="inline-flex items-center gap-1.5 px-3 py-2.5 min-h-11 bg-accent text-accent-foreground font-mono font-semibold text-xs rounded hover:bg-accent/90 transition-colors"
           >
             AGREGAR PROYECTO
           </a>
 
-          <ThemeToggle />
+          <ThemeToggle client:load />
         </div>
 
         {/* Mobile: theme toggle + hamburger */}
         <div class="flex items-center gap-2 sm:hidden">
-          <ThemeToggle />
+          <ThemeToggle client:load />
           <button
             id="mobile-menu-toggle"
             type="button"
-            class="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-secondary hover:text-accent transition-colors"
+            class="p-2 min-h-11 min-w-11 flex items-center justify-center text-secondary hover:text-accent transition-colors"
             aria-expanded="false"
             aria-label="Abrir menú"
           >
@@ -138,7 +138,7 @@ const directoryLinks = [
     <button
       id="mobile-menu-close"
       type="button"
-      class="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-secondary hover:text-accent transition-colors"
+      class="p-2 min-h-11 min-w-11 flex items-center justify-center text-secondary hover:text-accent transition-colors"
       aria-label="Cerrar menú"
     >
       <svg
@@ -237,8 +237,12 @@ const directoryLinks = [
   //       data-dropdown-menu (panel), data-dropdown-hover (opt-in hover)
 
   function closeAllDropdowns() {
-    document.querySelectorAll("[data-dropdown-menu]").forEach((m) => m.classList.add("hidden"));
-    document.querySelectorAll("[data-dropdown-toggle]").forEach((t) => t.setAttribute("aria-expanded", "false"));
+    document
+      .querySelectorAll("[data-dropdown-menu]")
+      .forEach((m) => m.classList.add("hidden"));
+    document
+      .querySelectorAll("[data-dropdown-toggle]")
+      .forEach((t) => t.setAttribute("aria-expanded", "false"));
   }
 
   // Click: toggle on button, close on outside
@@ -268,24 +272,29 @@ const directoryLinks = [
   });
 
   // Hover support (opt-in via data-dropdown-hover)
-  document.querySelectorAll<HTMLElement>("[data-dropdown-hover]").forEach((container) => {
-    const menu = container.querySelector("[data-dropdown-menu]");
-    const toggle = container.querySelector("[data-dropdown-toggle]");
-    if (!menu || !toggle) return;
+  document
+    .querySelectorAll<HTMLElement>("[data-dropdown-hover]")
+    .forEach((container) => {
+      const menu = container.querySelector("[data-dropdown-menu]");
+      const toggle = container.querySelector("[data-dropdown-toggle]");
+      if (!menu || !toggle) return;
 
-    let timer: ReturnType<typeof setTimeout> | null = null;
+      let timer: ReturnType<typeof setTimeout> | null = null;
 
-    container.addEventListener("mouseenter", () => {
-      if (timer) { clearTimeout(timer); timer = null; }
-      menu.classList.remove("hidden");
-      toggle.setAttribute("aria-expanded", "true");
+      container.addEventListener("mouseenter", () => {
+        if (timer) {
+          clearTimeout(timer);
+          timer = null;
+        }
+        menu.classList.remove("hidden");
+        toggle.setAttribute("aria-expanded", "true");
+      });
+
+      container.addEventListener("mouseleave", () => {
+        timer = setTimeout(() => {
+          menu.classList.add("hidden");
+          toggle.setAttribute("aria-expanded", "false");
+        }, 150);
+      });
     });
-
-    container.addEventListener("mouseleave", () => {
-      timer = setTimeout(() => {
-        menu.classList.add("hidden");
-        toggle.setAttribute("aria-expanded", "false");
-      }, 150);
-    });
-  });
 </script>

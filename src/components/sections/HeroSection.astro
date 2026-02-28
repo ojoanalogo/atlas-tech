@@ -1,6 +1,6 @@
 ---
-import SinaloaMap from "./maps/SinaloaMap";
-import { MapPin, Search, Plus } from "lucide-astro";
+import SinaloaMap from "../maps/SinaloaMap";
+import { MapPin, Search, Plus } from "@lucide/astro";
 
 interface Props {
   municipalityCounts?: Record<string, number>;
@@ -27,20 +27,20 @@ const { municipalityCounts = {} } = Astro.props;
       </div>
 
       <h1
-        class="text-4xl md:text-5xl lg:text-[52px] font-sans font-bold text-primary leading-[1.1] tracking-tight"
+        class="text-4xl md:text-5xl lg:text-hero font-sans font-bold text-primary leading-[1.1] tracking-tight"
       >
         DESCUBRE EL ECOSISTEMA<br />
         TECNOLÓGICO DE SINALOA
       </h1>
 
       <p
-        class="text-sm md:text-base font-mono text-muted leading-relaxed max-w-[500px]"
+        class="text-sm md:text-base font-mono text-muted leading-relaxed max-w-125"
       >
         Un directorio completo de startups, consultorías tech, talento y
         comunidades construyendo el futuro en nuestro estado.
       </p>
 
-      <div class="flex flex-wrap gap-4">
+      <div class="flex flex-wrap gap-4 justify-center lg:justify-start">
         <a
           href="/directorio"
           class="inline-flex items-center gap-2.5 px-6 py-3.5 bg-accent text-accent-foreground font-mono font-bold text-xs rounded hover:bg-accent/90 transition-colors"
@@ -59,7 +59,7 @@ const { municipalityCounts = {} } = Astro.props;
     </div>
 
     {/* Right: Hero Map Card */}
-    <div class="hidden lg:block w-full lg:w-[500px] shrink-0">
+    <div class="hidden lg:block w-full lg:w-125 shrink-0">
       <div
         class="bg-card border border-border rounded-lg p-4 flex flex-col gap-4 h-[45vh]"
       >

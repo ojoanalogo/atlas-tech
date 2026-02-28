@@ -1,6 +1,6 @@
 import type { CollectionEntry } from "astro:content";
 import type { AtlasEntryType } from "../config";
-import { MUNICIPALITY_IDS } from "../config";
+import { MUNICIPALITY_IDS, emptyTypeCounts } from "../config";
 
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
@@ -164,24 +164,17 @@ export function countByTypeAndMunicipality(
   entries: CollectionEntry<"atlas">[],
 ): Record<string, Record<AtlasEntryType, number>> {
   const result: Record<string, Record<AtlasEntryType, number>> = {};
-  const emptyTypes = (): Record<AtlasEntryType, number> => ({
-    startup: 0,
-    community: 0,
-    business: 0,
-    consultory: 0,
-    person: 0,
-  });
 
   for (const entry of entries) {
     const mun = entry.data.municipality;
     const type = entry.data.entryType;
     if (mun === "global") {
       for (const id of MUNICIPALITY_IDS) {
-        if (!result[id]) result[id] = emptyTypes();
+        if (!result[id]) result[id] = emptyTypeCounts();
         result[id][type] = (result[id][type] || 0) + 1;
       }
     } else {
-      if (!result[mun]) result[mun] = emptyTypes();
+      if (!result[mun]) result[mun] = emptyTypeCounts();
       result[mun][type] = (result[mun][type] || 0) + 1;
     }
   }
@@ -197,12 +190,6 @@ export function countByType(
       acc[type] = (acc[type] || 0) + 1;
       return acc;
     },
-    {
-      startup: 0,
-      community: 0,
-      business: 0,
-      consultory: 0,
-      person: 0,
-    } as Record<AtlasEntryType, number>,
+    emptyTypeCounts(),
   );
 }

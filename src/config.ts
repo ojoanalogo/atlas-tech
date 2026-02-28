@@ -5,28 +5,81 @@ export const EVENTS_SHEET_CSV_URL =
 export const SITE_DESCRIPTION =
   "Directorio del ecosistema tecnológico de Sinaloa — startups, consultorías, comunidades y personas.";
 
-export type AtlasEntryType =
-  | "startup"
-  | "community"
-  | "business"
-  | "consultory"
-  | "person";
+export const ENTRY_TYPES = [
+  "startup",
+  "community",
+  "business",
+  "consultory",
+  "person",
+] as const;
 
-export interface NavLink {
-  title: string;
-  id?: string;
-  url?: string;
-  redirect?: string;
-  tooltip?: string;
+export type AtlasEntryType = (typeof ENTRY_TYPES)[number];
+
+export interface EntryTypeConfig {
+  label: string;
+  labelPlural: string;
+  description: string;
+  badgeColor: string;
+  icon: string;
+  slug: string;
 }
 
-export const CATEGORY_URL_MAP: Record<AtlasEntryType, string> = {
-  startup: "startups",
-  consultory: "consultoras",
-  community: "comunidades",
-  person: "personas",
-  business: "empresas",
+export const ENTRY_TYPE_CONFIG: Record<AtlasEntryType, EntryTypeConfig> = {
+  startup: {
+    label: "Startup",
+    labelPlural: "Startups",
+    description: "Empresas emergentes de tecnología en Sinaloa",
+    badgeColor: "bg-emerald-500/90 text-emerald-50 border-emerald-500/60",
+    icon: "rocket",
+    slug: "startups",
+  },
+  community: {
+    label: "Comunidad",
+    labelPlural: "Comunidades",
+    description: "Grupos y comunidades de tecnología locales",
+    badgeColor: "bg-blue-500/90 text-blue-50 border-blue-500/60",
+    icon: "users",
+    slug: "comunidades",
+  },
+  business: {
+    label: "Empresa",
+    labelPlural: "Empresas",
+    description: "Empresas establecidas de tecnología",
+    badgeColor: "bg-purple-500/90 text-purple-50 border-purple-500/60",
+    icon: "briefcase",
+    slug: "empresas",
+  },
+  consultory: {
+    label: "Consultoría",
+    labelPlural: "Consultorías",
+    description: "Empresas de consultoría y servicios tecnológicos",
+    badgeColor: "bg-amber-500/90 text-amber-50 border-amber-500/60",
+    icon: "briefcase",
+    slug: "consultoras",
+  },
+  person: {
+    label: "Persona",
+    labelPlural: "Personas",
+    description: "Talento tech destacado de la región",
+    badgeColor: "bg-pink-500/90 text-pink-50 border-pink-500/60",
+    icon: "user",
+    slug: "personas",
+  },
 };
+
+/** Helper to create a zeroed-out Record<AtlasEntryType, number> */
+export function emptyTypeCounts(): Record<AtlasEntryType, number> {
+  return Object.fromEntries(
+    ENTRY_TYPES.map((t) => [t, 0]),
+  ) as Record<AtlasEntryType, number>;
+}
+
+// --- Derived lookups (backward-compatible) ---
+
+export const CATEGORY_URL_MAP: Record<AtlasEntryType, string> =
+  Object.fromEntries(
+    Object.entries(ENTRY_TYPE_CONFIG).map(([k, v]) => [k, v.slug]),
+  ) as Record<AtlasEntryType, string>;
 
 export const URL_CATEGORY_MAP: Record<string, AtlasEntryType> =
   Object.fromEntries(
@@ -37,31 +90,24 @@ export function getEntryUrl(entryType: AtlasEntryType, slug: string): string {
   return `/${CATEGORY_URL_MAP[entryType]}/${slug}`;
 }
 
+export interface NavLink {
+  title: string;
+  id?: string;
+  url?: string;
+  redirect?: string;
+  tooltip?: string;
+}
+
 export const NAV_LINKS: NavLink[] = [
-  {
-    title: "STARTUPS",
-    id: "startups",
-    url: "/directorio#type=startup",
-    tooltip: "Startups de Sinaloa",
-  },
-  {
-    title: "CONSULTORAS",
-    id: "consultoras",
-    url: "/directorio#type=consultory",
-    tooltip: "Consultorías tech",
-  },
-  {
-    title: "PERSONAS",
-    id: "personas",
-    url: "/directorio#type=person",
-    tooltip: "Talento local",
-  },
-  {
-    title: "COMUNIDADES",
-    id: "comunidades",
-    url: "/directorio#type=community",
-    tooltip: "Comunidades tech",
-  },
+  ...ENTRY_TYPES.map((type) => {
+    const c = ENTRY_TYPE_CONFIG[type];
+    return {
+      title: c.slug.toUpperCase(),
+      id: c.slug,
+      url: `/${c.slug}`,
+      tooltip: c.description,
+    };
+  }),
   {
     title: "MAPA",
     id: "mapa",
@@ -70,39 +116,31 @@ export const NAV_LINKS: NavLink[] = [
   },
 ];
 
+/** Main display categories (excludes "business" which groups with startup) */
 export interface AtlasCategory {
   type: AtlasEntryType;
   label: string;
   description: string;
   icon: string;
+  slug: string;
 }
 
-export const ATLAS_CATEGORIES: AtlasCategory[] = [
-  {
-    type: "startup",
-    label: "Startups",
-    description: "Empresas emergentes de tecnología en Sinaloa",
-    icon: "rocket",
-  },
-  {
-    type: "consultory",
-    label: "Consultorías",
-    description: "Empresas de consultoría y servicios tecnológicos",
-    icon: "briefcase",
-  },
-  {
-    type: "community",
-    label: "Comunidades",
-    description: "Grupos y comunidades de tecnología locales",
-    icon: "users",
-  },
-  {
-    type: "person",
-    label: "Personas",
-    description: "Talento tech destacado de la región",
-    icon: "heart",
-  },
+const DISPLAY_CATEGORIES: AtlasEntryType[] = [
+  "startup",
+  "consultory",
+  "community",
+  "person",
 ];
+
+export const ATLAS_CATEGORIES: AtlasCategory[] = DISPLAY_CATEGORIES.map(
+  (type) => ({
+    type,
+    label: ENTRY_TYPE_CONFIG[type].labelPlural,
+    description: ENTRY_TYPE_CONFIG[type].description,
+    icon: ENTRY_TYPE_CONFIG[type].icon,
+    slug: ENTRY_TYPE_CONFIG[type].slug,
+  }),
+);
 
 export interface Municipality {
   id: string;

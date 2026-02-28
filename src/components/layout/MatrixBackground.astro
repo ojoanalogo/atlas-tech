@@ -1,5 +1,6 @@
 ---
 interface Props {
+  highlight?: boolean;
   highlightColor?: string;
   boxSize?: number;
   movementDirection?:
@@ -16,6 +17,7 @@ interface Props {
 }
 
 const {
+  highlight = true,
   highlightColor = "rgba(20, 184, 166, 0.3)",
   boxSize = 50,
   movementDirection = "none",
@@ -26,6 +28,7 @@ const {
 <canvas
   id="matrix-bg"
   class="absolute inset-0 -z-10"
+  data-highlight={highlight}
   data-highlight-color={highlightColor}
   data-box-size={boxSize}
   data-movement-direction={movementDirection}
@@ -40,6 +43,7 @@ const {
     if (!ctx) return;
 
     // Configuration from data attributes
+    const highlight = canvas.dataset.highlight !== "false";
     const highlightColor = canvas.dataset.highlightColor;
     const boxSize = parseInt(canvas.dataset.boxSize || "50", 10);
     const movementDirection = canvas.dataset.movementDirection || "none";
@@ -101,7 +105,7 @@ const {
           // Check if this box is hovered
           const isHovered = col === hoveredBox.col && row === hoveredBox.row;
 
-          if (isHovered && ctx) {
+          if (highlight && isHovered && ctx) {
             ctx.fillStyle = highlightColor;
             ctx.fillRect(x, y, boxSize, boxSize);
           }
