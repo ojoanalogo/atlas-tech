@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import {
-  SINALOA_MUNICIPALITIES,
+  SINALOA_CITIES,
   ENTRY_TYPE_CONFIG,
   emptyTypeCounts,
 } from "../../config";
@@ -23,8 +23,8 @@ import {
 type TypeCounts = Record<AtlasEntryType, number>;
 
 interface MapSectionProps {
-  municipalityCounts: Record<string, number>;
-  municipalityTypeCounts: Record<string, TypeCounts>;
+  cityCounts: Record<string, number>;
+  cityTypeCounts: Record<string, TypeCounts>;
 }
 
 const EMPTY_TYPE_COUNTS: TypeCounts = emptyTypeCounts();
@@ -169,8 +169,8 @@ function StatsEmpty({ name, onClose }: { name: string; onClose: () => void }) {
 // --- Main component ---
 
 export default function MapSection({
-  municipalityCounts,
-  municipalityTypeCounts,
+  cityCounts,
+  cityTypeCounts,
 }: MapSectionProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -178,35 +178,33 @@ export default function MapSection({
   const [showScrollIndicator, setShowScrollIndicator] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
 
-  // Sort municipalities: ones with entries first, then alphabetically
+  // Sort cities: ones with entries first, then alphabetically
   const { withRecords, withoutRecords } = useMemo(() => {
-    const sorted = [...SINALOA_MUNICIPALITIES].sort((a, b) => {
-      const countA = municipalityCounts[a.id] || 0;
-      const countB = municipalityCounts[b.id] || 0;
+    const sorted = [...SINALOA_CITIES].sort((a, b) => {
+      const countA = cityCounts[a.id] || 0;
+      const countB = cityCounts[b.id] || 0;
       if (countA && !countB) return -1;
       if (!countA && countB) return 1;
       return a.name.localeCompare(b.name);
     });
     return {
-      withRecords: sorted.filter((m) => (municipalityCounts[m.id] || 0) > 0),
-      withoutRecords: sorted.filter((m) => !(municipalityCounts[m.id] || 0)),
+      withRecords: sorted.filter((m) => (cityCounts[m.id] || 0) > 0),
+      withoutRecords: sorted.filter((m) => !(cityCounts[m.id] || 0)),
     };
-  }, [municipalityCounts]);
+  }, [cityCounts]);
 
   // Filter by search
   const normalizedQuery = normalize(searchQuery.trim());
   const isSearching = normalizedQuery.length > 0;
 
-  const filterMunicipality = useCallback(
+  const filterCity = useCallback(
     (name: string) => !isSearching || normalize(name).includes(normalizedQuery),
     [isSearching, normalizedQuery],
   );
 
-  const filteredWithRecords = withRecords.filter((m) =>
-    filterMunicipality(m.name),
-  );
+  const filteredWithRecords = withRecords.filter((m) => filterCity(m.name));
   const filteredWithoutRecords = withoutRecords.filter((m) =>
-    filterMunicipality(m.name),
+    filterCity(m.name),
   );
   const totalVisible =
     filteredWithRecords.length + filteredWithoutRecords.length;
@@ -231,26 +229,26 @@ export default function MapSection({
     return () => el.removeEventListener("scroll", updateScrollIndicator);
   }, [updateScrollIndicator]);
 
-  // Selected municipality data
+  // Selected city data
   const selectedData = useMemo(() => {
     if (!selectedId) return null;
-    const mun = SINALOA_MUNICIPALITIES.find((m) => m.id === selectedId);
+    const mun = SINALOA_CITIES.find((m) => m.id === selectedId);
     if (!mun) return null;
-    const stats = municipalityTypeCounts[selectedId] || {
+    const stats = cityTypeCounts[selectedId] || {
       ...EMPTY_TYPE_COUNTS,
     };
     const total = Object.values(stats).reduce((a, b) => a + b, 0);
     return { name: mun.name, id: selectedId, stats, total };
-  }, [selectedId, municipalityTypeCounts]);
+  }, [selectedId, cityTypeCounts]);
 
-  const handleMunicipalityClick = useCallback(
+  const handleCityClick = useCallback(
     (id: string) => {
       if (selectedId === id) {
         setSelectedId(null);
       } else {
         setSelectedId(id);
         window.dispatchEvent(
-          new CustomEvent("select-municipality", { detail: { id } }),
+          new CustomEvent("select-city", { detail: { id } }),
         );
       }
     },
@@ -266,7 +264,7 @@ export default function MapSection({
     const handler = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
       if (
-        !target.closest("[data-municipality]") &&
+        !target.closest("[data-city]") &&
         !target.closest("[data-stats-panel]") &&
         !target.closest("[data-map-popup]") &&
         !target.closest("[data-mun-search]")
@@ -278,13 +276,13 @@ export default function MapSection({
     return () => window.removeEventListener("click", handler);
   }, []);
 
-  const activeMunicipalityCount = Object.keys(municipalityCounts).length;
+  const activeCityCount = Object.keys(cityCounts).length;
 
   return (
     <section id="map" className="py-8 px-4">
       <div className="max-w-7xl mx-auto">
         <div className="grid lg:grid-cols-9 gap-4">
-          {/* Left: Municipalities (4 cols) */}
+          {/* Left: Cities (4 cols) */}
           <div className="lg:col-span-4 space-y-4">
             <div>
               <div className="flex items-center gap-2 mb-1">
@@ -317,7 +315,7 @@ export default function MapSection({
               )}
             </div>
 
-            {/* Municipality list */}
+            {/* City list */}
             <div className="bg-card border border-border rounded-lg p-4 space-y-3">
               {/* Search */}
               <div className="relative" data-mun-search>
@@ -371,16 +369,16 @@ export default function MapSection({
                   )}
 
                   {filteredWithRecords.map((mun) => {
-                    const count = municipalityCounts[mun.id] || 0;
+                    const count = cityCounts[mun.id] || 0;
                     return (
-                      <MunicipalityButton
+                      <CityButton
                         key={mun.id}
                         id={mun.id}
                         name={mun.name}
                         count={count}
                         isActive={selectedId === mun.id}
                         dimmed={false}
-                        onClick={handleMunicipalityClick}
+                        onClick={handleCityClick}
                       />
                     );
                   })}
@@ -397,13 +395,13 @@ export default function MapSection({
                   )}
 
                   {filteredWithoutRecords.map((mun) => (
-                    <MunicipalityButton
+                    <CityButton
                       key={mun.id}
                       id={mun.id}
                       name={mun.name}
                       isActive={selectedId === mun.id}
                       dimmed
-                      onClick={handleMunicipalityClick}
+                      onClick={handleCityClick}
                     />
                   ))}
 
@@ -454,7 +452,7 @@ export default function MapSection({
                   <div className="flex items-center gap-1.5">
                     <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />
                     <span className="text-xs font-mono text-accent">
-                      {activeMunicipalityCount} municipios
+                      {activeCityCount} municipios
                     </span>
                   </div>
                 </div>
@@ -463,7 +461,7 @@ export default function MapSection({
                 </p>
               </div>
               <div className="flex-1 min-h-100 bg-elevated border border-border rounded-lg overflow-hidden">
-                <SinaloaMap municipalityCounts={municipalityCounts} />
+                <SinaloaMap cityCounts={cityCounts} />
               </div>
             </div>
           </div>
@@ -473,9 +471,9 @@ export default function MapSection({
   );
 }
 
-// --- Municipality button ---
+// --- City button ---
 
-function MunicipalityButton({
+function CityButton({
   id,
   name,
   count,
@@ -493,7 +491,7 @@ function MunicipalityButton({
   return (
     <button
       type="button"
-      data-municipality={id}
+      data-city={id}
       onClick={(e) => {
         e.stopPropagation();
         onClick(id);

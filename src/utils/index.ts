@@ -1,6 +1,6 @@
 import type { CollectionEntry } from "astro:content";
 import type { AtlasEntryType } from "../config";
-import { MUNICIPALITY_IDS, emptyTypeCounts } from "../config";
+import { CITY_IDS, emptyTypeCounts } from "../config";
 
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
@@ -137,14 +137,14 @@ export function filterAtlasByType(
   return entries.filter((entry) => entry.data.entryType === type);
 }
 
-export function groupByMunicipality(
+export function groupByCity(
   entries: CollectionEntry<"atlas">[],
 ): Record<string, number> {
   const result: Record<string, number> = {};
   for (const entry of entries) {
-    const mun = entry.data.municipality;
+    const mun = entry.data.city;
     if (mun === "global") {
-      for (const id of MUNICIPALITY_IDS) {
+      for (const id of CITY_IDS) {
         result[id] = (result[id] || 0) + 1;
       }
     } else {
@@ -160,16 +160,16 @@ export function getFeaturedEntries(entries: CollectionEntry<"atlas">[]) {
     .sort((a, b) => a.data.name.localeCompare(b.data.name));
 }
 
-export function countByTypeAndMunicipality(
+export function countByTypeAndCity(
   entries: CollectionEntry<"atlas">[],
 ): Record<string, Record<AtlasEntryType, number>> {
   const result: Record<string, Record<AtlasEntryType, number>> = {};
 
   for (const entry of entries) {
-    const mun = entry.data.municipality;
+    const mun = entry.data.city;
     const type = entry.data.entryType;
     if (mun === "global") {
-      for (const id of MUNICIPALITY_IDS) {
+      for (const id of CITY_IDS) {
         if (!result[id]) result[id] = emptyTypeCounts();
         result[id][type] = (result[id][type] || 0) + 1;
       }

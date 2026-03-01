@@ -4,19 +4,19 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import EntryCard from "../../components/entries/EntryCard.astro";
 import DirectoryFilter from "../../components/entries/DirectoryFilter";
 import {
-  SINALOA_MUNICIPALITIES,
+  SINALOA_CITIES,
   ENTRY_TYPE_CONFIG,
-  getMunicipalityName,
+  getCityName,
 } from "../../config";
 
 export function getStaticPaths() {
-  return SINALOA_MUNICIPALITIES.map((m) => ({
-    params: { municipality: m.id },
-    props: { municipalityId: m.id, municipalityName: m.name },
+  return SINALOA_CITIES.map((m) => ({
+    params: { city: m.id },
+    props: { cityId: m.id, cityName: m.name },
   }));
 }
 
-const { municipalityId, municipalityName } = Astro.props;
+const { cityId, cityName } = Astro.props;
 
 const allEntries = await getCollection("atlas");
 
@@ -24,35 +24,35 @@ const typeLabels: Record<string, string> = Object.fromEntries(
   Object.entries(ENTRY_TYPE_CONFIG).map(([k, v]) => [k, v.labelPlural]),
 );
 
-const municipalityCounts: Record<string, number> = {};
+const cityCounts: Record<string, number> = {};
 allEntries.forEach((entry) => {
-  const mun = entry.data.municipality;
-  municipalityCounts[mun] = (municipalityCounts[mun] || 0) + 1;
+  const mun = entry.data.city;
+  cityCounts[mun] = (cityCounts[mun] || 0) + 1;
 });
 
-const globalCount = municipalityCounts["global"] || 0;
+const globalCount = cityCounts["global"] || 0;
 
-const municipalities = [
+const cities = [
   ...(globalCount > 0
     ? [{ id: "global", name: "Global", count: globalCount }]
     : []),
-  ...SINALOA_MUNICIPALITIES.map((m) => ({
+  ...SINALOA_CITIES.map((m) => ({
     id: m.id,
     name: m.name,
-    count: municipalityCounts[m.id] || 0,
+    count: cityCounts[m.id] || 0,
   })),
 ];
 ---
 
-<BaseLayout title={`${municipalityName} — TECH_ATLAS`}>
+<BaseLayout title={`${cityName} — TECH_ATLAS`}>
   <section class="py-4 px-4">
     <div class="max-w-7xl mx-auto">
       <DirectoryFilter
         client:load
         typeLabels={typeLabels}
-        municipalities={municipalities}
+        cities={cities}
         totalCount={allEntries.length}
-        initialMunicipality={municipalityId}
+        initialCity={cityId}
       >
         <div id="entries-grid" class="grid sm:grid-cols-2 xl:grid-cols-3 gap-4">
           {
@@ -60,7 +60,7 @@ const municipalities = [
               <div
                 class="entry-item"
                 data-type={entry.data.entryType}
-                data-municipality={entry.data.municipality}
+                data-city={entry.data.city}
               >
                 <EntryCard
                   slug={entry.slug}
@@ -69,7 +69,6 @@ const municipalities = [
                   entryType={entry.data.entryType}
                   logo={entry.data.logo}
                   coverImage={entry.data.coverImage}
-                  municipality={entry.data.municipality}
                   city={entry.data.city}
                   tags={entry.data.tags}
                 />

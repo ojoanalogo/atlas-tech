@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, type ReactNode } from "react";
 import { SearchX } from "lucide-react";
 import { CATEGORY_URL_MAP, type AtlasEntryType } from "../../config";
 
-interface MunicipalityInfo {
+interface CityInfo {
   id: string;
   name: string;
   count: number;
@@ -10,10 +10,10 @@ interface MunicipalityInfo {
 
 interface Props {
   typeLabels: Record<string, string>;
-  municipalities: MunicipalityInfo[];
+  cities: CityInfo[];
   totalCount: number;
   initialType?: string;
-  initialMunicipality?: string;
+  initialCity?: string;
   children?: ReactNode;
 }
 
@@ -24,18 +24,18 @@ function typeToPath(type: string): string {
 
 export default function DirectoryFilter({
   typeLabels,
-  municipalities,
+  cities,
   totalCount,
   initialType = "",
-  initialMunicipality = "",
+  initialCity = "",
   children,
 }: Props) {
   const [visibleCount, setVisibleCount] = useState(totalCount);
   const activeType = initialType;
-  const activeMunicipality = initialMunicipality;
+  const activeCity = initialCity;
 
   const applyDOMFilter = useCallback(
-    (type: string, municipality: string, animate: boolean) => {
+    (type: string, city: string, animate: boolean) => {
       const entries = document.querySelectorAll<HTMLElement>(".entry-item");
       const gridEl = document.getElementById("entries-grid");
       let count = 0;
@@ -43,8 +43,7 @@ export default function DirectoryFilter({
       // Update visibility
       entries.forEach((el) => {
         const matchType = !type || el.dataset.type === type;
-        const matchMun =
-          !municipality || el.dataset.municipality === municipality;
+        const matchMun = !city || el.dataset.city === city;
         const visible = matchType && matchMun;
         el.classList.toggle("hidden", !visible);
         if (visible) count++;
@@ -75,14 +74,12 @@ export default function DirectoryFilter({
 
   // Apply filter on mount
   useEffect(() => {
-    applyDOMFilter(activeType, activeMunicipality, false);
-  }, [applyDOMFilter, activeType, activeMunicipality]);
+    applyDOMFilter(activeType, activeCity, false);
+  }, [applyDOMFilter, activeType, activeCity]);
 
   // Update document title
   useEffect(() => {
-    const munName = municipalities.find(
-      (m) => m.id === activeMunicipality,
-    )?.name;
+    const munName = cities.find((m) => m.id === activeCity)?.name;
     if (munName) {
       document.title = `${munName} — TECH_ATLAS`;
     } else if (activeType && typeLabels[activeType]) {
@@ -90,13 +87,13 @@ export default function DirectoryFilter({
     } else {
       document.title = "Directorio — TECH_ATLAS";
     }
-  }, [activeType, activeMunicipality, municipalities, typeLabels]);
+  }, [activeType, activeCity, cities, typeLabels]);
 
-  function navigate(type: string, municipality: string) {
+  function navigate(type: string, city: string) {
     if (type) {
       window.location.href = typeToPath(type);
-    } else if (municipality) {
-      window.location.href = `/directorio/${municipality}`;
+    } else if (city) {
+      window.location.href = `/directorio/${city}`;
     } else {
       window.location.href = "/directorio";
     }
@@ -107,8 +104,8 @@ export default function DirectoryFilter({
     navigate(newType, "");
   }
 
-  function handleMunicipalityClick(id: string) {
-    const newMun = id === activeMunicipality ? "" : id;
+  function handleCityClick(id: string) {
+    const newMun = id === activeCity ? "" : id;
     navigate("", newMun);
   }
 
@@ -116,13 +113,11 @@ export default function DirectoryFilter({
     navigate("", "");
   }
 
-  const activeMunName = municipalities.find(
-    (m) => m.id === activeMunicipality,
-  )?.name;
+  const activeCityName = cities.find((m) => m.id === activeCity)?.name;
   const activeTypeName = activeType ? typeLabels[activeType] : undefined;
-  const heading = activeMunName || activeTypeName || "Ecosistema";
+  const heading = activeCityName || activeTypeName || "Ecosistema";
 
-  const sortedMunicipalities = municipalities
+  const sortedCities = cities
     .filter((m) => m.count > 0)
     .sort((a, b) => b.count - a.count);
 
@@ -134,7 +129,7 @@ export default function DirectoryFilter({
           INICIO
         </a>
         <span className="mx-2">/</span>
-        {activeMunName || activeTypeName ? (
+        {activeCityName || activeTypeName ? (
           <>
             <button
               onClick={clearFilters}
@@ -144,7 +139,7 @@ export default function DirectoryFilter({
             </button>
             <span className="mx-2">/</span>
             <span className="text-accent">
-              {(activeMunName || activeTypeName || "").toUpperCase()}
+              {(activeCityName || activeTypeName || "").toUpperCase()}
             </span>
           </>
         ) : (
@@ -171,7 +166,7 @@ export default function DirectoryFilter({
             clearFilters();
           }}
           className={`px-3 py-1.5 rounded text-xs font-mono border transition-colors ${
-            !activeType && !activeMunicipality
+            !activeType && !activeCity
               ? "bg-accent/20 text-accent border-accent/30"
               : "bg-card/90 text-secondary border-border hover:border-accent/30"
           }`}
@@ -197,27 +192,27 @@ export default function DirectoryFilter({
         ))}
       </div>
 
-      {/* Main content with municipality sidebar */}
+      {/* Main content with city sidebar */}
       <div className="grid lg:grid-cols-[220px_1fr] gap-6">
-        {/* Municipality sidebar */}
+        {/* City sidebar */}
         <aside className="bg-card/90 backdrop-blur-sm border border-border rounded-lg p-4 h-fit lg:max-h-150 lg:overflow-y-auto order-2 lg:order-1">
           <h3 className="font-mono text-xs text-muted uppercase tracking-wider mb-3">
             Municipios
           </h3>
           <div className="space-y-1">
-            {sortedMunicipalities.map((mun) => (
+            {sortedCities.map((mun) => (
               <button
                 key={mun.id}
-                onClick={() => handleMunicipalityClick(mun.id)}
+                onClick={() => handleCityClick(mun.id)}
                 className={`w-full flex items-center justify-between py-2 px-3 rounded text-left transition-colors cursor-pointer ${
-                  activeMunicipality === mun.id
+                  activeCity === mun.id
                     ? "bg-accent/10 border-l-2 border-accent"
                     : "hover:bg-elevated"
                 }`}
               >
                 <span
                   className={`text-sm ${
-                    activeMunicipality === mun.id
+                    activeCity === mun.id
                       ? "text-accent font-medium"
                       : "text-primary"
                   }`}

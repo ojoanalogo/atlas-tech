@@ -2,7 +2,7 @@
 import type { CollectionEntry } from "astro:content";
 import EntryCard from "../entries/EntryCard.astro";
 import FeaturedCarousel from "../entries/FeaturedCarousel";
-import { getMunicipalityName } from "../../config";
+import { getCityName } from "../../config";
 
 interface Props {
   entries: CollectionEntry<"atlas">[];
@@ -19,9 +19,8 @@ const carouselEntries = displayEntries.map((entry) => ({
   entryType: entry.data.entryType,
   logoSrc: entry.data.logo?.src,
   coverSrc: entry.data.coverImage?.src,
-  municipality: entry.data.municipality,
   city: entry.data.city,
-  municipalityName: getMunicipalityName(entry.data.municipality),
+  cityName: getCityName(entry.data.city),
   tags: entry.data.tags || [],
 }));
 ---
@@ -75,7 +74,6 @@ const carouselEntries = displayEntries.map((entry) => ({
               entryType={entry.data.entryType}
               logo={entry.data.logo}
               coverImage={entry.data.coverImage}
-              municipality={entry.data.municipality}
               city={entry.data.city}
               tags={entry.data.tags}
             />

@@ -1,7 +1,7 @@
 import { defineCollection, z } from "astro:content";
-import { ALL_MUNICIPALITY_IDS, ENTRY_TYPES } from "../config";
+import { ALL_CITY_IDS, ENTRY_TYPES } from "../config";
 
-const municipalityEnum = z.enum(ALL_MUNICIPALITY_IDS as [string, ...string[]]);
+const cityEnum = z.enum(ALL_CITY_IDS as [string, ...string[]]);
 const entryTypeEnum = z.enum(ENTRY_TYPES as unknown as [string, ...string[]]);
 
 const atlasSchema = ({ image }: { image: Function }) =>
@@ -13,8 +13,7 @@ const atlasSchema = ({ image }: { image: Function }) =>
     description: z.string(),
     logo: image().optional(),
     coverImage: image().optional(),
-    municipality: municipalityEnum,
-    city: z.string(),
+    city: cityEnum,
     state: z.string().default("Sinaloa"),
     country: z.string().default("México"),
     tags: z.array(z.string()).default([]),
@@ -24,24 +23,36 @@ const atlasSchema = ({ image }: { image: Function }) =>
     instagram: z.string().optional(),
     linkedin: z.string().optional(),
     github: z.string().optional(),
+    youtube: z.string().optional(),
     publishDate: z.coerce.date().optional(),
     featured: z.boolean().optional(),
-    // Startup/business extras
+
+    // Startup/business/consultory extras
     foundedYear: z.number().optional(),
     stage: z.string().optional(),
     teamSize: z.string().optional(),
     sector: z.string().optional(),
+    services: z.array(z.string()).optional(),
+    technologies: z.array(z.string()).optional(),
+    hiring: z.boolean().optional(),
+    hiringUrl: z.string().url().optional(),
+
     // Community extras
     memberCount: z.number().optional(),
     meetupFrequency: z.string().optional(),
     discord: z.string().optional(),
     telegram: z.string().optional(),
+    platform: z.string().optional(),
+    focusAreas: z.array(z.string()).optional(),
+
     // Person extras
     role: z.string().optional(),
     company: z.string().optional(),
     skills: z.array(z.string()).optional(),
     availableForHire: z.boolean().optional(),
+    availableForMentoring: z.boolean().optional(),
     email: z.string().email().optional(),
+    portfolio: z.string().url().optional(),
   });
 
 const atlasCollection = defineCollection({ schema: atlasSchema });

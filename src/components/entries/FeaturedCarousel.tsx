@@ -21,9 +21,8 @@ export interface FeaturedEntry {
   entryType: AtlasEntryType;
   logoSrc?: string;
   coverSrc?: string;
-  municipality: string;
   city: string;
-  municipalityName: string;
+  cityName: string;
   tags: string[];
 }
 
@@ -49,9 +48,9 @@ export default function FeaturedCarousel({
           const config = ENTRY_TYPE_CONFIG[entry.entryType];
           const url = `/${CATEGORY_URL_MAP[entry.entryType]}/${entry.slug}`;
           const location =
-            entry.municipality === "global"
-              ? entry.city
-              : `${entry.city}, ${entry.municipalityName}`;
+            entry.city === "global"
+              ? "Global"
+              : entry.cityName;
 
           return (
             <CarouselItem

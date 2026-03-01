@@ -3,9 +3,9 @@ import { getCollection } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import {
   countByType,
-  countByTypeAndMunicipality,
+  countByTypeAndCity,
   getFeaturedEntries,
-  groupByMunicipality,
+  groupByCity,
 } from "../utils";
 import CalendarSection from "../components/sections/CalendarSection.astro";
 import CtaSection from "../components/sections/CtaSection.astro";
@@ -18,8 +18,8 @@ import MatrixBackground from "../components/layout/MatrixBackground.astro";
 const allEntries = await getCollection("atlas");
 const counts = countByType(allEntries);
 const featured = getFeaturedEntries(allEntries);
-const municipalityCounts = groupByMunicipality(allEntries);
-const municipalityTypeCounts = countByTypeAndMunicipality(allEntries);
+const cityCounts = groupByCity(allEntries);
+const cityTypeCounts = countByTypeAndCity(allEntries);
 ---
 
 <BaseLayout>
@@ -29,12 +29,12 @@ const municipalityTypeCounts = countByTypeAndMunicipality(allEntries);
     highlight={false}
     slot="bg"
   />
-  <HeroSection municipalityCounts={municipalityCounts} />
+  <HeroSection cityCounts={cityCounts} />
   <CategorySection counts={counts} />
   <FeaturedSection entries={featured} />
   <MapSection
-    municipalityCounts={municipalityCounts}
-    municipalityTypeCounts={municipalityTypeCounts}
+    cityCounts={cityCounts}
+    cityTypeCounts={cityTypeCounts}
     client:load
   />
   <CalendarSection />

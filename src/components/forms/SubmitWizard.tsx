@@ -16,20 +16,22 @@ import {
 import {
   ENTRY_TYPES as ALL_ENTRY_TYPES,
   ENTRY_TYPE_CONFIG,
+  N8N_WEBHOOK_URL,
+  STAGE_OPTIONS,
+  TEAM_SIZE_OPTIONS,
+  PLATFORM_OPTIONS,
   type AtlasEntryType,
 } from "../../config";
 
-const FORMCARRY_URL = "https://formcarry.com/s/0SLLJVV-2qL";
-
 type EntryType = AtlasEntryType;
 
-interface MunicipalityOption {
+interface CityOption {
   id: string;
   name: string;
 }
 
 interface Props {
-  municipalities: MunicipalityOption[];
+  cities: CityOption[];
 }
 
 const ICON_MAP: Record<string, typeof Rocket> = {
@@ -56,13 +58,72 @@ const STEPS = [
   "Envío",
 ];
 
-export default function SubmitWizard({ municipalities }: Props) {
+const TYPE_COPY: Record<
+  EntryType,
+  {
+    entityName: string;
+    namePlaceholder: string;
+    taglinePlaceholder: string;
+    descriptionPlaceholder: string;
+    successTitle: string;
+    successMessage: string;
+  }
+> = {
+  startup: {
+    entityName: "startup",
+    namePlaceholder: "Nombre de la startup",
+    taglinePlaceholder: "Una frase corta que describe tu startup",
+    descriptionPlaceholder: "Describe tu startup en detalle",
+    successTitle: "Startup enviada",
+    successMessage:
+      "Tu startup ha sido recibida. La revisaremos y la agregaremos al directorio pronto.",
+  },
+  business: {
+    entityName: "empresa",
+    namePlaceholder: "Nombre de la empresa",
+    taglinePlaceholder: "Una frase corta que describe tu empresa",
+    descriptionPlaceholder: "Describe tu empresa en detalle",
+    successTitle: "Empresa enviada",
+    successMessage:
+      "Tu empresa ha sido recibida. La revisaremos y la agregaremos al directorio pronto.",
+  },
+  consultory: {
+    entityName: "consultoría",
+    namePlaceholder: "Nombre de la consultoría",
+    taglinePlaceholder: "Una frase corta que describe tu consultoría",
+    descriptionPlaceholder: "Describe tu consultoría en detalle",
+    successTitle: "Consultoría enviada",
+    successMessage:
+      "Tu consultoría ha sido recibida. La revisaremos y la agregaremos al directorio pronto.",
+  },
+  community: {
+    entityName: "comunidad",
+    namePlaceholder: "Nombre de la comunidad",
+    taglinePlaceholder: "Una frase corta que describe tu comunidad",
+    descriptionPlaceholder: "Describe tu comunidad en detalle",
+    successTitle: "Comunidad enviada",
+    successMessage:
+      "Tu comunidad ha sido recibida. La revisaremos y la agregaremos al directorio pronto.",
+  },
+  person: {
+    entityName: "perfil",
+    namePlaceholder: "Tu nombre completo",
+    taglinePlaceholder: "Tu título profesional o especialidad",
+    descriptionPlaceholder: "Cuéntanos sobre ti, tu experiencia y lo que haces",
+    successTitle: "Perfil enviado",
+    successMessage:
+      "Tu perfil ha sido recibido. Lo revisaremos y lo agregaremos al directorio pronto.",
+  },
+};
+
+export default function SubmitWizard({ cities }: Props) {
   const [step, setStep] = useState(0);
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState<"success" | "error" | null>(null);
 
   // Step 0: Tipo
   const [entryType, setEntryType] = useState<EntryType | "">("");
+  const copy = entryType ? TYPE_COPY[entryType] : null;
 
   // Step 1: Info básica
   const [name, setName] = useState("");
@@ -70,13 +131,15 @@ export default function SubmitWizard({ municipalities }: Props) {
   const [description, setDescription] = useState("");
 
   // Step 2: Ubicación
-  const [municipality, setMunicipality] = useState("");
+  const [city, setCity] = useState("");
 
   // Step 3: Enlaces
   const [website, setWebsite] = useState("");
   const [x, setX] = useState("");
+  const [instagram, setInstagram] = useState("");
   const [linkedin, setLinkedin] = useState("");
   const [github, setGithub] = useState("");
+  const [youtube, setYoutube] = useState("");
   const [discord, setDiscord] = useState("");
   const [telegram, setTelegram] = useState("");
 
@@ -85,12 +148,21 @@ export default function SubmitWizard({ municipalities }: Props) {
   const [stage, setStage] = useState("");
   const [teamSize, setTeamSize] = useState("");
   const [sector, setSector] = useState("");
+  const [services, setServices] = useState("");
+  const [technologies, setTechnologies] = useState("");
+  const [hiring, setHiring] = useState(false);
+  const [hiringUrl, setHiringUrl] = useState("");
   const [memberCount, setMemberCount] = useState("");
   const [meetupFrequency, setMeetupFrequency] = useState("");
+  const [platform, setPlatform] = useState("");
+  const [focusAreas, setFocusAreas] = useState("");
   const [role, setRole] = useState("");
   const [company, setCompany] = useState("");
   const [skills, setSkills] = useState("");
   const [email, setEmail] = useState("");
+  const [portfolio, setPortfolio] = useState("");
+  const [availableForHire, setAvailableForHire] = useState(false);
+  const [availableForMentoring, setAvailableForMentoring] = useState(false);
 
   // Step 5: Etiquetas
   const [tags, setTags] = useState<string[]>([]);
@@ -107,7 +179,7 @@ export default function SubmitWizard({ municipalities }: Props) {
       case 1:
         return name.trim() !== "" && description.trim() !== "";
       case 2:
-        return municipality !== "";
+        return city !== "";
       default:
         return true;
     }
@@ -133,54 +205,60 @@ export default function SubmitWizard({ municipalities }: Props) {
     setTags(tags.filter((t) => t !== tag));
   }
 
+  function buildPayload() {
+    return {
+      entryType,
+      name,
+      tagline: tagline || undefined,
+      description,
+      city,
+      links: {
+        website: website || undefined,
+        x: x || undefined,
+        instagram: instagram || undefined,
+        linkedin: linkedin || undefined,
+        github: github || undefined,
+        youtube: youtube || undefined,
+        discord: discord || undefined,
+        telegram: telegram || undefined,
+      },
+      tags: tags.length > 0 ? tags : undefined,
+      foundedYear: foundedYear || undefined,
+      stage: stage || undefined,
+      teamSize: teamSize || undefined,
+      sector: sector || undefined,
+      services: services || undefined,
+      technologies: technologies || undefined,
+      hiring: hiring || undefined,
+      hiringUrl: hiringUrl || undefined,
+      memberCount: memberCount || undefined,
+      meetupFrequency: meetupFrequency || undefined,
+      platform: platform || undefined,
+      focusAreas: focusAreas || undefined,
+      role: role || undefined,
+      company: company || undefined,
+      skills: skills || undefined,
+      email: email || undefined,
+      portfolio: portfolio || undefined,
+      availableForHire: availableForHire || undefined,
+      availableForMentoring: availableForMentoring || undefined,
+    };
+  }
+
   async function handleSubmit() {
     setSubmitting(true);
     setResult(null);
 
     try {
       const fd = new FormData();
-      fd.append("entryType", entryType);
-      fd.append("name", name);
-      if (tagline) fd.append("tagline", tagline);
-      fd.append("description", description);
-      fd.append("municipality", municipality);
-      if (website) fd.append("website", website);
-      if (x) fd.append("x", x);
-      if (linkedin) fd.append("linkedin", linkedin);
-      if (github) fd.append("github", github);
-      if (discord) fd.append("discord", discord);
-      if (telegram) fd.append("telegram", telegram);
-
-      // Type-specific fields
-      if (
-        entryType === "startup" ||
-        entryType === "business" ||
-        entryType === "consultory"
-      ) {
-        if (foundedYear) fd.append("foundedYear", foundedYear);
-        if (stage) fd.append("stage", stage);
-        if (teamSize) fd.append("teamSize", teamSize);
-        if (sector) fd.append("sector", sector);
-      }
-      if (entryType === "community") {
-        if (memberCount) fd.append("memberCount", memberCount);
-        if (meetupFrequency) fd.append("meetupFrequency", meetupFrequency);
-      }
-      if (entryType === "person") {
-        if (role) fd.append("role", role);
-        if (company) fd.append("company", company);
-        if (skills) fd.append("skills", skills);
-        if (email) fd.append("email", email);
-      }
-
-      if (tags.length > 0) fd.append("tags", tags.join(", "));
+      fd.append("payload", JSON.stringify(buildPayload()));
 
       const logoFile = logoRef.current?.files?.[0];
       const coverFile = coverRef.current?.files?.[0];
       if (logoFile) fd.append("logo", logoFile);
       if (coverFile) fd.append("coverImage", coverFile);
 
-      const res = await fetch(FORMCARRY_URL, {
+      const res = await fetch(N8N_WEBHOOK_URL, {
         method: "POST",
         body: fd,
         headers: { Accept: "application/json" },
@@ -203,11 +281,11 @@ export default function SubmitWizard({ municipalities }: Props) {
       <div className="text-center py-16 space-y-4">
         <CheckCircle className="w-16 h-16 mx-auto text-accent" />
         <h2 className="text-2xl font-sans font-bold text-primary">
-          Proyecto enviado
+          {copy?.successTitle ?? "Registro enviado"}
         </h2>
         <p className="text-secondary max-w-md mx-auto">
-          Tu proyecto ha sido recibido. Lo revisaremos y lo agregaremos al
-          directorio pronto.
+          {copy?.successMessage ??
+            "Tu registro ha sido recibido. Lo revisaremos y lo agregaremos al directorio pronto."}
         </p>
         <a
           href="/directorio"
@@ -227,7 +305,7 @@ export default function SubmitWizard({ municipalities }: Props) {
           Error al enviar
         </h2>
         <p className="text-secondary max-w-md mx-auto">
-          Hubo un problema al enviar tu proyecto. Por favor intenta de nuevo.
+          Hubo un problema al enviar tu registro. Por favor intenta de nuevo.
         </p>
         <button
           onClick={() => setResult(null)}
@@ -264,10 +342,10 @@ export default function SubmitWizard({ municipalities }: Props) {
       {step === 0 && (
         <div className="space-y-4">
           <h2 className="text-xl font-sans font-bold text-primary">
-            Tipo de proyecto
+            Tipo de registro
           </h2>
           <p className="text-sm text-secondary">
-            Selecciona la categoría que mejor describe tu proyecto.
+            Selecciona la categoría que mejor te describe.
           </p>
           <div className="grid sm:grid-cols-2 gap-3">
             {ENTRY_TYPES.map(({ type, label, desc, icon: Icon }) => (
@@ -318,7 +396,7 @@ export default function SubmitWizard({ municipalities }: Props) {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
-                placeholder="Nombre del proyecto"
+                placeholder={copy?.namePlaceholder ?? "Nombre"}
                 className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-hidden focus:border-accent transition-colors"
               />
             </label>
@@ -330,7 +408,7 @@ export default function SubmitWizard({ municipalities }: Props) {
                 type="text"
                 value={tagline}
                 onChange={(e) => setTagline(e.target.value)}
-                placeholder="Una frase corta que describe tu proyecto"
+                placeholder={copy?.taglinePlaceholder ?? "Una frase corta descriptiva"}
                 className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-hidden focus:border-accent transition-colors"
               />
             </label>
@@ -343,7 +421,7 @@ export default function SubmitWizard({ municipalities }: Props) {
                 onChange={(e) => setDescription(e.target.value)}
                 required
                 rows={4}
-                placeholder="Describe tu proyecto en detalle"
+                placeholder={copy?.descriptionPlaceholder ?? "Describe en detalle"}
                 className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-hidden focus:border-accent transition-colors resize-y"
               />
             </label>
@@ -363,13 +441,13 @@ export default function SubmitWizard({ municipalities }: Props) {
                 Municipio *
               </span>
               <select
-                value={municipality}
-                onChange={(e) => setMunicipality(e.target.value)}
+                value={city}
+                onChange={(e) => setCity(e.target.value)}
                 required
                 className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm focus:outline-hidden focus:border-accent transition-colors"
               >
                 <option value="">Selecciona un municipio</option>
-                {municipalities.map((m) => (
+                {cities.map((m) => (
                   <option key={m.id} value={m.id}>
                     {m.name}
                   </option>
@@ -414,6 +492,18 @@ export default function SubmitWizard({ municipalities }: Props) {
             </label>
             <label className="block">
               <span className="text-xs font-mono text-muted uppercase tracking-wider">
+                Instagram
+              </span>
+              <input
+                type="text"
+                value={instagram}
+                onChange={(e) => setInstagram(e.target.value)}
+                placeholder="@usuario"
+                className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-hidden focus:border-accent transition-colors"
+              />
+            </label>
+            <label className="block">
+              <span className="text-xs font-mono text-muted uppercase tracking-wider">
                 LinkedIn
               </span>
               <input
@@ -433,6 +523,18 @@ export default function SubmitWizard({ municipalities }: Props) {
                 value={github}
                 onChange={(e) => setGithub(e.target.value)}
                 placeholder="usuario"
+                className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-hidden focus:border-accent transition-colors"
+              />
+            </label>
+            <label className="block">
+              <span className="text-xs font-mono text-muted uppercase tracking-wider">
+                YouTube
+              </span>
+              <input
+                type="url"
+                value={youtube}
+                onChange={(e) => setYoutube(e.target.value)}
+                placeholder="https://youtube.com/@canal"
                 className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-hidden focus:border-accent transition-colors"
               />
             </label>
@@ -473,7 +575,11 @@ export default function SubmitWizard({ municipalities }: Props) {
         <div className="space-y-4">
           <h2 className="text-xl font-sans font-bold text-primary">Detalles</h2>
           <p className="text-sm text-secondary">
-            Campos específicos según el tipo de proyecto. Todos opcionales.
+            {entryType === "person"
+              ? "Información sobre tu perfil profesional. Todos opcionales."
+              : entryType === "community"
+                ? "Información sobre tu comunidad. Todos opcionales."
+                : "Campos específicos según el tipo de proyecto. Todos opcionales."}
           </p>
           <div className="space-y-3">
             {(entryType === "startup" ||
@@ -494,24 +600,23 @@ export default function SubmitWizard({ municipalities }: Props) {
                     className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-hidden focus:border-accent transition-colors"
                   />
                 </label>
-                <label className="block">
-                  <span className="text-xs font-mono text-muted uppercase tracking-wider">
-                    Etapa
-                  </span>
-                  <select
-                    value={stage}
-                    onChange={(e) => setStage(e.target.value)}
-                    className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm focus:outline-hidden focus:border-accent transition-colors"
-                  >
-                    <option value="">Selecciona</option>
-                    <option value="Idea">Idea</option>
-                    <option value="Pre-seed">Pre-seed</option>
-                    <option value="Seed">Seed</option>
-                    <option value="Serie A">Serie A</option>
-                    <option value="Serie B+">Serie B+</option>
-                    <option value="Establecida">Establecida</option>
-                  </select>
-                </label>
+                {entryType === "startup" && (
+                  <label className="block">
+                    <span className="text-xs font-mono text-muted uppercase tracking-wider">
+                      Etapa
+                    </span>
+                    <select
+                      value={stage}
+                      onChange={(e) => setStage(e.target.value)}
+                      className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm focus:outline-hidden focus:border-accent transition-colors"
+                    >
+                      <option value="">Selecciona</option>
+                      {STAGE_OPTIONS.map((o) => (
+                        <option key={o.value} value={o.value}>{o.label}</option>
+                      ))}
+                    </select>
+                  </label>
+                )}
                 <label className="block">
                   <span className="text-xs font-mono text-muted uppercase tracking-wider">
                     Tamaño del equipo
@@ -522,11 +627,9 @@ export default function SubmitWizard({ municipalities }: Props) {
                     className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm focus:outline-hidden focus:border-accent transition-colors"
                   >
                     <option value="">Selecciona</option>
-                    <option value="1-5">1-5</option>
-                    <option value="6-15">6-15</option>
-                    <option value="16-50">16-50</option>
-                    <option value="51-200">51-200</option>
-                    <option value="200+">200+</option>
+                    {TEAM_SIZE_OPTIONS.map((o) => (
+                      <option key={o.value} value={o.value}>{o.label}</option>
+                    ))}
                   </select>
                 </label>
                 <label className="block">
@@ -541,6 +644,59 @@ export default function SubmitWizard({ municipalities }: Props) {
                     className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-hidden focus:border-accent transition-colors"
                   />
                 </label>
+                <label className="block">
+                  <span className="text-xs font-mono text-muted uppercase tracking-wider">
+                    Servicios
+                  </span>
+                  <input
+                    type="text"
+                    value={services}
+                    onChange={(e) => setServices(e.target.value)}
+                    placeholder="ej. Desarrollo web, Consultoría IT (separados por coma)"
+                    className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-hidden focus:border-accent transition-colors"
+                  />
+                </label>
+                <label className="block">
+                  <span className="text-xs font-mono text-muted uppercase tracking-wider">
+                    Tecnologías
+                  </span>
+                  <input
+                    type="text"
+                    value={technologies}
+                    onChange={(e) => setTechnologies(e.target.value)}
+                    placeholder="ej. React, Python, AWS (separadas por coma)"
+                    className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-hidden focus:border-accent transition-colors"
+                  />
+                </label>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="checkbox"
+                    checked={hiring}
+                    onChange={(e) => setHiring(e.target.checked)}
+                    id="hiring"
+                    className="w-4 h-4 rounded border-border text-accent focus:ring-accent"
+                  />
+                  <label
+                    htmlFor="hiring"
+                    className="text-xs font-mono text-muted uppercase tracking-wider"
+                  >
+                    Está contratando
+                  </label>
+                </div>
+                {hiring && (
+                  <label className="block">
+                    <span className="text-xs font-mono text-muted uppercase tracking-wider">
+                      URL de vacantes
+                    </span>
+                    <input
+                      type="url"
+                      value={hiringUrl}
+                      onChange={(e) => setHiringUrl(e.target.value)}
+                      placeholder="https://tu-empresa.com/careers"
+                      className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-hidden focus:border-accent transition-colors"
+                    />
+                  </label>
+                )}
               </>
             )}
             {entryType === "community" && (
@@ -566,6 +722,33 @@ export default function SubmitWizard({ municipalities }: Props) {
                     value={meetupFrequency}
                     onChange={(e) => setMeetupFrequency(e.target.value)}
                     placeholder="ej. Semanal, Mensual, Permanente"
+                    className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-hidden focus:border-accent transition-colors"
+                  />
+                </label>
+                <label className="block">
+                  <span className="text-xs font-mono text-muted uppercase tracking-wider">
+                    Plataforma principal
+                  </span>
+                  <select
+                    value={platform}
+                    onChange={(e) => setPlatform(e.target.value)}
+                    className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm focus:outline-hidden focus:border-accent transition-colors"
+                  >
+                    <option value="">Selecciona</option>
+                    {PLATFORM_OPTIONS.map((o) => (
+                      <option key={o.value} value={o.value}>{o.label}</option>
+                    ))}
+                  </select>
+                </label>
+                <label className="block">
+                  <span className="text-xs font-mono text-muted uppercase tracking-wider">
+                    Áreas de enfoque
+                  </span>
+                  <input
+                    type="text"
+                    value={focusAreas}
+                    onChange={(e) => setFocusAreas(e.target.value)}
+                    placeholder="ej. IA, Web Dev, Emprendimiento (separados por coma)"
                     className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-hidden focus:border-accent transition-colors"
                   />
                 </label>
@@ -621,6 +804,48 @@ export default function SubmitWizard({ municipalities }: Props) {
                     className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-hidden focus:border-accent transition-colors"
                   />
                 </label>
+                <label className="block">
+                  <span className="text-xs font-mono text-muted uppercase tracking-wider">
+                    Portafolio
+                  </span>
+                  <input
+                    type="url"
+                    value={portfolio}
+                    onChange={(e) => setPortfolio(e.target.value)}
+                    placeholder="https://tu-portafolio.com"
+                    className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-hidden focus:border-accent transition-colors"
+                  />
+                </label>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="checkbox"
+                    checked={availableForHire}
+                    onChange={(e) => setAvailableForHire(e.target.checked)}
+                    id="availableForHire"
+                    className="w-4 h-4 rounded border-border text-accent focus:ring-accent"
+                  />
+                  <label
+                    htmlFor="availableForHire"
+                    className="text-xs font-mono text-muted uppercase tracking-wider"
+                  >
+                    Disponible para contratación
+                  </label>
+                </div>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="checkbox"
+                    checked={availableForMentoring}
+                    onChange={(e) => setAvailableForMentoring(e.target.checked)}
+                    id="availableForMentoring"
+                    className="w-4 h-4 rounded border-border text-accent focus:ring-accent"
+                  />
+                  <label
+                    htmlFor="availableForMentoring"
+                    className="text-xs font-mono text-muted uppercase tracking-wider"
+                  >
+                    Disponible para mentoría
+                  </label>
+                </div>
               </>
             )}
           </div>
@@ -634,7 +859,7 @@ export default function SubmitWizard({ municipalities }: Props) {
             Etiquetas
           </h2>
           <p className="text-sm text-secondary">
-            Agrega hasta 10 etiquetas que describan tu proyecto.
+            Agrega hasta 10 etiquetas que describan tu {copy?.entityName ?? "registro"}.
           </p>
           <div className="flex gap-2">
             <input
@@ -729,7 +954,7 @@ export default function SubmitWizard({ municipalities }: Props) {
             {tagline && <SummaryRow label="Tagline" value={tagline} />}
             <SummaryRow
               label="Municipio"
-              value={municipalities.find((m) => m.id === municipality)?.name}
+              value={cities.find((m) => m.id === city)?.name}
             />
             {website && <SummaryRow label="Web" value={website} />}
             {tags.length > 0 && (
@@ -779,7 +1004,7 @@ export default function SubmitWizard({ municipalities }: Props) {
             ) : (
               <>
                 <Send className="w-4 h-4" />
-                ENVIAR PROYECTO
+                ENVIAR
               </>
             )}
           </button>

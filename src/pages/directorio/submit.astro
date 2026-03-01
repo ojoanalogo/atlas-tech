@@ -1,11 +1,11 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import SubmitWizard from "../../components/forms/SubmitWizard";
-import { SINALOA_MUNICIPALITIES } from "../../config";
+import { SINALOA_CITIES } from "../../config";
 
-const municipalities = [
+const cities = [
   { id: "global", name: "Global (sin ubicacion especifica)" },
-  ...SINALOA_MUNICIPALITIES.map((m) => ({ id: m.id, name: m.name })),
+  ...SINALOA_CITIES.map((m) => ({ id: m.id, name: m.name })),
 ];
 ---
 
@@ -34,7 +34,7 @@ const municipalities = [
       <div
         class="bg-card/90 backdrop-blur-sm border border-border rounded-lg p-6 md:p-8"
       >
-        <SubmitWizard client:load municipalities={municipalities} />
+        <SubmitWizard client:load cities={cities} />
       </div>
     </div>
   </section>

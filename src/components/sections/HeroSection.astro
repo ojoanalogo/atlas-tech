@@ -3,10 +3,10 @@ import SinaloaMap from "../maps/SinaloaMap";
 import { MapPin, Search, Plus } from "@lucide/astro";
 
 interface Props {
-  municipalityCounts?: Record<string, number>;
+  cityCounts?: Record<string, number>;
 }
 
-const { municipalityCounts = {} } = Astro.props;
+const { cityCounts = {} } = Astro.props;
 ---
 
 <section id="hero" class="py-8 px-4">
@@ -82,7 +82,7 @@ const { municipalityCounts = {} } = Astro.props;
         >
           <SinaloaMap
             compact
-            municipalityCounts={municipalityCounts}
+            cityCounts={cityCounts}
             client:visible
           />
         </div>

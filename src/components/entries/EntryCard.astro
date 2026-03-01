@@ -1,7 +1,7 @@
 ---
 import { Image } from "astro:assets";
 import {
-  getMunicipalityName,
+  getCityName,
   getEntryUrl,
   type AtlasEntryType,
 } from "../../config";
@@ -15,7 +15,6 @@ interface Props {
   entryType: AtlasEntryType;
   logo?: ImageMetadata;
   coverImage?: ImageMetadata;
-  municipality: string;
   city: string;
   tags?: string[];
 }
@@ -27,7 +26,6 @@ const {
   entryType,
   logo,
   coverImage,
-  municipality,
   city,
   tags = [],
 } = Astro.props;
@@ -95,9 +93,9 @@ const {
       <MapPin class="w-3 h-3 shrink-0" />
       <span
         >{
-          municipality === "global"
-            ? city
-            : `${city}, ${getMunicipalityName(municipality)}`
+          city === "global"
+            ? "Global"
+            : getCityName(city)
         }</span
       >
     </div>

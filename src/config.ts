@@ -69,9 +69,10 @@ export const ENTRY_TYPE_CONFIG: Record<AtlasEntryType, EntryTypeConfig> = {
 
 /** Helper to create a zeroed-out Record<AtlasEntryType, number> */
 export function emptyTypeCounts(): Record<AtlasEntryType, number> {
-  return Object.fromEntries(
-    ENTRY_TYPES.map((t) => [t, 0]),
-  ) as Record<AtlasEntryType, number>;
+  return Object.fromEntries(ENTRY_TYPES.map((t) => [t, 0])) as Record<
+    AtlasEntryType,
+    number
+  >;
 }
 
 // --- Derived lookups (backward-compatible) ---
@@ -142,12 +143,12 @@ export const ATLAS_CATEGORIES: AtlasCategory[] = DISPLAY_CATEGORIES.map(
   }),
 );
 
-export interface Municipality {
+export interface City {
   id: string;
   name: string;
 }
 
-export const SINALOA_MUNICIPALITIES: Municipality[] = [
+export const SINALOA_CITIES: City[] = [
   { id: "ahome", name: "Ahome" },
   { id: "angostura", name: "Angostura" },
   { id: "badiraguato", name: "Badiraguato" },
@@ -174,16 +175,47 @@ export const SINALOA_MUNICIPALITIES: Municipality[] = [
   },
 ];
 
-export const MUNICIPALITY_IDS = SINALOA_MUNICIPALITIES.map((m) => m.id);
+export const CITY_IDS = SINALOA_CITIES.map((m) => m.id);
 
-/** All valid municipality IDs including "global" for non-location-specific entries */
-export const ALL_MUNICIPALITY_IDS = ["global", ...MUNICIPALITY_IDS];
+/** All valid city IDs including "global" for non-location-specific entries */
+export const ALL_CITY_IDS = ["global", ...CITY_IDS];
 
-/** Get display name for a municipality ID */
-export function getMunicipalityName(id: string): string {
+/** Get display name for a city ID */
+export function getCityName(id: string): string {
   if (id === "global") return "Global";
-  return SINALOA_MUNICIPALITIES.find((m) => m.id === id)?.name ?? id;
+  return SINALOA_CITIES.find((m) => m.id === id)?.name ?? id;
 }
+
+// --- Submit Wizard constants ---
+
+export const N8N_WEBHOOK_URL =
+  "https://n8n.operations.molecula.digital/webhook/55010ced-85fd-4778-b212-d07d238066e0";
+
+export const STAGE_OPTIONS = [
+  { value: "Idea", label: "Idea" },
+  { value: "Pre-seed", label: "Pre-seed" },
+  { value: "Seed", label: "Seed" },
+  { value: "Serie A", label: "Serie A" },
+  { value: "Serie B+", label: "Serie B+" },
+  { value: "Establecida", label: "Establecida" },
+] as const;
+
+export const TEAM_SIZE_OPTIONS = [
+  { value: "1-5", label: "1-5" },
+  { value: "6-15", label: "6-15" },
+  { value: "16-50", label: "16-50" },
+  { value: "51-200", label: "51-200" },
+  { value: "200+", label: "200+" },
+] as const;
+
+export const PLATFORM_OPTIONS = [
+  { value: "Discord", label: "Discord" },
+  { value: "Telegram", label: "Telegram" },
+  { value: "Slack", label: "Slack" },
+  { value: "WhatsApp", label: "WhatsApp" },
+  { value: "Presencial", label: "Presencial" },
+  { value: "Otro", label: "Otro" },
+] as const;
 
 export type SocialPlatform = "x" | "github" | "instagram" | "linkedin";
 

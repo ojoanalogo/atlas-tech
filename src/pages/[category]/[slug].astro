@@ -4,18 +4,21 @@ import { Image } from "astro:assets";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import EntryBadge from "../../components/entries/EntryBadge.astro";
 import {
-  getMunicipalityName,
+  getCityName,
   CATEGORY_URL_MAP,
   ENTRY_TYPE_CONFIG,
   type AtlasEntryType,
 } from "../../config";
 import {
   BadgeCheck,
+  Briefcase,
   ExternalLink,
   Globe,
+  GraduationCap,
   MapPin,
   MessageCircle,
   Send,
+  UserCheck,
 } from "@lucide/astro";
 import SocialActivity from "../../components/sections/SocialActivity.astro";
 
@@ -48,6 +51,7 @@ const details: { label: string; value: string | number | undefined }[] = [
   { label: "Sector", value: entry.data.sector },
   { label: "Miembros", value: entry.data.memberCount },
   { label: "Frecuencia", value: entry.data.meetupFrequency },
+  { label: "Plataforma", value: entry.data.platform },
   { label: "Rol", value: entry.data.role },
   { label: "Empresa", value: entry.data.company },
 ].filter((d) => d.value !== undefined);
@@ -74,8 +78,18 @@ const links: { label: string; url: string | undefined; icon: string }[] = [
       : undefined,
     icon: "instagram",
   },
+  {
+    label: "YouTube",
+    url: entry.data.youtube
+      ? (entry.data.youtube.startsWith("http")
+          ? entry.data.youtube
+          : `https://youtube.com/@${entry.data.youtube}`)
+      : undefined,
+    icon: "youtube",
+  },
   { label: "Discord", url: entry.data.discord, icon: "discord" },
   { label: "Telegram", url: entry.data.telegram, icon: "telegram" },
+  { label: "Portafolio", url: entry.data.portfolio, icon: "globe" },
 ].filter((l) => l.url !== undefined);
 ---
 
@@ -180,6 +194,42 @@ const links: { label: string; url: string | undefined; icon: string }[] = [
                 </a>
               )
             }
+            {
+              entry.data.hiring && (
+                entry.data.hiringUrl ? (
+                  <a
+                    href={entry.data.hiringUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="inline-flex items-center gap-2 px-4 py-2 border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 font-mono font-semibold text-sm rounded-lg hover:bg-emerald-500/20 transition-colors"
+                  >
+                    <Briefcase class="w-4 h-4" />
+                    CONTRATANDO
+                  </a>
+                ) : (
+                  <span class="inline-flex items-center gap-2 px-4 py-2 border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 font-mono font-semibold text-sm rounded-lg">
+                    <Briefcase class="w-4 h-4" />
+                    CONTRATANDO
+                  </span>
+                )
+              )
+            }
+            {
+              entry.data.availableForHire && (
+                <span class="inline-flex items-center gap-2 px-4 py-2 border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 font-mono font-semibold text-sm rounded-lg">
+                  <UserCheck class="w-4 h-4" />
+                  DISPONIBLE
+                </span>
+              )
+            }
+            {
+              entry.data.availableForMentoring && (
+                <span class="inline-flex items-center gap-2 px-4 py-2 border border-blue-500/30 bg-blue-500/10 text-blue-400 font-mono font-semibold text-sm rounded-lg">
+                  <GraduationCap class="w-4 h-4" />
+                  MENTORIA
+                </span>
+              )
+            }
           </div>
         </div>
 
@@ -230,6 +280,60 @@ const links: { label: string; url: string | undefined; icon: string }[] = [
           )
         }
 
+        {/* Services (startup/business/consultory) */}
+        {
+          entry.data.services && entry.data.services.length > 0 && (
+            <div class="bg-card/90 backdrop-blur-sm border border-border rounded-lg p-6">
+              <h2 class="font-mono text-xs text-muted uppercase tracking-wider mb-4">
+                Servicios
+              </h2>
+              <div class="flex flex-wrap gap-2">
+                {entry.data.services.map((service) => (
+                  <span class="text-xs font-mono px-2 py-1 rounded bg-purple-500/10 text-purple-400 border border-purple-500/20">
+                    {service}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )
+        }
+
+        {/* Technologies (startup/business/consultory) */}
+        {
+          entry.data.technologies && entry.data.technologies.length > 0 && (
+            <div class="bg-card/90 backdrop-blur-sm border border-border rounded-lg p-6">
+              <h2 class="font-mono text-xs text-muted uppercase tracking-wider mb-4">
+                Tecnologias
+              </h2>
+              <div class="flex flex-wrap gap-2">
+                {entry.data.technologies.map((tech) => (
+                  <span class="text-xs font-mono px-2 py-1 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                    {tech}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )
+        }
+
+        {/* Focus areas (community) */}
+        {
+          entry.data.focusAreas && entry.data.focusAreas.length > 0 && (
+            <div class="bg-card/90 backdrop-blur-sm border border-border rounded-lg p-6">
+              <h2 class="font-mono text-xs text-muted uppercase tracking-wider mb-4">
+                Areas de enfoque
+              </h2>
+              <div class="flex flex-wrap gap-2">
+                {entry.data.focusAreas.map((area) => (
+                  <span class="text-xs font-mono px-2 py-1 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                    {area}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )
+        }
+
         <SocialActivity x={entry.data.x} />
       </div>
 
@@ -269,9 +373,9 @@ const links: { label: string; url: string | undefined; icon: string }[] = [
             <MapPin class="w-4 h-4 text-accent shrink-0" />
             <span
               >{
-                entry.data.municipality === "global"
-                  ? entry.data.city
-                  : `${entry.data.city}, ${getMunicipalityName(entry.data.municipality)}`
+                entry.data.city === "global"
+                  ? "Global"
+                  : getCityName(entry.data.city)
               }</span
             >
           </div>
@@ -335,6 +439,16 @@ const links: { label: string; url: string | undefined; icon: string }[] = [
                         fill="currentColor"
                       >
                         <path d="M7.0301.084c-1.2768.0602-2.1487.264-2.911.5634-.7888.3075-1.4575.72-2.1228 1.3877-.6652.6677-1.075 1.3368-1.3802 2.127-.2954.7638-.4956 1.6365-.552 2.914-.0564 1.2775-.0689 1.6882-.0626 4.947.0062 3.2586.0206 3.6671.0825 4.9473.061 1.2765.264 2.1482.5635 2.9107.308.7889.72 1.4573 1.388 2.1228.6679.6655 1.3365 1.0743 2.1285 1.38.7632.295 1.6361.4961 2.9134.552 1.2773.056 1.6884.069 4.9462.0627 3.2578-.0062 3.668-.0207 4.9478-.0814 1.28-.0607 2.147-.2652 2.9098-.5633.7889-.3086 1.4578-.72 2.1228-1.3881.665-.6682 1.0745-1.3378 1.3795-2.1284.2957-.7632.4966-1.636.552-2.9124.056-1.2809.0692-1.6898.063-4.948-.0063-3.2583-.021-3.6668-.0817-4.9465-.0607-1.2797-.264-2.1487-.5633-2.9117-.3084-.7889-.72-1.4568-1.3876-2.1228C21.2982 1.33 20.628.9208 19.8504.6165 19.0872.321 18.2143.12 16.9366.0667 15.6588.0107 15.2479-.0022 11.9999.0009 8.7519.0037 8.3424.0177 7.0689.0827l.0012-.0003zm-.2073 2.3102c1.2568-.0567 1.6334-.0689 4.8492-.0625 3.2157.0063 3.5906.021 4.8495.0827 1.1644.0531 1.7975.2479 2.2183.4117.5576.2168.9556.4758 1.3742.8943.4184.4185.6776.8162.8945 1.3741.1636.4202.3583 1.0537.4113 2.2179.0624 1.2589.0762 1.6338.0825 4.8492.0063 3.2155-.0059 3.5906-.0684 4.8495-.0618 1.1646-.252 1.7977-.4156 2.218-.2167.5579-.4756.9558-.8942 1.3742-.4182.4188-.816.6778-1.3741.8944-.4202.1636-1.0539.3584-2.2185.4116-1.2585.0623-1.6332.0764-4.8494.0827-3.2161.0062-3.5907-.006-4.8497-.0685-1.1644-.0618-1.7977-.252-2.2178-.4156-.558-.2167-.9562-.4756-1.3742-.8943-.4185-.4182-.6778-.816-.8944-1.3742-.1637-.4202-.3585-1.0539-.4117-2.2181-.0623-1.2588-.0764-1.6334-.0826-4.8495-.0062-3.216.0061-3.5907.0685-4.8495.0617-1.1644.252-1.7976.4155-2.2178.2168-.558.4757-.9562.8943-1.3742.4185-.4185.8162-.6778 1.3742-.8944.4203-.1636 1.0539-.3584 2.218-.4117zm9.9233 3.3544a1.4348 1.4348 0 1 0 0 2.8695 1.4348 1.4348 0 0 0 0-2.8695zm-6.7253 1.7197a4.862 4.862 0 1 0 .001 9.7235 4.862 4.862 0 0 0-.001-9.7235zm0 2.139a2.7232 2.7232 0 1 1 0 5.4464 2.7232 2.7232 0 0 1 0-5.4464z" />
+                      </svg>
+                    )}
+                    {/* YouTube */}
+                    {link.icon === "youtube" && (
+                      <svg
+                        class="w-4 h-4"
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                      >
+                        <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
                       </svg>
                     )}
                     {/* Discord */}

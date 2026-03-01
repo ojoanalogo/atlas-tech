@@ -108,13 +108,13 @@ const BOUNDS = {
   maxY: 1679049.332,
 };
 
-interface MunicipalityCounts {
+interface CityCounts {
   [name: string]: number;
 }
 
 interface SinaloaMapProps {
   compact?: boolean;
-  municipalityCounts?: MunicipalityCounts;
+  cityCounts?: CityCounts;
 }
 
 interface TooltipState {
@@ -165,7 +165,7 @@ function clamp(value: number, min: number, max: number) {
 
 export default function SinaloaMap({
   compact = false,
-  municipalityCounts = {},
+  cityCounts = {},
 }: SinaloaMapProps) {
   const width = compact ? 380 : 800;
   const height = compact ? 450 : 800;
@@ -334,7 +334,7 @@ export default function SinaloaMap({
       if (!name) return;
       const rect = containerRef.current?.getBoundingClientRect();
       if (!rect) return;
-      const count = id ? municipalityCounts[id] || 0 : 0;
+      const count = id ? cityCounts[id] || 0 : 0;
       setTooltip({
         x: e.clientX - rect.left,
         y: e.clientY - rect.top,
@@ -342,7 +342,7 @@ export default function SinaloaMap({
         count,
       });
     },
-    [municipalityCounts, popup],
+    [cityCounts, popup],
   );
 
   const handleMouseMove = useCallback(
@@ -393,22 +393,14 @@ export default function SinaloaMap({
         translate.y +
         (rect.height - svgRect.height * scale) / 2;
 
-      const count = municipalityCounts[id] || 0;
+      const count = cityCounts[id] || 0;
       setTooltip(null);
       setPopup({ x: px, y: py, id, name, count });
     },
-    [
-      compact,
-      municipalityCounts,
-      pathGenerator,
-      scale,
-      translate,
-      width,
-      height,
-    ],
+    [compact, cityCounts, pathGenerator, scale, translate, width, height],
   );
 
-  // Listen for sidebar municipality selection
+  // Listen for sidebar city selection
   useEffect(() => {
     const handler = (e: Event) => {
       const id = (e as CustomEvent).detail?.id;
@@ -418,8 +410,8 @@ export default function SinaloaMap({
       );
       if (geo) handleGeoClick(geo);
     };
-    window.addEventListener("select-municipality", handler);
-    return () => window.removeEventListener("select-municipality", handler);
+    window.addEventListener("select-city", handler);
+    return () => window.removeEventListener("select-city", handler);
   }, [handleGeoClick]);
 
   return (
