@@ -60,9 +60,15 @@ export default function AtcbPortal() {
       timeZone="America/Mexico_City"
       location={event.location}
       options={["Apple", "Google", "iCal", "Outlook.com", "Yahoo"]}
+      label="Agregar a calendario"
       buttonStyle="round"
       size="3"
       lightMode="bodyScheme"
+      language="es"
+      trigger="click"
+      forceOverlay
+      hideBranding
+      pastDateHandling="disable"
     />,
     mount,
   );
