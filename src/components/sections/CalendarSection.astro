@@ -3,6 +3,7 @@ import { EVENTS_SHEET_CSV_URL } from "../../config";
 import { parseEventsCSV } from "../../utils";
 import type { TechEvent } from "../../utils";
 import EventCalendar from "../calendar/EventCalendar";
+import AddToCalendarButton from "../calendar/AddToCalendarButton";
 import { CalendarDays, Clock, MapPin, ArrowRight } from "@lucide/astro";
 
 let events: TechEvent[] = [];
@@ -47,7 +48,7 @@ function formatDate(dateStr: string): string {
       {/* Left: Calendar (5 cols) */}
       <div class="hidden md:block lg:col-span-5">
         <div class="bg-card border border-border rounded-lg p-4">
-          <EventCalendar eventsByDate={eventsByDate} client:visible />
+          <EventCalendar eventsByDate={eventsByDate} client:load />
         </div>
       </div>
 
@@ -124,6 +125,7 @@ function formatDate(dateStr: string): string {
       </div>
     </div>
   </div>
+  <AddToCalendarButton client:only="react" />
 </section>
 
 <script>

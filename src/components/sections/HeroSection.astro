@@ -83,6 +83,7 @@ const { cityCounts = {} } = Astro.props;
         >
           <SinaloaMap
             compact
+            linkOnClick
             cityCounts={cityCounts}
             client:idle
           />

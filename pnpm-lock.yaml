@@ -21,6 +21,9 @@ importers:
       '@lucide/astro':
         specifier: 0.575.0
         version: 0.575.0(astro@5.18.0(@types/node@24.10.15)(jiti@2.6.1)(lightningcss@1.31.1)(rollup@4.57.1)(typescript@5.9.3)(yaml@2.8.2))
+      add-to-calendar-button-react:
+        specifier: ^2.13.8
+        version: 2.13.8(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       astro:
         specifier: 5.18.0
         version: 5.18.0(@types/node@24.10.15)(jiti@2.6.1)(lightningcss@1.31.1)(rollup@4.57.1)(typescript@5.9.3)(yaml@2.8.2)
@@ -1726,6 +1729,17 @@ packages:
     engines: {node: '>=0.4.0'}
     hasBin: true
 
+  add-to-calendar-button-react@2.13.8:
+    resolution: {integrity: sha512-95FBSWCzLhhmeKkO5tLpw5spllxmV/d03Td0WOCAI4CQfN+XWmBowzR2edtDppnWiRvy/wzJEMiyf8vUoSKZaw==}
+    engines: {node: '>=18.17.0', npm: '>=9.6.7'}
+    peerDependencies:
+      react: 19.2.4
+      react-dom: 19.2.4
+
+  add-to-calendar-button@2.13.8:
+    resolution: {integrity: sha512-hgB2p3y05legI2x3lh3ye6unH4iDuZ7nSoCap/FQZlJ2zMoP6PltXuT4+zjM+ygMpRQ7AW1zcqhAufgmrCNqnw==}
+    engines: {node: '>=18.17.0', npm: '>=9.6.7'}
+
   ansi-align@3.0.1:
     resolution: {integrity: sha512-IOfwwBF5iczOjp/WeY4YxyjqAFMQoZufdQWDd19SEExbVLNXqvpzSJ/M7Za4/sCPmQ0+GRquoA7bGcINcxew6w==}
 
@@ -2744,6 +2758,10 @@ packages:
   tapable@2.3.0:
     resolution: {integrity: sha512-g9ljZiwki/LfxmQADO3dEY1CbpmXT5Hm2fJ+QaGKwSXUylMybePR7/67YW7jOrrvjEgL1Fmz5kzyAjWVWLlucg==}
     engines: {node: '>=6'}
+
+  timezones-ical-library@2.1.2:
+    resolution: {integrity: sha512-VW7gTRzrveUNdLaztWKlsgHRn1eagubRA/HHembnrh9xYDtDRwRWN+zWcNIE3QM+TpXikSJLp/jwxYQv7IJJvg==}
+    engines: {node: '>=22.20.0', npm: '>=10.9.3'}
 
   tiny-inflate@1.0.3:
     resolution: {integrity: sha512-pkY1fj1cKHb2seWDy0B16HeWyczlJA9/WW3u3c4z/NiWDsO3DOU5D7nhTLE9CF0yXv/QZFY7sEJmj24dK+Rrqw==}
@@ -4582,6 +4600,16 @@ snapshots:
 
   acorn@8.16.0: {}
 
+  add-to-calendar-button-react@2.13.8(react-dom@19.2.4(react@19.2.4))(react@19.2.4):
+    dependencies:
+      add-to-calendar-button: 2.13.8
+      react: 19.2.4
+      react-dom: 19.2.4(react@19.2.4)
+
+  add-to-calendar-button@2.13.8:
+    dependencies:
+      timezones-ical-library: 2.1.2
+
   ansi-align@3.0.1:
     dependencies:
       string-width: 4.2.3
@@ -6033,6 +6061,8 @@ snapshots:
   tailwindcss@4.2.1: {}
 
   tapable@2.3.0: {}
+
+  timezones-ical-library@2.1.2: {}
 
   tiny-inflate@1.0.3: {}
 

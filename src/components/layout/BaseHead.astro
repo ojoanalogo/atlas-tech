@@ -9,12 +9,7 @@ export interface Props {
   article?: boolean;
 }
 
-const {
-  title,
-  description,
-  image = "/share.jpg",
-  article = false,
-} = Astro.props;
+const { title, description, image = "/og.png", article = false } = Astro.props;
 
 const isProd = import.meta.env.PROD;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
@@ -53,9 +48,8 @@ const siteName = "Tech Atlas — Directorio del ecosistema tech de Sinaloa";
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
 <link rel="manifest" href="/site.webmanifest" />
-<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#00FF88" />
-<meta name="msapplication-TileColor" content="#0C0C0C" />
-<meta name="theme-color" content="#0C0C0C" />
+<meta name="msapplication-TileColor" content="#1a7a4f" />
+<meta name="theme-color" content="#1a7a4f" />
 
 <!-- Primary Meta Tags -->
 <title>{title}</title>
@@ -81,11 +75,9 @@ const siteName = "Tech Atlas — Directorio del ecosistema tech de Sinaloa";
 {
   isProd && (
     <script
-      is:inline
-      async
+      defer
       src="https://analytics.molecula.digital/script.js"
-      data-website-id="1b018a85-d69c-4ff9-a716-9bf7ae546331"
-      data-do-not-track="true"
+      data-website-id="87276dcc-091a-468d-a36f-4f1be4c4e1bc"
     />
   )
 }

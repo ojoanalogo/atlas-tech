@@ -251,9 +251,6 @@ export default function MapSection({
         setSelectedId(null);
       } else {
         setSelectedId(id);
-        window.dispatchEvent(
-          new CustomEvent("select-city", { detail: { id } }),
-        );
       }
     },
     [selectedId],
@@ -427,17 +424,21 @@ export default function MapSection({
                 </div>
 
                 {/* Scroll indicator */}
-                <div
-                  className={`absolute bottom-0 left-0 right-0 flex flex-col items-center pointer-events-none transition-opacity duration-300 ${showScrollIndicator ? "opacity-100" : "opacity-0"}`}
-                >
-                  <div className="h-12 w-full bg-gradient-to-t from-card to-transparent" />
-                  <div className="-mt-2 flex items-center gap-1 text-muted animate-bounce">
-                    <ChevronsDown className="w-4 h-4" />
+                {showScrollIndicator && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const el = listRef.current;
+                      if (el) el.scrollBy({ top: 150, behavior: "smooth" });
+                    }}
+                    className="w-full flex items-center justify-center gap-1 py-2 text-muted hover:text-accent transition-colors cursor-pointer"
+                  >
+                    <ChevronsDown className="w-4 h-4 animate-bounce" />
                     <span className="text-2xs font-mono uppercase tracking-wider">
                       Más municipios
                     </span>
-                  </div>
-                </div>
+                  </button>
+                )}
               </div>
             </div>
           </div>
@@ -465,7 +466,7 @@ export default function MapSection({
                 </p>
               </div>
               <div className="flex-1 min-h-100 bg-elevated border border-border rounded-lg overflow-hidden">
-                <SinaloaMap cityCounts={cityCounts} />
+                <SinaloaMap cityCounts={cityCounts} selectedCity={selectedId} />
               </div>
             </div>
           </div>

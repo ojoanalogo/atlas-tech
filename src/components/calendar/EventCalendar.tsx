@@ -6,7 +6,6 @@ import {
   Users,
   ExternalLink,
   Map,
-  CalendarPlus,
   Video,
 } from "lucide-react";
 import type { TechEvent } from "../../utils";
@@ -17,43 +16,21 @@ interface Props {
 
 const WEEKDAYS = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
 const MONTH_NAMES = [
-  "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
-  "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre",
+  "Enero",
+  "Febrero",
+  "Marzo",
+  "Abril",
+  "Mayo",
+  "Junio",
+  "Julio",
+  "Agosto",
+  "Septiembre",
+  "Octubre",
+  "Noviembre",
+  "Diciembre",
 ];
 
 const MAX_PILLS = 2;
-
-function buildGoogleCalendarUrl(ev: TechEvent): string {
-  const params = new URLSearchParams({ action: "TEMPLATE", text: ev.title });
-
-  // date is YYYY-MM-DD, times are like "8:30" or "11:00"
-  const dateClean = ev.date.replace(/-/g, "");
-
-  if (ev.startTime) {
-    const fmtTime = (t: string) => {
-      const [h, m] = t.split(":");
-      return h.padStart(2, "0") + (m ?? "00").padStart(2, "0") + "00";
-    };
-    const start = `${dateClean}T${fmtTime(ev.startTime)}`;
-    const end = ev.endTime
-      ? `${dateClean}T${fmtTime(ev.endTime)}`
-      : `${dateClean}T${fmtTime(ev.startTime)}`;
-    params.set("dates", `${start}/${end}`);
-    // CDMX timezone
-    params.set("ctz", "America/Mexico_City");
-  } else {
-    // All-day event: YYYYMMDD/YYYYMMDD (next day)
-    const d = new Date(ev.date + "T00:00:00");
-    d.setDate(d.getDate() + 1);
-    const nextDay = d.toISOString().slice(0, 10).replace(/-/g, "");
-    params.set("dates", `${dateClean}/${nextDay}`);
-  }
-
-  if (ev.description) params.set("details", ev.description);
-  if (ev.location) params.set("location", ev.location);
-
-  return `https://calendar.google.com/calendar/render?${params.toString()}`;
-}
 
 function toDateKey(year: number, month: number, day: number): string {
   return `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
@@ -124,7 +101,11 @@ export default function EventCalendar({ eventsByDate }: Props) {
   }, []);
 
   // Collect days with events for mobile list view
-  const daysWithEvents: { day: number; dateKey: string; events: TechEvent[] }[] = [];
+  const daysWithEvents: {
+    day: number;
+    dateKey: string;
+    events: TechEvent[];
+  }[] = [];
   for (let d = 1; d <= daysInMonth; d++) {
     const key = toDateKey(year, month, d);
     const evs = eventsByDate[key];
@@ -142,8 +123,18 @@ export default function EventCalendar({ eventsByDate }: Props) {
           className="p-2 rounded-lg border border-[var(--color-border)] bg-card/90 hover:bg-[var(--color-elevated)] transition-colors"
           aria-label="Mes anterior"
         >
-          <svg className="w-4 h-4 text-[var(--color-primary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          <svg
+            className="w-4 h-4 text-[var(--color-primary)]"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M15 19l-7-7 7-7"
+            />
           </svg>
         </button>
         <h3 className="text-lg font-sans font-bold text-[var(--color-primary)]">
@@ -151,11 +142,21 @@ export default function EventCalendar({ eventsByDate }: Props) {
         </h3>
         <button
           onClick={nextMonth}
-          className="p-2 rounded-lg border border-[var(--color-border)] bg-card/90 hover:bg-[var(--color-elevated)] transition-colors"
+          className="p-2 rounded-lg border border-border bg-card/90 hover:bg-[var(--color-elevated)] transition-colors"
           aria-label="Mes siguiente"
         >
-          <svg className="w-4 h-4 text-[var(--color-primary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          <svg
+            className="w-4 h-4 text-primary"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M9 5l7 7-7 7"
+            />
           </svg>
         </button>
       </div>
@@ -190,7 +191,8 @@ export default function EventCalendar({ eventsByDate }: Props) {
             const key = toDateKey(year, month, day);
             const dayEvents = eventsByDate[key] ?? [];
             const isToday = day === todayKey;
-            const overflow = dayEvents.length > MAX_PILLS ? dayEvents.length - MAX_PILLS : 0;
+            const overflow =
+              dayEvents.length > MAX_PILLS ? dayEvents.length - MAX_PILLS : 0;
 
             return (
               <div
@@ -301,7 +303,7 @@ export default function EventCalendar({ eventsByDate }: Props) {
           onClick={() => setSelectedEvent(null)}
         >
           <div
-            className="bg-[var(--color-card)] border border-[var(--color-border)] rounded-xl max-w-lg w-full shadow-2xl overflow-hidden"
+            className="bg-[var(--color-card)] border border-[var(--color-border)] rounded-xl max-w-lg w-full shadow-2xl overflow-visible"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
@@ -342,7 +344,10 @@ export default function EventCalendar({ eventsByDate }: Props) {
             <div className="px-5 pb-4 space-y-3">
               {selectedEvent.location && (
                 <div className="flex items-start gap-2 text-sm text-[var(--color-secondary)]">
-                  <MapPin size={14} className="shrink-0 mt-0.5 text-[var(--color-muted)]" />
+                  <MapPin
+                    size={14}
+                    className="shrink-0 mt-0.5 text-[var(--color-muted)]"
+                  />
                   <span>
                     {selectedEvent.location}
                     {selectedEvent.isInPerson && (
@@ -384,15 +389,14 @@ export default function EventCalendar({ eventsByDate }: Props) {
                     Google Maps
                   </a>
                 )}
-                <a
-                  href={buildGoogleCalendarUrl(selectedEvent)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 text-xs font-mono px-3 py-2 rounded-lg border border-[var(--color-border)] text-[var(--color-primary)] hover:bg-[var(--color-elevated)] transition-colors"
-                >
-                  <CalendarPlus size={13} />
-                  Agregar a calendario
-                </a>
+                <div id="atcb-mount" data-event={JSON.stringify({
+                  name: selectedEvent.title,
+                  description: selectedEvent.description,
+                  startDate: selectedEvent.date,
+                  startTime: selectedEvent.startTime,
+                  endTime: selectedEvent.endTime,
+                  location: selectedEvent.location,
+                })} />
                 {selectedEvent.meetLink && (
                   <a
                     href={selectedEvent.meetLink}

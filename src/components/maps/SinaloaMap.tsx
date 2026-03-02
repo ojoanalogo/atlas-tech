@@ -138,6 +138,10 @@ interface CityCounts {
 interface SinaloaMapProps {
   compact?: boolean;
   cityCounts?: CityCounts;
+  /** When true, clicking a city opens /directorio/{id} in a new tab instead of showing a popup. */
+  linkOnClick?: boolean;
+  /** Externally selected city id to highlight on the map. */
+  selectedCity?: string | null;
 }
 
 interface TooltipState {
@@ -189,6 +193,8 @@ function clamp(value: number, min: number, max: number) {
 export default function SinaloaMap({
   compact = false,
   cityCounts = {},
+  linkOnClick = false,
+  selectedCity = null,
 }: SinaloaMapProps) {
   const width = compact ? 380 : 800;
   const height = compact ? 450 : 800;
@@ -200,8 +206,8 @@ export default function SinaloaMap({
   const [tooltip, setTooltip] = useState<TooltipState | null>(null);
   const [popup, setPopup] = useState<PopupState | null>(null);
   const [interactionEnabled, setInteractionEnabled] = useState(false);
-  const [showMobileLockOverlay, setShowMobileLockOverlay] = useState(false);
-  const mobileLockTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [hint, setHint] = useState<string | null>(null);
+  const hintTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const dragStart = useRef({ x: 0, y: 0 });
   const translateStart = useRef({ x: 0, y: 0 });
   const didDrag = useRef(false);
@@ -244,9 +250,9 @@ export default function SinaloaMap({
   const handlePointerDown = useCallback(
     (e: React.PointerEvent) => {
       if (e.button !== 0) return;
+      didDrag.current = false;
       if (!interactionEnabled) return;
       setIsDragging(true);
-      didDrag.current = false;
       dragStart.current = { x: e.clientX, y: e.clientY };
       translateStart.current = { ...translate };
       (e.target as HTMLElement).setPointerCapture(e.pointerId);
@@ -277,24 +283,21 @@ export default function SinaloaMap({
     setIsDragging(false);
   }, []);
 
-  // Show lock overlay on touch (mobile only — desktop uses CSS hover)
-  const handleLockedInteraction = useCallback(() => {
-    if (interactionEnabled || compact) return;
-    setShowMobileLockOverlay(true);
-    if (mobileLockTimer.current) clearTimeout(mobileLockTimer.current);
-    mobileLockTimer.current = setTimeout(
-      () => setShowMobileLockOverlay(false),
-      3000,
-    );
-  }, [interactionEnabled, compact]);
+  const showHint = useCallback((msg: string) => {
+    setHint(msg);
+    if (hintTimer.current) clearTimeout(hintTimer.current);
+    hintTimer.current = setTimeout(() => setHint(null), 2000);
+  }, []);
 
-  // Hide overlay when unlocking
-  useEffect(() => {
-    if (interactionEnabled) {
-      setShowMobileLockOverlay(false);
-      if (mobileLockTimer.current) clearTimeout(mobileLockTimer.current);
-    }
-  }, [interactionEnabled]);
+  // On mobile, show hint when user tries to pinch while locked
+  const handleMapTouchStart = useCallback(
+    (e: React.TouchEvent) => {
+      if (!interactionEnabled && !compact && e.touches.length >= 2) {
+        showHint("Desbloquea el mapa para interactuar");
+      }
+    },
+    [interactionEnabled, compact, showHint],
+  );
 
   // Wheel zoom
   const handleWheel = useCallback(
@@ -392,11 +395,9 @@ export default function SinaloaMap({
     setTooltip(null);
   }, []);
 
-  // Click handler – open popup at geography centroid
-  const handleGeoClick = useCallback(
+  // Open popup at a geography's centroid
+  const openPopupForGeo = useCallback(
     (geo: any) => {
-      if (didDrag.current) return; // was a drag, not a click
-      if (compact) return; // no popup in hero compact mode
       const id: string | undefined = geo.properties?.id;
       const name: string | undefined = geo.properties?.name;
       if (!id || !name) return;
@@ -407,7 +408,6 @@ export default function SinaloaMap({
       const rect = containerRef.current?.getBoundingClientRect();
       if (!rect) return;
 
-      // Convert SVG centroid to container pixel position accounting for transform
       const svgEl = containerRef.current?.querySelector("svg");
       if (!svgEl) return;
       const svgRect = svgEl.getBoundingClientRect();
@@ -426,22 +426,42 @@ export default function SinaloaMap({
       setTooltip(null);
       setPopup({ x: px, y: py, id, name, count });
     },
-    [compact, cityCounts, pathGenerator, scale, translate, width, height],
+    [cityCounts, pathGenerator, scale, translate, width, height],
   );
 
-  // Listen for sidebar city selection
+  // Click handler
+  const handleGeoClick = useCallback(
+    (geo: any) => {
+      if (didDrag.current) return;
+      if (linkOnClick) {
+        const id = geo.properties?.id;
+        if (id) window.open(`/directorio/${id}`, "_blank", "noopener");
+        return;
+      }
+      if (compact) return;
+      openPopupForGeo(geo);
+    },
+    [compact, linkOnClick, openPopupForGeo],
+  );
+
+  // Sync sidebar selection → map popup
+  const openPopupRef = useRef(openPopupForGeo);
+  openPopupRef.current = openPopupForGeo;
+
   useEffect(() => {
-    const handler = (e: Event) => {
-      const id = (e as CustomEvent).detail?.id;
-      if (!id) return;
-      const geo = geographiesRef.current.find(
-        (g: any) => g.properties?.id === id,
-      );
-      if (geo) handleGeoClick(geo);
-    };
-    window.addEventListener("select-city", handler);
-    return () => window.removeEventListener("select-city", handler);
-  }, [handleGeoClick]);
+    if (!selectedCity || compact) {
+      setPopup(null);
+      return;
+    }
+    const geo = geographiesRef.current.find(
+      (g) => g.properties?.id === selectedCity,
+    );
+    if (geo) {
+      openPopupRef.current(geo);
+    } else {
+      setPopup(null);
+    }
+  }, [selectedCity, compact]);
 
   return (
     <div
@@ -455,7 +475,7 @@ export default function SinaloaMap({
             : "grab",
         touchAction: interactionEnabled ? "none" : "auto",
       }}
-      onTouchStart={handleLockedInteraction}
+      onTouchStart={handleMapTouchStart}
     >
       <div
         style={{
@@ -482,46 +502,49 @@ export default function SinaloaMap({
               return (
                 <>
                 <GeographiesCapture geographies={geographies} geographiesRef={geographiesRef} />
-                {geographies.map((geo) => (
-                <Geography
-                  key={geo.rsmKey}
-                  geography={geo}
-                  onClick={() => handleGeoClick(geo)}
-                  onMouseEnter={(e) => handleMouseEnter(geo, e)}
-                  onMouseMove={handleMouseMove}
-                  onMouseLeave={handleMouseLeave}
-                  style={{
-                    default: {
-                      fill: ACCENT,
-                      fillOpacity:
-                        popup && popup.id === geo.properties?.id ? 0.15 : 0.05,
-                      stroke: ACCENT,
-                      strokeWidth:
-                        popup && popup.id === geo.properties?.id ? 1.4 : 1,
-                      strokeOpacity:
-                        popup && popup.id === geo.properties?.id ? 1 : 0.6,
-                      outline: "none",
-                    },
-                    hover: {
-                      fill: ACCENT,
-                      fillOpacity: 0.2,
-                      stroke: ACCENT,
-                      strokeWidth: 1.4,
-                      strokeOpacity: 1,
-                      outline: "none",
-                      cursor: isDragging ? "grabbing" : "pointer",
-                    },
-                    pressed: {
-                      fill: ACCENT,
-                      fillOpacity: 0.3,
-                      stroke: ACCENT,
-                      strokeWidth: 1.4,
-                      strokeOpacity: 1,
-                      outline: "none",
-                    },
-                  }}
-                />
-              ))}
+                {geographies.map((geo) => {
+                  const geoId = geo.properties?.id as string | undefined;
+                  const isHighlighted =
+                    (popup && popup.id === geoId) ||
+                    (selectedCity && selectedCity === geoId);
+                  return (
+                    <Geography
+                      key={geo.rsmKey}
+                      geography={geo}
+                      onClick={() => handleGeoClick(geo)}
+                      onMouseEnter={(e) => handleMouseEnter(geo, e)}
+                      onMouseMove={handleMouseMove}
+                      onMouseLeave={handleMouseLeave}
+                      style={{
+                        default: {
+                          fill: ACCENT,
+                          fillOpacity: isHighlighted ? 0.15 : 0.05,
+                          stroke: ACCENT,
+                          strokeWidth: isHighlighted ? 1.4 : 1,
+                          strokeOpacity: isHighlighted ? 1 : 0.6,
+                          outline: "none",
+                        },
+                        hover: {
+                          fill: ACCENT,
+                          fillOpacity: 0.2,
+                          stroke: ACCENT,
+                          strokeWidth: 1.4,
+                          strokeOpacity: 1,
+                          outline: "none",
+                          cursor: isDragging ? "grabbing" : "pointer",
+                        },
+                        pressed: {
+                          fill: ACCENT,
+                          fillOpacity: 0.3,
+                          stroke: ACCENT,
+                          strokeWidth: 1.4,
+                          strokeOpacity: 1,
+                          outline: "none",
+                        },
+                      }}
+                    />
+                  );
+                })}
               </>
               );
             }}
@@ -591,43 +614,58 @@ export default function SinaloaMap({
           </div>
 
           {/* Body */}
-          <div className="px-3 py-2.5 space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-mono text-[var(--color-muted)]">
-                Proyectos
-              </span>
-              <span className="text-xs font-mono font-bold text-[var(--color-primary)]">
-                {popup.count}
-              </span>
+          {popup.count > 0 ? (
+            <div className="px-3 py-2.5 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-mono text-[var(--color-muted)]">
+                  Proyectos
+                </span>
+                <span className="text-xs font-mono font-bold text-[var(--color-primary)]">
+                  {popup.count}
+                </span>
+              </div>
+              <a
+                href={`/directorio/${popup.id}`}
+                className="block w-full text-center text-xs font-mono font-semibold px-3 py-1.5 rounded bg-accent text-accent-foreground hover:bg-accent/80 transition-colors"
+              >
+                VER COMUNIDAD →
+              </a>
             </div>
-            <a
-              href={`/directorio/${popup.id}`}
-              className="block w-full text-center text-xs font-mono font-semibold px-3 py-1.5 rounded bg-accent text-accent-foreground hover:bg-accent/80 transition-colors"
-            >
-              VER COMUNIDAD →
-            </a>
+          ) : (
+            <div className="px-3 py-2.5 space-y-2 text-center">
+              <p className="text-xs text-[var(--color-muted)] font-mono">
+                Aún no hay registros
+              </p>
+              <a
+                href="/directorio/submit"
+                className="block w-full text-center text-xs font-mono font-semibold px-3 py-1.5 rounded border border-dashed border-accent/40 text-accent hover:bg-accent/10 transition-colors"
+              >
+                REGISTRAR →
+              </a>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Interaction hint (mobile pinch while locked) */}
+      {hint && !compact && (
+        <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
+          <div className="px-4 py-2.5 rounded-lg bg-black/70 text-white text-sm font-mono shadow-lg">
+            {hint}
           </div>
         </div>
       )}
 
-      {/* Lock overlay — visible on hover (desktop) or touch (mobile) */}
+      {/* Locked banner */}
       {!interactionEnabled && !compact && (
-        <div
-          className={`absolute inset-0 z-30 flex items-center justify-center transition-opacity duration-200 bg-black/20 backdrop-blur-px ${
-            showMobileLockOverlay ? "opacity-100" : "opacity-0"
-          }`}
+        <button
+          type="button"
+          onClick={() => setInteractionEnabled(true)}
+          className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 flex items-center gap-2 px-4 py-2 rounded-lg bg-[var(--color-card)]/90 border border-[var(--color-border)] shadow-lg text-xs font-mono text-[var(--color-muted)] hover:text-accent hover:border-accent transition-colors cursor-pointer backdrop-blur-sm"
         >
-          <button
-            onClick={() => {
-              setInteractionEnabled(true);
-              setShowMobileLockOverlay(false);
-            }}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-[var(--color-card)] border border-[var(--color-border)] shadow-xl text-sm font-mono font-semibold text-[var(--color-primary)] hover:border-accent transition-colors"
-          >
-            <Lock size={14} className="text-[var(--color-muted)]" />
-            Interactuar con el mapa
-          </button>
-        </div>
+          <Lock size={12} />
+          Toca para interactuar
+        </button>
       )}
 
       {/* Zoom controls */}

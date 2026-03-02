@@ -12,6 +12,11 @@ import {
   CheckCircle,
   AlertCircle,
   Loader2,
+  LayoutGrid,
+  FileText,
+  SlidersHorizontal,
+  Globe,
+  UserCircle,
 } from "lucide-react";
 import {
   ENTRY_TYPES as ALL_ENTRY_TYPES,
@@ -49,13 +54,12 @@ const ENTRY_TYPES = ALL_ENTRY_TYPES.map((type) => ({
 }));
 
 const STEPS = [
-  "Tipo",
-  "Info básica",
-  "Ubicación",
-  "Enlaces",
-  "Detalles",
-  "Etiquetas",
-  "Envío",
+  { label: "Tipo", icon: LayoutGrid },
+  { label: "Información", icon: FileText },
+  { label: "Detalles", icon: SlidersHorizontal },
+  { label: "Enlaces", icon: Globe },
+  { label: "Contacto", icon: UserCircle },
+  { label: "Envío", icon: Send },
 ];
 
 const TYPE_COPY: Record<
@@ -125,25 +129,13 @@ export default function SubmitWizard({ cities }: Props) {
   const [entryType, setEntryType] = useState<EntryType | "">("");
   const copy = entryType ? TYPE_COPY[entryType] : null;
 
-  // Step 1: Info básica
+  // Step 1: Info básica + Ubicación
   const [name, setName] = useState("");
   const [tagline, setTagline] = useState("");
   const [description, setDescription] = useState("");
-
-  // Step 2: Ubicación
   const [city, setCity] = useState("");
 
-  // Step 3: Enlaces
-  const [website, setWebsite] = useState("");
-  const [x, setX] = useState("");
-  const [instagram, setInstagram] = useState("");
-  const [linkedin, setLinkedin] = useState("");
-  const [github, setGithub] = useState("");
-  const [youtube, setYoutube] = useState("");
-  const [discord, setDiscord] = useState("");
-  const [telegram, setTelegram] = useState("");
-
-  // Step 4: Detalles
+  // Step 2: Detalles (type-specific)
   const [foundedYear, setFoundedYear] = useState("");
   const [stage, setStage] = useState("");
   const [teamSize, setTeamSize] = useState("");
@@ -164,11 +156,24 @@ export default function SubmitWizard({ cities }: Props) {
   const [availableForHire, setAvailableForHire] = useState(false);
   const [availableForMentoring, setAvailableForMentoring] = useState(false);
 
-  // Step 5: Etiquetas
+  // Step 3: Enlaces + Etiquetas
+  const [website, setWebsite] = useState("");
+  const [x, setX] = useState("");
+  const [instagram, setInstagram] = useState("");
+  const [linkedin, setLinkedin] = useState("");
+  const [github, setGithub] = useState("");
+  const [youtube, setYoutube] = useState("");
+  const [discord, setDiscord] = useState("");
+  const [telegram, setTelegram] = useState("");
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState("");
 
-  // Step 6: Imágenes
+  // Step 4: Contacto (submitter info)
+  const [submitterName, setSubmitterName] = useState("");
+  const [submitterEmail, setSubmitterEmail] = useState("");
+  const [submitterPhone, setSubmitterPhone] = useState("");
+
+  // Step 5: Imágenes & envío
   const logoRef = useRef<HTMLInputElement>(null);
   const coverRef = useRef<HTMLInputElement>(null);
 
@@ -177,9 +182,9 @@ export default function SubmitWizard({ cities }: Props) {
       case 0:
         return entryType !== "";
       case 1:
-        return name.trim() !== "" && description.trim() !== "";
-      case 2:
-        return city !== "";
+        return name.trim() !== "" && description.trim() !== "" && city !== "";
+      case 4:
+        return submitterName.trim() !== "" && submitterEmail.trim() !== "";
       default:
         return true;
     }
@@ -242,6 +247,11 @@ export default function SubmitWizard({ cities }: Props) {
       portfolio: portfolio || undefined,
       availableForHire: availableForHire || undefined,
       availableForMentoring: availableForMentoring || undefined,
+      submitter: {
+        name: submitterName,
+        email: submitterEmail,
+        phone: submitterPhone || undefined,
+      },
     };
   }
 
@@ -317,25 +327,38 @@ export default function SubmitWizard({ cities }: Props) {
     );
   }
 
+  const CurrentStepIcon = STEPS[step].icon;
+
   return (
-    <form onSubmit={(e) => e.preventDefault()} className="space-y-8">
-      {/* Step indicator */}
-      <div className="flex items-center gap-1">
-        {STEPS.map((s, i) => (
-          <div key={s} className="flex items-center gap-1 flex-1">
-            <div
-              className={`h-1.5 rounded-full flex-1 transition-colors ${
-                i <= step ? "bg-accent" : "bg-border"
-              }`}
-            />
+    <form onSubmit={(e) => e.preventDefault()} className="space-y-6">
+      {/* Step header */}
+      <div className="space-y-4">
+        {/* Progress bars */}
+        <div className="flex items-center gap-1">
+          {STEPS.map((s, i) => (
+            <div key={s.label} className="flex-1">
+              <div
+                className={`h-1.5 rounded-full transition-colors ${
+                  i <= step ? "bg-accent" : "bg-border"
+                }`}
+              />
+            </div>
+          ))}
+        </div>
+        {/* Step info with icon */}
+        <div className="flex items-center gap-3">
+          <div className="w-11 h-11 rounded-full bg-accent/10 border border-accent/20 flex items-center justify-center shrink-0">
+            <CurrentStepIcon className="w-5 h-5 text-accent" />
           </div>
-        ))}
-      </div>
-      <div className="flex items-center justify-between">
-        <span className="text-xs font-mono text-muted">
-          PASO {step + 1} DE {STEPS.length}
-        </span>
-        <span className="text-xs font-mono text-accent">{STEPS[step]}</span>
+          <div>
+            <span className="text-xs font-mono text-muted block leading-tight">
+              PASO {step + 1} DE {STEPS.length}
+            </span>
+            <span className="text-sm font-mono font-semibold text-accent tracking-wide">
+              {STEPS[step].label.toUpperCase()}
+            </span>
+          </div>
+        </div>
       </div>
 
       {/* Step 0: Tipo */}
@@ -380,11 +403,11 @@ export default function SubmitWizard({ cities }: Props) {
         </div>
       )}
 
-      {/* Step 1: Info básica */}
+      {/* Step 1: Información (básica + ubicación) */}
       {step === 1 && (
         <div className="space-y-4">
           <h2 className="text-xl font-sans font-bold text-primary">
-            Información básica
+            Información
           </h2>
           <div className="space-y-3">
             <label className="block">
@@ -408,7 +431,9 @@ export default function SubmitWizard({ cities }: Props) {
                 type="text"
                 value={tagline}
                 onChange={(e) => setTagline(e.target.value)}
-                placeholder={copy?.taglinePlaceholder ?? "Una frase corta descriptiva"}
+                placeholder={
+                  copy?.taglinePlaceholder ?? "Una frase corta descriptiva"
+                }
                 className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-hidden focus:border-accent transition-colors"
               />
             </label>
@@ -421,21 +446,12 @@ export default function SubmitWizard({ cities }: Props) {
                 onChange={(e) => setDescription(e.target.value)}
                 required
                 rows={4}
-                placeholder={copy?.descriptionPlaceholder ?? "Describe en detalle"}
+                placeholder={
+                  copy?.descriptionPlaceholder ?? "Describe en detalle"
+                }
                 className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-hidden focus:border-accent transition-colors resize-y"
               />
             </label>
-          </div>
-        </div>
-      )}
-
-      {/* Step 2: Ubicación */}
-      {step === 2 && (
-        <div className="space-y-4">
-          <h2 className="text-xl font-sans font-bold text-primary">
-            Ubicación
-          </h2>
-          <div className="space-y-3">
             <label className="block">
               <span className="text-xs font-mono text-muted uppercase tracking-wider">
                 Municipio *
@@ -458,120 +474,8 @@ export default function SubmitWizard({ cities }: Props) {
         </div>
       )}
 
-      {/* Step 3: Enlaces */}
-      {step === 3 && (
-        <div className="space-y-4">
-          <h2 className="text-xl font-sans font-bold text-primary">Enlaces</h2>
-          <p className="text-sm text-secondary">
-            Todos los campos son opcionales.
-          </p>
-          <div className="space-y-3">
-            <label className="block">
-              <span className="text-xs font-mono text-muted uppercase tracking-wider">
-                Sitio web
-              </span>
-              <input
-                type="url"
-                value={website}
-                onChange={(e) => setWebsite(e.target.value)}
-                placeholder="https://tu-sitio.com"
-                className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-hidden focus:border-accent transition-colors"
-              />
-            </label>
-            <label className="block">
-              <span className="text-xs font-mono text-muted uppercase tracking-wider">
-                X
-              </span>
-              <input
-                type="text"
-                value={x}
-                onChange={(e) => setX(e.target.value)}
-                placeholder="@usuario"
-                className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-hidden focus:border-accent transition-colors"
-              />
-            </label>
-            <label className="block">
-              <span className="text-xs font-mono text-muted uppercase tracking-wider">
-                Instagram
-              </span>
-              <input
-                type="text"
-                value={instagram}
-                onChange={(e) => setInstagram(e.target.value)}
-                placeholder="@usuario"
-                className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-hidden focus:border-accent transition-colors"
-              />
-            </label>
-            <label className="block">
-              <span className="text-xs font-mono text-muted uppercase tracking-wider">
-                LinkedIn
-              </span>
-              <input
-                type="url"
-                value={linkedin}
-                onChange={(e) => setLinkedin(e.target.value)}
-                placeholder="https://linkedin.com/in/usuario"
-                className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-hidden focus:border-accent transition-colors"
-              />
-            </label>
-            <label className="block">
-              <span className="text-xs font-mono text-muted uppercase tracking-wider">
-                GitHub
-              </span>
-              <input
-                type="text"
-                value={github}
-                onChange={(e) => setGithub(e.target.value)}
-                placeholder="usuario"
-                className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-hidden focus:border-accent transition-colors"
-              />
-            </label>
-            <label className="block">
-              <span className="text-xs font-mono text-muted uppercase tracking-wider">
-                YouTube
-              </span>
-              <input
-                type="url"
-                value={youtube}
-                onChange={(e) => setYoutube(e.target.value)}
-                placeholder="https://youtube.com/@canal"
-                className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-hidden focus:border-accent transition-colors"
-              />
-            </label>
-            {entryType === "community" && (
-              <>
-                <label className="block">
-                  <span className="text-xs font-mono text-muted uppercase tracking-wider">
-                    Discord
-                  </span>
-                  <input
-                    type="url"
-                    value={discord}
-                    onChange={(e) => setDiscord(e.target.value)}
-                    placeholder="https://discord.gg/..."
-                    className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-hidden focus:border-accent transition-colors"
-                  />
-                </label>
-                <label className="block">
-                  <span className="text-xs font-mono text-muted uppercase tracking-wider">
-                    Telegram
-                  </span>
-                  <input
-                    type="url"
-                    value={telegram}
-                    onChange={(e) => setTelegram(e.target.value)}
-                    placeholder="https://t.me/..."
-                    className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-hidden focus:border-accent transition-colors"
-                  />
-                </label>
-              </>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Step 4: Detalles */}
-      {step === 4 && (
+      {/* Step 2: Detalles */}
+      {step === 2 && (
         <div className="space-y-4">
           <h2 className="text-xl font-sans font-bold text-primary">Detalles</h2>
           <p className="text-sm text-secondary">
@@ -612,7 +516,9 @@ export default function SubmitWizard({ cities }: Props) {
                     >
                       <option value="">Selecciona</option>
                       {STAGE_OPTIONS.map((o) => (
-                        <option key={o.value} value={o.value}>{o.label}</option>
+                        <option key={o.value} value={o.value}>
+                          {o.label}
+                        </option>
                       ))}
                     </select>
                   </label>
@@ -628,7 +534,9 @@ export default function SubmitWizard({ cities }: Props) {
                   >
                     <option value="">Selecciona</option>
                     {TEAM_SIZE_OPTIONS.map((o) => (
-                      <option key={o.value} value={o.value}>{o.label}</option>
+                      <option key={o.value} value={o.value}>
+                        {o.label}
+                      </option>
                     ))}
                   </select>
                 </label>
@@ -736,7 +644,9 @@ export default function SubmitWizard({ cities }: Props) {
                   >
                     <option value="">Selecciona</option>
                     {PLATFORM_OPTIONS.map((o) => (
-                      <option key={o.value} value={o.value}>{o.label}</option>
+                      <option key={o.value} value={o.value}>
+                        {o.label}
+                      </option>
                     ))}
                   </select>
                 </label>
@@ -852,65 +762,234 @@ export default function SubmitWizard({ cities }: Props) {
         </div>
       )}
 
-      {/* Step 5: Etiquetas */}
-      {step === 5 && (
-        <div className="space-y-4">
-          <h2 className="text-xl font-sans font-bold text-primary">
-            Etiquetas
-          </h2>
-          <p className="text-sm text-secondary">
-            Agrega hasta 10 etiquetas que describan tu {copy?.entityName ?? "registro"}.
-          </p>
-          <div className="flex gap-2">
-            <input
-              type="text"
-              value={tagInput}
-              onChange={(e) => setTagInput(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  e.preventDefault();
-                  addTag();
-                }
-              }}
-              placeholder="Escribe y presiona Enter"
-              className="flex-1 px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-hidden focus:border-accent transition-colors"
-            />
-            <button
-              type="button"
-              onClick={addTag}
-              disabled={tags.length >= 10}
-              className="px-3 py-2 rounded-lg border border-border bg-card text-muted hover:text-accent hover:border-accent transition-colors disabled:opacity-40"
-            >
-              <Plus className="w-4 h-4" />
-            </button>
-          </div>
-          {tags.length > 0 && (
-            <div className="flex flex-wrap gap-2">
-              {tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="inline-flex items-center gap-1 text-xs font-mono px-2 py-1 rounded bg-accent/10 text-accent border border-accent/20"
-                >
-                  {tag}
-                  <button
-                    type="button"
-                    onClick={() => removeTag(tag)}
-                    className="hover:text-red-400 transition-colors"
-                  >
-                    <X className="w-3 h-3" />
-                  </button>
+      {/* Step 3: Enlaces + Etiquetas */}
+      {step === 3 && (
+        <div className="space-y-6">
+          <div className="space-y-4">
+            <h2 className="text-xl font-sans font-bold text-primary">
+              Enlaces
+            </h2>
+            <p className="text-sm text-secondary">
+              Todos los campos son opcionales.
+            </p>
+            <div className="space-y-3">
+              <label className="block">
+                <span className="text-xs font-mono text-muted uppercase tracking-wider">
+                  Sitio web
                 </span>
-              ))}
+                <input
+                  type="url"
+                  value={website}
+                  onChange={(e) => setWebsite(e.target.value)}
+                  placeholder="https://tu-sitio.com"
+                  className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-hidden focus:border-accent transition-colors"
+                />
+              </label>
+              <label className="block">
+                <span className="text-xs font-mono text-muted uppercase tracking-wider">
+                  X
+                </span>
+                <input
+                  type="text"
+                  value={x}
+                  onChange={(e) => setX(e.target.value)}
+                  placeholder="@usuario"
+                  className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-hidden focus:border-accent transition-colors"
+                />
+              </label>
+              <label className="block">
+                <span className="text-xs font-mono text-muted uppercase tracking-wider">
+                  Instagram
+                </span>
+                <input
+                  type="text"
+                  value={instagram}
+                  onChange={(e) => setInstagram(e.target.value)}
+                  placeholder="@usuario"
+                  className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-hidden focus:border-accent transition-colors"
+                />
+              </label>
+              <label className="block">
+                <span className="text-xs font-mono text-muted uppercase tracking-wider">
+                  LinkedIn
+                </span>
+                <input
+                  type="url"
+                  value={linkedin}
+                  onChange={(e) => setLinkedin(e.target.value)}
+                  placeholder="https://linkedin.com/in/usuario"
+                  className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-hidden focus:border-accent transition-colors"
+                />
+              </label>
+              <label className="block">
+                <span className="text-xs font-mono text-muted uppercase tracking-wider">
+                  GitHub
+                </span>
+                <input
+                  type="text"
+                  value={github}
+                  onChange={(e) => setGithub(e.target.value)}
+                  placeholder="usuario"
+                  className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-hidden focus:border-accent transition-colors"
+                />
+              </label>
+              <label className="block">
+                <span className="text-xs font-mono text-muted uppercase tracking-wider">
+                  YouTube
+                </span>
+                <input
+                  type="url"
+                  value={youtube}
+                  onChange={(e) => setYoutube(e.target.value)}
+                  placeholder="https://youtube.com/@canal"
+                  className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-hidden focus:border-accent transition-colors"
+                />
+              </label>
+              {entryType === "community" && (
+                <>
+                  <label className="block">
+                    <span className="text-xs font-mono text-muted uppercase tracking-wider">
+                      Discord
+                    </span>
+                    <input
+                      type="url"
+                      value={discord}
+                      onChange={(e) => setDiscord(e.target.value)}
+                      placeholder="https://discord.gg/..."
+                      className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-hidden focus:border-accent transition-colors"
+                    />
+                  </label>
+                  <label className="block">
+                    <span className="text-xs font-mono text-muted uppercase tracking-wider">
+                      Telegram
+                    </span>
+                    <input
+                      type="url"
+                      value={telegram}
+                      onChange={(e) => setTelegram(e.target.value)}
+                      placeholder="https://t.me/..."
+                      className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-hidden focus:border-accent transition-colors"
+                    />
+                  </label>
+                </>
+              )}
             </div>
-          )}
-          <p className="text-xs text-muted font-mono">
-            {tags.length}/10 etiquetas
-          </p>
+          </div>
+
+          <div className="border-t border-border" />
+
+          <div className="space-y-4">
+            <h3 className="text-lg font-sans font-bold text-primary">
+              Etiquetas
+            </h3>
+            <p className="text-sm text-secondary">
+              Agrega hasta 10 etiquetas que describan tu{" "}
+              {copy?.entityName ?? "registro"}.
+            </p>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={tagInput}
+                onChange={(e) => setTagInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    addTag();
+                  }
+                }}
+                placeholder="Escribe y presiona Enter"
+                className="flex-1 px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-hidden focus:border-accent transition-colors"
+              />
+              <button
+                type="button"
+                onClick={addTag}
+                disabled={tags.length >= 10}
+                className="px-3 py-2 rounded-lg border border-border bg-card text-muted hover:text-accent hover:border-accent transition-colors disabled:opacity-40"
+              >
+                <Plus className="w-4 h-4" />
+              </button>
+            </div>
+            {tags.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="inline-flex items-center gap-1 text-xs font-mono px-2 py-1 rounded bg-accent/10 text-accent border border-accent/20"
+                  >
+                    {tag}
+                    <button
+                      type="button"
+                      onClick={() => removeTag(tag)}
+                      className="hover:text-red-400 transition-colors"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </span>
+                ))}
+              </div>
+            )}
+            <p className="text-xs text-muted font-mono">
+              {tags.length}/10 etiquetas
+            </p>
+          </div>
         </div>
       )}
 
-      {/* Step 6: Imágenes & envío */}
-      {step === 6 && (
+      {/* Step 4: Contacto (submitter info) */}
+      {step === 4 && (
+        <div className="space-y-4">
+          <h2 className="text-xl font-sans font-bold text-primary">
+            Datos de contacto
+          </h2>
+          <p className="text-sm text-secondary">
+            Tu información para que podamos comunicarnos contigo sobre este
+            registro.
+          </p>
+          <div className="space-y-3">
+            <label className="block">
+              <span className="text-xs font-mono text-muted uppercase tracking-wider">
+                Tu nombre *
+              </span>
+              <input
+                type="text"
+                value={submitterName}
+                onChange={(e) => setSubmitterName(e.target.value)}
+                required
+                placeholder="Nombre completo"
+                className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-hidden focus:border-accent transition-colors"
+              />
+            </label>
+            <label className="block">
+              <span className="text-xs font-mono text-muted uppercase tracking-wider">
+                Tu email *
+              </span>
+              <input
+                type="email"
+                value={submitterEmail}
+                onChange={(e) => setSubmitterEmail(e.target.value)}
+                required
+                placeholder="tu@email.com"
+                className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-hidden focus:border-accent transition-colors"
+              />
+            </label>
+            <label className="block">
+              <span className="text-xs font-mono text-muted uppercase tracking-wider">
+                Tu teléfono
+              </span>
+              <input
+                type="tel"
+                value={submitterPhone}
+                onChange={(e) => setSubmitterPhone(e.target.value)}
+                placeholder="+52 667 123 4567"
+                className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-hidden focus:border-accent transition-colors"
+              />
+            </label>
+          </div>
+        </div>
+      )}
+
+      {/* Step 5: Imágenes & envío */}
+      {step === 5 && (
         <div className="space-y-6">
           <h2 className="text-xl font-sans font-bold text-primary">
             Imágenes y envío
@@ -960,6 +1039,8 @@ export default function SubmitWizard({ cities }: Props) {
             {tags.length > 0 && (
               <SummaryRow label="Etiquetas" value={tags.join(", ")} />
             )}
+            <SummaryRow label="Contacto" value={submitterName} />
+            <SummaryRow label="Email" value={submitterEmail} />
           </div>
         </div>
       )}
