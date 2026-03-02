@@ -10,7 +10,7 @@ logo: logo.png
 coverImage: cover.png
 tags: ["servicios", "innovación", "transporte"]
 verified: true
-instagram: enrutate.com
+instagram: enrutateapp
 publishDate: 2026-03-01
 featured: true
 ---

@@ -17,8 +17,11 @@ import {
   GraduationCap,
   MapPin,
   MessageCircle,
+  Rocket,
   Send,
+  User,
   UserCheck,
+  Users,
 } from "@lucide/astro";
 import SocialActivity from "../../components/sections/SocialActivity.astro";
 
@@ -43,8 +46,18 @@ const typeLabels: Record<string, string> = Object.fromEntries(
   ]),
 );
 
-const details: { label: string; value: string | number | undefined }[] = [
-  { label: "Categoria", value: typeLabels[entry.data.entryType] },
+const iconMap: Record<string, typeof Rocket> = {
+  rocket: Rocket,
+  briefcase: Briefcase,
+  users: Users,
+  user: User,
+};
+
+const entryIcon = ENTRY_TYPE_CONFIG[entry.data.entryType as AtlasEntryType]?.icon;
+const EntryIcon = iconMap[entryIcon];
+
+const details: { label: string; value: string | number | undefined; icon?: typeof Rocket }[] = [
+  { label: "Categoria", value: typeLabels[entry.data.entryType], icon: EntryIcon },
   { label: "Fundada", value: entry.data.foundedYear },
   { label: "Equipo", value: entry.data.teamSize },
   { label: "Etapa", value: entry.data.stage },
@@ -354,7 +367,8 @@ const links: { label: string; url: string | undefined; icon: string }[] = [
                 {details.map((detail) => (
                   <div class="flex items-center justify-between">
                     <span class="text-sm text-muted">{detail.label}</span>
-                    <span class="text-sm font-mono text-primary">
+                    <span class="text-sm font-mono text-primary flex items-center gap-1.5">
+                      {detail.icon && <detail.icon class="w-4 h-4 text-accent" />}
                       {detail.value}
                     </span>
                   </div>
