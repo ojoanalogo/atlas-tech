@@ -6,6 +6,8 @@ description: "SofIA es un asistente inteligente de finanzas personales que permi
 city: "culiacan"
 state: "Sinaloa"
 country: "México"
+logo: logo.jpg
+coverImage: cover.png
 tags: ["fintech", "inteligencia-artificial", "finanzas-personales", "whatsapp"]
 verified: false
 website: "https://sofinanzas.mx"

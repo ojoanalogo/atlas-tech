@@ -6,7 +6,6 @@ interface Props {
 }
 
 const { x } = Astro.props;
-const theme = "dark";
 ---
 
 {
@@ -42,7 +41,7 @@ const theme = "dark";
         <div class="rounded-lg border border-border overflow-hidden bg-elevated max-h-125 overflow-y-auto">
           <a
             class="twitter-timeline"
-            data-theme={theme}
+            data-theme="dark"
             data-chrome="noheader nofooter noborders transparent"
             href={`https://twitter.com/${x}`}
           >
@@ -57,5 +56,58 @@ const theme = "dark";
 {
   x && (
     <script is:inline async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+  )
+}
+
+{
+  x && (
+    <script is:inline>
+      (function () {
+        function getTheme() {
+          return document.documentElement.classList.contains("dark")
+            ? "dark"
+            : "light";
+        }
+
+        function updateTwitterTheme() {
+          var theme = getTheme();
+          var timelines = document.querySelectorAll(".twitter-timeline");
+          timelines.forEach(function (el) {
+            el.setAttribute("data-theme", theme);
+          });
+          // Re-render embedded iframes if Twitter widgets API is available
+          var iframes = document.querySelectorAll('iframe[id^="twitter-widget"]');
+          iframes.forEach(function (iframe) {
+            var src = iframe.getAttribute("src");
+            if (src) {
+              var newSrc = src.replace(/theme%3D(dark|light)/, "theme%3D" + theme);
+              if (newSrc !== src) {
+                iframe.setAttribute("src", newSrc);
+              }
+            }
+          });
+          // Use official API to reload if available
+          if (window.twttr && window.twttr.widgets) {
+            window.twttr.widgets.load();
+          }
+        }
+
+        // Watch for class changes on <html> to detect theme toggle
+        var observer = new MutationObserver(function (mutations) {
+          mutations.forEach(function (mutation) {
+            if (
+              mutation.type === "attributes" &&
+              mutation.attributeName === "class"
+            ) {
+              updateTwitterTheme();
+            }
+          });
+        });
+        observer.observe(document.documentElement, { attributes: true });
+
+        // Set initial theme on load
+        updateTwitterTheme();
+      })();
+    </script>
   )
 }

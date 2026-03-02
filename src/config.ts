@@ -1,5 +1,7 @@
 export const SITE_TITLE = "TECH_ATLAS";
 
+export const DEFAULT_PAGINATION = 18;
+
 export const EVENTS_SHEET_CSV_URL =
   "https://docs.google.com/spreadsheets/d/e/2PACX-1vSfpcM8hS7F6d7EZjYZe_IeM31VjNE-MarfJxjuK6BlAZPvsZJzVV5up-vnsejfnnSzrx4TLoe5jVG_/pub?output=csv";
 export const SITE_DESCRIPTION =

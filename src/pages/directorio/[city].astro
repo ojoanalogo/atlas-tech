@@ -1,13 +1,7 @@
 ---
 import { getCollection } from "astro:content";
-import BaseLayout from "../../layouts/BaseLayout.astro";
-import EntryCard from "../../components/entries/EntryCard.astro";
-import DirectoryFilter from "../../components/entries/DirectoryFilter";
-import {
-  SINALOA_CITIES,
-  ENTRY_TYPE_CONFIG,
-  getCityName,
-} from "../../config";
+import DirectoryLayout from "../../layouts/DirectoryLayout.astro";
+import { SINALOA_CITIES } from "../../config";
 
 export function getStaticPaths() {
   return SINALOA_CITIES.map((m) => ({
@@ -17,66 +11,12 @@ export function getStaticPaths() {
 }
 
 const { cityId, cityName } = Astro.props;
-
 const allEntries = await getCollection("atlas");
-
-const typeLabels: Record<string, string> = Object.fromEntries(
-  Object.entries(ENTRY_TYPE_CONFIG).map(([k, v]) => [k, v.labelPlural]),
-);
-
-const cityCounts: Record<string, number> = {};
-allEntries.forEach((entry) => {
-  const mun = entry.data.city;
-  cityCounts[mun] = (cityCounts[mun] || 0) + 1;
-});
-
-const globalCount = cityCounts["global"] || 0;
-
-const cities = [
-  ...(globalCount > 0
-    ? [{ id: "global", name: "Global", count: globalCount }]
-    : []),
-  ...SINALOA_CITIES.map((m) => ({
-    id: m.id,
-    name: m.name,
-    count: cityCounts[m.id] || 0,
-  })),
-];
 ---
 
-<BaseLayout title={`${cityName} — TECH_ATLAS`}>
-  <section class="py-4 px-4">
-    <div class="max-w-7xl mx-auto">
-      <DirectoryFilter
-        client:load
-        typeLabels={typeLabels}
-        cities={cities}
-        totalCount={allEntries.length}
-        initialCity={cityId}
-      >
-        <div id="entries-grid" class="grid sm:grid-cols-2 xl:grid-cols-3 gap-4">
-          {
-            allEntries.map((entry) => (
-              <div
-                class="entry-item"
-                data-type={entry.data.entryType}
-                data-city={entry.data.city}
-              >
-                <EntryCard
-                  slug={entry.slug}
-                  name={entry.data.name}
-                  tagline={entry.data.tagline}
-                  entryType={entry.data.entryType}
-                  logo={entry.data.logo}
-                  coverImage={entry.data.coverImage}
-                  city={entry.data.city}
-                  tags={entry.data.tags}
-                />
-              </div>
-            ))
-          }
-        </div>
-      </DirectoryFilter>
-    </div>
-  </section>
-</BaseLayout>
+<DirectoryLayout
+  title={`${cityName} — TECH_ATLAS`}
+  entries={allEntries}
+  cityEntries={allEntries}
+  initialCity={cityId}
+/>

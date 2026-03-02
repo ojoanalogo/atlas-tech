@@ -1,5 +1,3 @@
-"use client";
-
 import * as React from "react";
 import useEmblaCarousel, {
   type UseEmblaCarouselType,
@@ -101,6 +99,7 @@ function Carousel({
 
     return () => {
       api?.off("select", onSelect);
+      api?.off("reInit", onSelect);
     };
   }, [api, onSelect]);
 

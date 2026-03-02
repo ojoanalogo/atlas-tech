@@ -46,9 +46,9 @@ html {
   /* Dark theme */
   --color-background: #101010;
   --color-primary: #ffffff;
-  --color-secondary: #8a8a8a;
+  --color-secondary: #a1a1a1;
   --color-accent: #42ab7a;
-  --color-muted: #8a8a8a;
+  --color-muted: #6b6b6b;
   --color-border: #2f2f2f;
   --color-card: #0a0a0a;
   --color-elevated: #141414;
@@ -69,6 +69,19 @@ html {
 
 .entry-item.animate-in {
   animation: entry-fade-in 250ms ease-out both;
+}
+
+/* Collapsible panel animation (grid-row trick) */
+.collapse-grid {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 250ms ease-out;
+}
+.collapse-grid.open {
+  grid-template-rows: 1fr;
+}
+.collapse-grid > .collapse-content {
+  overflow: hidden;
 }
 
 /* Hide scrollbar but keep scroll functionality */

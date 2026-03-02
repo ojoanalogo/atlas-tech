@@ -130,13 +130,6 @@ function parseCSVRows(csv: string): string[][] {
   return rows;
 }
 
-export function filterAtlasByType(
-  entries: CollectionEntry<"atlas">[],
-  type: AtlasEntryType,
-) {
-  return entries.filter((entry) => entry.data.entryType === type);
-}
-
 export function groupByCity(
   entries: CollectionEntry<"atlas">[],
 ): Record<string, number> {

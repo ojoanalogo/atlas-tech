@@ -12,11 +12,11 @@ const directoryLinks = ENTRY_TYPES.map((type) => ({
 <header id="main-header" class="px-4 py-4">
   <div class:list={["mx-auto", "max-w-7xl"]}>
     <div
-      class="bg-white dark:bg-[#0a0a0a] border rounded-lg font-mono text-sm transition-all duration-300 border-gray-400/50 dark:border-gray-400/30 hover:shadow-xs dark:hover:shadow-md dark:hover:shadow-black/20"
+      class="bg-white dark:bg-card border rounded-lg font-mono text-sm transition-all duration-300 border-gray-400/50 dark:border-gray-400/30 hover:shadow-xs dark:hover:shadow-md dark:hover:shadow-black/20"
     >
       <nav
         id="navigation-menu"
-        aria-label="Main menu"
+        aria-label="Menú principal"
         class="flex items-center justify-between gap-4 px-4 py-3"
       >
         {/* Logo */}
@@ -129,6 +129,9 @@ const directoryLinks = ENTRY_TYPES.map((type) => ({
 {/* Mobile fullscreen menu overlay */}
 <div
   id="mobile-menu"
+  role="dialog"
+  aria-modal="true"
+  aria-label="Menú de navegación"
   class="fixed inset-0 z-[100] bg-background flex flex-col opacity-0 invisible transition-all duration-300 sm:hidden"
 >
   <div class="flex items-center justify-between px-8 py-6">

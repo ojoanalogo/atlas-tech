@@ -1,8 +1,8 @@
 import { defineCollection, z } from "astro:content";
 import { ALL_CITY_IDS, ENTRY_TYPES } from "../config";
 
-const cityEnum = z.enum(ALL_CITY_IDS as [string, ...string[]]);
-const entryTypeEnum = z.enum(ENTRY_TYPES as unknown as [string, ...string[]]);
+const cityEnum = z.enum(ALL_CITY_IDS as readonly [string, ...string[]]);
+const entryTypeEnum = z.enum(ENTRY_TYPES);
 
 const atlasSchema = ({ image }: { image: Function }) =>
   z.object({

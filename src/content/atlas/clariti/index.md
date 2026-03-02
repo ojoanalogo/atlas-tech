@@ -6,6 +6,8 @@ description: ""
 city: "culiacan"
 state: "Sinaloa"
 country: "México"
+logo: logo.jpg
+coverImage: cover.jpg
 tags: ["servicios", "innovación"]
 verified: true
 instagram: clariti.mx

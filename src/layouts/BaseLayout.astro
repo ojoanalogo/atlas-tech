@@ -15,11 +15,12 @@ const {
 
 <!doctype html>
 <html
-  lang="es"
+  lang="es-MX"
   class="bg-background text-secondary selection:bg-accent selection:text-accent-foreground"
 >
   <head>
     <BaseHead title={title} description={description} image={image} />
+    <slot name="head" />
     <script is:inline>
       (function () {
         var t = localStorage.getItem("theme");

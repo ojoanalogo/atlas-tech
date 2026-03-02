@@ -6,6 +6,8 @@ description: ""
 city: "culiacan"
 state: "Sinaloa"
 country: "México"
+logo: logo.webp
+coverImage: cover.png
 tags: ["servicios", "innovación"]
 verified: true
 instagram: lucciai

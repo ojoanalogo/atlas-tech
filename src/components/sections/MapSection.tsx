@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo, memo } from "react";
 import {
   SINALOA_CITIES,
   ENTRY_TYPE_CONFIG,
@@ -202,9 +202,13 @@ export default function MapSection({
     [isSearching, normalizedQuery],
   );
 
-  const filteredWithRecords = withRecords.filter((m) => filterCity(m.name));
-  const filteredWithoutRecords = withoutRecords.filter((m) =>
-    filterCity(m.name),
+  const filteredWithRecords = useMemo(
+    () => withRecords.filter((m) => filterCity(m.name)),
+    [withRecords, filterCity],
+  );
+  const filteredWithoutRecords = useMemo(
+    () => withoutRecords.filter((m) => filterCity(m.name)),
+    [withoutRecords, filterCity],
   );
   const totalVisible =
     filteredWithRecords.length + filteredWithoutRecords.length;
@@ -473,7 +477,7 @@ export default function MapSection({
 
 // --- City button ---
 
-function CityButton({
+const CityButton = memo(function CityButton({
   id,
   name,
   count,
@@ -513,4 +517,4 @@ function CityButton({
       )}
     </button>
   );
-}
+});

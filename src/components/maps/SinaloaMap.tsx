@@ -1,13 +1,14 @@
-import {
+import React, {
   useState,
   useCallback,
   useRef,
   useEffect,
-  type LucideIcon,
+  useMemo,
 } from "react";
 import { geoIdentity, geoPath } from "d3-geo";
 import { ComposableMap, Geographies, Geography } from "react-simple-maps";
 import {
+  type LucideIcon,
   Rocket,
   Code,
   Users,
@@ -53,7 +54,7 @@ const ROWS = PATTERN_ICONS.length / COLS;
 const BG_COLS = 12;
 const BG_ROWS = 10;
 
-function IconPatternBg() {
+const IconPatternBg = React.memo(function IconPatternBg() {
   let iconIdx = 0;
   const cells: React.ReactNode[] = [];
 
@@ -96,6 +97,20 @@ function IconPatternBg() {
       </div>
     </div>
   );
+});
+
+/** Captures geographies into a ref via useEffect instead of during render. */
+function GeographiesCapture({
+  geographies,
+  geographiesRef,
+}: {
+  geographies: MapGeography[];
+  geographiesRef: React.MutableRefObject<MapGeography[]>;
+}) {
+  useEffect(() => {
+    geographiesRef.current = geographies;
+  }, [geographies, geographiesRef]);
+  return null;
 }
 
 const DRAG_THRESHOLD = 5; // px – ignore clicks if pointer moved more than this
@@ -107,6 +122,14 @@ const BOUNDS = {
   minY: 1165418.1,
   maxY: 1679049.332,
 };
+
+/** GeoJSON feature shape returned by react-simple-maps Geographies. */
+interface MapGeography {
+  type: string;
+  geometry: Record<string, unknown>;
+  properties: Record<string, unknown>;
+  rsmKey?: string;
+}
 
 interface CityCounts {
   [name: string]: number;
@@ -183,10 +206,16 @@ export default function SinaloaMap({
   const translateStart = useRef({ x: 0, y: 0 });
   const didDrag = useRef(false);
   const containerRef = useRef<HTMLDivElement>(null);
-  const geographiesRef = useRef<any[]>([]);
+  const geographiesRef = useRef<MapGeography[]>([]);
 
-  const projection = createProjection(width, height, padding);
-  const pathGenerator = geoPath(projection as any);
+  const projection = useMemo(
+    () => createProjection(width, height, padding),
+    [width, height, padding],
+  );
+  const pathGenerator = useMemo(
+    () => geoPath(projection as any),
+    [projection],
+  );
 
   // Compute pan boundaries based on current scale
   const getMaxTranslate = useCallback(
@@ -450,8 +479,10 @@ export default function SinaloaMap({
         >
           <Geographies geography={TOPO_URL}>
             {({ geographies }) => {
-              geographiesRef.current = geographies;
-              return geographies.map((geo) => (
+              return (
+                <>
+                <GeographiesCapture geographies={geographies} geographiesRef={geographiesRef} />
+                {geographies.map((geo) => (
                 <Geography
                   key={geo.rsmKey}
                   geography={geo}
@@ -490,7 +521,9 @@ export default function SinaloaMap({
                     },
                   }}
                 />
-              ));
+              ))}
+              </>
+              );
             }}
           </Geographies>
         </ComposableMap>

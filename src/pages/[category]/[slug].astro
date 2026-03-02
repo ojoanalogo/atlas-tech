@@ -93,10 +93,14 @@ const links: { label: string; url: string | undefined; icon: string }[] = [
 ].filter((l) => l.url !== undefined);
 ---
 
-<BaseLayout title={`${entry.data.name} — TECH_ATLAS`}>
+<BaseLayout
+  title={`${entry.data.name} — TECH_ATLAS`}
+  description={entry.data.tagline}
+  image={entry.data.coverImage?.src ?? entry.data.logo?.src}
+>
   <div class="max-w-7xl mx-auto px-4 py-8">
     {/* Breadcrumb */}
-    <nav class="text-xs font-mono text-muted mb-6">
+    <nav aria-label="Breadcrumb" class="text-xs font-mono text-muted mb-6">
       <a href="/" class="hover:text-accent transition-colors">INICIO</a>
       <span class="mx-2">/</span>
       <a href="/directorio" class="hover:text-accent transition-colors"
@@ -343,9 +347,9 @@ const links: { label: string; url: string | undefined; icon: string }[] = [
         {
           details.length > 0 && (
             <div class="bg-card/90 backdrop-blur-sm border border-border rounded-lg p-5">
-              <h3 class="font-mono text-xs text-muted uppercase tracking-wider mb-4">
+              <h2 class="font-mono text-xs text-muted uppercase tracking-wider mb-4">
                 Detalles
-              </h3>
+              </h2>
               <div class="space-y-3">
                 {details.map((detail) => (
                   <div class="flex items-center justify-between">
@@ -364,11 +368,11 @@ const links: { label: string; url: string | undefined; icon: string }[] = [
         <div
           class="bg-card/90 backdrop-blur-sm border border-border rounded-lg p-5"
         >
-          <h3
+          <h2
             class="font-mono text-xs text-muted uppercase tracking-wider mb-4"
           >
             Ubicacion
-          </h3>
+          </h2>
           <div class="flex items-center gap-2 text-sm text-primary">
             <MapPin class="w-4 h-4 text-accent shrink-0" />
             <span
@@ -388,9 +392,9 @@ const links: { label: string; url: string | undefined; icon: string }[] = [
         {
           links.length > 0 && (
             <div class="bg-card/90 backdrop-blur-sm border border-border rounded-lg p-5">
-              <h3 class="font-mono text-xs text-muted uppercase tracking-wider mb-4">
+              <h2 class="font-mono text-xs text-muted uppercase tracking-wider mb-4">
                 Enlaces
-              </h3>
+              </h2>
               <div class="space-y-2">
                 {links.map((link) => (
                   <a

@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { MapPin } from "lucide-react";
 import AutoScroll from "embla-carousel-auto-scroll";
 import {
@@ -31,16 +32,21 @@ export default function FeaturedCarousel({
 }: {
   entries: FeaturedEntry[];
 }) {
+  const plugins = useMemo(
+    () => [
+      AutoScroll({
+        speed: 0.3,
+        stopOnInteraction: true,
+        stopOnMouseEnter: false,
+      }),
+    ],
+    [],
+  );
+
   return (
     <Carousel
       opts={{ align: "start", loop: true }}
-      plugins={[
-        AutoScroll({
-          speed: 0.3,
-          stopOnInteraction: true,
-          stopOnMouseEnter: false,
-        }),
-      ]}
+      plugins={plugins}
       className="w-full"
     >
       <CarouselContent className="-ml-3">

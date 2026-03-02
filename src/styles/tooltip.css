@@ -22,7 +22,8 @@
   z-index: 9999;
 }
 
-.tooltip:hover::after {
+.tooltip:hover::after,
+.tooltip:focus-within::after {
   opacity: 1;
   visibility: visible;
 }

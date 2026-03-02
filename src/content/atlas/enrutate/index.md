@@ -6,7 +6,9 @@ description: ""
 city: "culiacan"
 state: "Sinaloa"
 country: "México"
-tags: ["servicios", "innovación"]
+logo: logo.png
+coverImage: cover.png
+tags: ["servicios", "innovación", "transporte"]
 verified: true
 instagram: enrutate.com
 publishDate: 2026-03-01

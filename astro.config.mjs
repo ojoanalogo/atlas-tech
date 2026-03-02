@@ -6,7 +6,7 @@ import { defineConfig } from "astro/config";
 // https://astro.build/config
 export default defineConfig({
   integrations: [react(), sitemap()],
-  site: "https://ojoanalogo.github.io",
+  site: "https://atlastech.mx",
   compressHTML: true,
   vite: { plugins: [tailwindcss()] },
 });

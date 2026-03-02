@@ -23,6 +23,13 @@ const cityTypeCounts = countByTypeAndCity(allEntries);
 ---
 
 <BaseLayout>
+  <link
+    slot="head"
+    rel="preload"
+    href="/topo/Sinaloa_municipios.json"
+    as="fetch"
+    crossorigin
+  />
   <MatrixBackground
     movementDirection="up-left"
     movementSpeed={0.04}
@@ -35,7 +42,7 @@ const cityTypeCounts = countByTypeAndCity(allEntries);
   <MapSection
     cityCounts={cityCounts}
     cityTypeCounts={cityTypeCounts}
-    client:load
+    client:visible
   />
   <CalendarSection />
   <CtaSection />

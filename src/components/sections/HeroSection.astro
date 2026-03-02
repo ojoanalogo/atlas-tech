@@ -1,6 +1,7 @@
 ---
 import SinaloaMap from "../maps/SinaloaMap";
 import { MapPin, Search, Plus } from "@lucide/astro";
+import { SINALOA_CITIES } from "../../config";
 
 interface Props {
   cityCounts?: Record<string, number>;
@@ -71,7 +72,7 @@ const { cityCounts = {} } = Astro.props;
           <div class="flex items-center gap-1.5">
             <span class="w-2 h-2 rounded-full bg-accent animate-pulse"></span>
             <span class="text-xs font-mono font-semibold text-accent"
-              >[18 municipios]</span
+              >[{SINALOA_CITIES.length} municipios]</span
             >
           </div>
         </div>
@@ -83,7 +84,7 @@ const { cityCounts = {} } = Astro.props;
           <SinaloaMap
             compact
             cityCounts={cityCounts}
-            client:visible
+            client:idle
           />
         </div>
       </div>

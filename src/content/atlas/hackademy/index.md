@@ -6,6 +6,8 @@ description: ""
 city: "culiacan"
 state: "Sinaloa"
 country: "México"
+logo: logo.jpg
+coverImage: cover.png
 tags: ["school", "bootcamp", "innovación"]
 verified: true
 instagram: hackademy.mx

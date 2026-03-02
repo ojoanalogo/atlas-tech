@@ -9,21 +9,7 @@ import {
   CalendarPlus,
   Video,
 } from "lucide-react";
-
-interface TechEvent {
-  title: string;
-  organizer: string;
-  date: string;
-  startTime: string;
-  endTime: string;
-  description: string;
-  url: string;
-  location: string;
-  mapsUrl: string;
-  isInPerson: boolean;
-  calendarLink: string;
-  meetLink: string;
-}
+import type { TechEvent } from "../../utils";
 
 interface Props {
   eventsByDate: Record<string, TechEvent[]>;
@@ -224,9 +210,9 @@ export default function EventCalendar({ eventsByDate }: Props) {
                 </span>
 
                 <div className="mt-1 space-y-0.5">
-                  {dayEvents.slice(0, MAX_PILLS).map((ev, idx) => (
+                  {dayEvents.slice(0, MAX_PILLS).map((ev) => (
                     <button
-                      key={idx}
+                      key={`${ev.date}-${ev.title}`}
                       onClick={() => setSelectedEvent(ev)}
                       className="w-full text-left px-1.5 py-0.5 text-2xs font-sans font-medium rounded bg-[var(--color-accent)]/15 text-[var(--color-accent)] truncate hover:bg-[var(--color-accent)]/25 transition-colors cursor-pointer"
                       title={ev.title}
@@ -273,9 +259,9 @@ export default function EventCalendar({ eventsByDate }: Props) {
                 </span>
               </div>
               <div className="space-y-2">
-                {evs.map((ev, idx) => (
+                {evs.map((ev) => (
                   <button
-                    key={idx}
+                    key={`${ev.date}-${ev.title}`}
                     onClick={() => setSelectedEvent(ev)}
                     className="w-full text-left p-2 rounded-lg bg-[var(--color-elevated)] border border-[var(--color-border)] hover:border-[var(--color-accent)]/50 transition-colors"
                   >
