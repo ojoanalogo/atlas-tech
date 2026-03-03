@@ -62,7 +62,7 @@ export default function AtcbPortal() {
       options={["Apple", "Google", "iCal", "Outlook.com", "Yahoo"]}
       label="Agregar a calendario"
       buttonStyle="round"
-      size="3"
+      size="2"
       lightMode="bodyScheme"
       language="es"
       trigger="click"

@@ -26,6 +26,7 @@
 
 html {
   font-size: 16px;
+  scroll-behavior: smooth;
 }
 
 /* Theme CSS Custom Properties */

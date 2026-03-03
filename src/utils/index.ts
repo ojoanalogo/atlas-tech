@@ -20,8 +20,9 @@ export interface TechEvent {
   location: string;
   mapsUrl: string;
   isInPerson: boolean;
-  calendarLink: string;
   meetLink: string;
+  image: string;
+  registerUrl: string;
 }
 
 /**
@@ -37,7 +38,7 @@ export function parseEventsCSV(csv: string): TechEvent[] {
   for (let i = 1; i < rows.length; i++) {
     const row = rows[i];
     // Pad short rows — missing trailing columns become empty strings
-    while (row.length < 12) row.push("");
+    while (row.length < 13) row.push("");
 
     const rawDate = row[2].trim(); // M/DD/YYYY format
     if (!rawDate) continue;
@@ -63,8 +64,9 @@ export function parseEventsCSV(csv: string): TechEvent[] {
       location: row[7].trim(),
       mapsUrl: row[8].trim(),
       isInPerson: row[9].trim().toLowerCase() === "presencial",
-      calendarLink: row[10].trim(),
-      meetLink: row[11].trim(),
+      meetLink: row[10].trim(),
+      image: row[11].trim(),
+      registerUrl: row[12].trim(),
     });
   }
 

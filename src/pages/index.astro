@@ -7,6 +7,7 @@ import {
   getFeaturedEntries,
   groupByCity,
 } from "../utils";
+import UpcomingEventsStrip from "../components/calendar/UpcomingEventsStrip";
 import CalendarSection from "../components/sections/CalendarSection.astro";
 import CtaSection from "../components/sections/CtaSection.astro";
 import HeroSection from "../components/sections/HeroSection.astro";
@@ -37,6 +38,11 @@ const cityTypeCounts = countByTypeAndCity(allEntries);
     slot="bg"
   />
   <HeroSection cityCounts={cityCounts} />
+  <section class="py-4 px-4">
+    <div class="max-w-7xl mx-auto">
+      <UpcomingEventsStrip client:visible />
+    </div>
+  </section>
   <CategorySection counts={counts} />
   <FeaturedSection entries={featured} />
   <MapSection
