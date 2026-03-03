@@ -129,18 +129,18 @@ function formatDate(dateStr: string): string {
 </section>
 
 <script>
-  document
-    .querySelectorAll<HTMLButtonElement>("[data-event-detail]")
-    .forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const data = btn.dataset.eventDetail;
-        if (!data) return;
-        try {
-          const event = JSON.parse(data);
-          window.dispatchEvent(
-            new CustomEvent("open-event-detail", { detail: event }),
-          );
-        } catch {}
-      });
-    });
+  document.addEventListener("click", (e) => {
+    const btn = (e.target as HTMLElement).closest<HTMLButtonElement>(
+      "[data-event-detail]",
+    );
+    if (!btn) return;
+    const data = btn.dataset.eventDetail;
+    if (!data) return;
+    try {
+      const event = JSON.parse(data);
+      window.dispatchEvent(
+        new CustomEvent("open-event-detail", { detail: event }),
+      );
+    } catch {}
+  });
 </script>

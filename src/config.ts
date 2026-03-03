@@ -195,6 +195,7 @@ export const N8N_WEBHOOK_URL =
 
 export const STAGE_OPTIONS = [
   { value: "Idea", label: "Idea" },
+  { value: "Bootstrap", label: "Bootstrap" },
   { value: "Pre-seed", label: "Pre-seed" },
   { value: "Seed", label: "Seed" },
   { value: "Serie A", label: "Serie A" },
