@@ -11,7 +11,7 @@ coverImage: cover.jpg
 tags: ["servicios", "ia", "fintech"]
 website: https://operia.mx
 linkedin: https://www.linkedin.com/in/palazuelos
-github: https://github.com/Punksolid
+github: Punksolid
 verified: true
 publishDate: 2026-03-01
 featured: true
