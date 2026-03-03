@@ -1,13 +1,4 @@
 import { useState, useEffect } from "react";
-import {
-  X,
-  Clock,
-  MapPin,
-  Users,
-  ExternalLink,
-  Map,
-  Video,
-} from "lucide-react";
 import type { TechEvent } from "../../utils";
 
 interface Props {
@@ -52,8 +43,6 @@ export default function EventCalendar({ eventsByDate }: Props) {
   const now = new Date();
   const [year, setYear] = useState(now.getFullYear());
   const [month, setMonth] = useState(now.getMonth());
-  const [selectedEvent, setSelectedEvent] = useState<TechEvent | null>(null);
-
   const { daysInMonth, startWeekday } = getMonthDays(year, month);
 
   const today = new Date();
@@ -69,7 +58,6 @@ export default function EventCalendar({ eventsByDate }: Props) {
     } else {
       setMonth(month - 1);
     }
-    setSelectedEvent(null);
   }
 
   function nextMonth() {
@@ -79,16 +67,13 @@ export default function EventCalendar({ eventsByDate }: Props) {
     } else {
       setMonth(month + 1);
     }
-    setSelectedEvent(null);
   }
 
-  // Listen for sidebar event clicks
+  // Navigate calendar when sidebar event is clicked
   useEffect(() => {
     const handler = (e: Event) => {
       const detail = (e as CustomEvent).detail;
-      if (detail?.title) {
-        setSelectedEvent(detail as TechEvent);
-        // Navigate calendar to the event's month
+      if (detail?.date) {
         const [y, m] = (detail.date as string).split("-").map(Number);
         if (y && m) {
           setYear(y);
@@ -215,7 +200,7 @@ export default function EventCalendar({ eventsByDate }: Props) {
                   {dayEvents.slice(0, MAX_PILLS).map((ev) => (
                     <button
                       key={`${ev.date}-${ev.title}`}
-                      onClick={() => setSelectedEvent(ev)}
+                      onClick={() => window.dispatchEvent(new CustomEvent("open-event-detail", { detail: ev }))}
                       className="w-full text-left px-1.5 py-0.5 text-2xs font-sans font-medium rounded bg-[var(--color-accent)]/15 text-[var(--color-accent)] truncate hover:bg-[var(--color-accent)]/25 transition-colors cursor-pointer"
                       title={ev.title}
                     >
@@ -264,7 +249,7 @@ export default function EventCalendar({ eventsByDate }: Props) {
                 {evs.map((ev) => (
                   <button
                     key={`${ev.date}-${ev.title}`}
-                    onClick={() => setSelectedEvent(ev)}
+                    onClick={() => window.dispatchEvent(new CustomEvent("open-event-detail", { detail: ev }))}
                     className="w-full text-left p-2 rounded-lg bg-[var(--color-elevated)] border border-[var(--color-border)] hover:border-[var(--color-accent)]/50 transition-colors"
                   >
                     <p className="text-sm font-sans font-medium text-[var(--color-accent)]">
@@ -296,123 +281,6 @@ export default function EventCalendar({ eventsByDate }: Props) {
         )}
       </div>
 
-      {/* Event detail modal */}
-      {selectedEvent && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
-          onClick={() => setSelectedEvent(null)}
-        >
-          <div
-            className="bg-[var(--color-card)] border border-[var(--color-border)] rounded-xl max-w-lg w-full shadow-2xl overflow-visible"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Header */}
-            <div className="px-5 pt-5 pb-3">
-              <div className="flex items-start justify-between gap-3">
-                <h4 className="text-lg font-sans font-bold text-[var(--color-primary)]">
-                  {selectedEvent.title}
-                </h4>
-                <button
-                  onClick={() => setSelectedEvent(null)}
-                  className="p-1.5 rounded-lg hover:bg-[var(--color-elevated)] transition-colors shrink-0"
-                  aria-label="Cerrar"
-                >
-                  <X size={18} className="text-[var(--color-muted)]" />
-                </button>
-              </div>
-
-              {/* Meta info */}
-              <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 mt-2">
-                {selectedEvent.organizer && (
-                  <span className="inline-flex items-center gap-1.5 text-xs font-mono text-[var(--color-muted)]">
-                    <Users size={12} />
-                    {selectedEvent.organizer}
-                  </span>
-                )}
-                {(selectedEvent.startTime || selectedEvent.endTime) && (
-                  <span className="inline-flex items-center gap-1.5 text-xs font-mono text-[var(--color-muted)]">
-                    <Clock size={12} />
-                    {selectedEvent.startTime && selectedEvent.endTime
-                      ? `${selectedEvent.startTime}–${selectedEvent.endTime}`
-                      : selectedEvent.startTime || selectedEvent.endTime}
-                  </span>
-                )}
-              </div>
-            </div>
-
-            {/* Body */}
-            <div className="px-5 pb-4 space-y-3">
-              {selectedEvent.location && (
-                <div className="flex items-start gap-2 text-sm text-[var(--color-secondary)]">
-                  <MapPin
-                    size={14}
-                    className="shrink-0 mt-0.5 text-[var(--color-muted)]"
-                  />
-                  <span>
-                    {selectedEvent.location}
-                    {selectedEvent.isInPerson && (
-                      <span className="ml-2 inline-block text-2xs font-mono font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded bg-[var(--color-accent)]/15 text-[var(--color-accent)]">
-                        Presencial
-                      </span>
-                    )}
-                  </span>
-                </div>
-              )}
-
-              {selectedEvent.description && (
-                <p className="text-[var(--color-secondary)] whitespace-pre-line text-xs max-h-40 overflow-y-auto leading-relaxed">
-                  {selectedEvent.description}
-                </p>
-              )}
-
-              {/* Actions */}
-              <div className="flex flex-col sm:flex-row flex-wrap gap-2 pt-3 border-t border-[var(--color-border)]">
-                {selectedEvent.url && (
-                  <a
-                    href={selectedEvent.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 text-xs font-mono font-semibold px-3 py-2 rounded-lg bg-[var(--color-accent)] text-[var(--color-accent-foreground)] hover:opacity-90 transition-opacity"
-                  >
-                    <ExternalLink size={13} />
-                    Sitio web
-                  </a>
-                )}
-                {selectedEvent.mapsUrl && (
-                  <a
-                    href={selectedEvent.mapsUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 text-xs font-mono px-3 py-2 rounded-lg border border-[var(--color-border)] text-[var(--color-primary)] hover:bg-[var(--color-elevated)] transition-colors"
-                  >
-                    <Map size={13} />
-                    Google Maps
-                  </a>
-                )}
-                <div id="atcb-mount" data-event={JSON.stringify({
-                  name: selectedEvent.title,
-                  description: selectedEvent.description,
-                  startDate: selectedEvent.date,
-                  startTime: selectedEvent.startTime,
-                  endTime: selectedEvent.endTime,
-                  location: selectedEvent.location,
-                })} />
-                {selectedEvent.meetLink && (
-                  <a
-                    href={selectedEvent.meetLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 text-xs font-mono px-3 py-2 rounded-lg border border-[var(--color-border)] text-[var(--color-primary)] hover:bg-[var(--color-elevated)] transition-colors"
-                  >
-                    <Video size={13} />
-                    Meet/Zoom
-                  </a>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

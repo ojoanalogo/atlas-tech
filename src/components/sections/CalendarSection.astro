@@ -4,6 +4,7 @@ import { parseEventsCSV } from "../../utils";
 import type { TechEvent } from "../../utils";
 import EventCalendar from "../calendar/EventCalendar";
 import AddToCalendarButton from "../calendar/AddToCalendarButton";
+import EventDetailModal from "../calendar/EventDetailModal";
 import { CalendarDays, Clock, MapPin, ArrowRight } from "@lucide/astro";
 
 let events: TechEvent[] = [];
@@ -125,6 +126,7 @@ function formatDate(dateStr: string): string {
       </div>
     </div>
   </div>
+  <EventDetailModal client:load />
   <AddToCalendarButton client:only="react" />
 </section>
 

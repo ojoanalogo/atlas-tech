@@ -230,18 +230,8 @@ export interface SocialLink {
 
 export const SOCIAL_LINKS: SocialLink[] = [
   {
-    platform: "x",
-    url: "https://x.com/techatlas_mx",
-    label: "X",
-  },
-  {
     platform: "github",
-    url: "https://github.com/techatlas-mx",
+    url: "https://github.com/ojoanalogo/atlas-tech",
     label: "Github",
-  },
-  {
-    platform: "linkedin",
-    url: "https://linkedin.com/company/techatlas",
-    label: "Linkedin",
   },
 ];
