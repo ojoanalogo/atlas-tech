@@ -2,17 +2,11 @@
 import EventCalendar from "../calendar/EventCalendar";
 import EventDetailModal from "../calendar/EventDetailModal";
 import AddToCalendarButton from "../calendar/AddToCalendarButton";
-
-interface Props {
-  calendarOnly?: boolean;
-}
-
-const { calendarOnly = false } = Astro.props;
 ---
 
 <section id="calendario" class="py-4 px-4">
   <div class="max-w-7xl mx-auto">
-    <EventCalendar calendarOnly={calendarOnly} client:load />
+    <EventCalendar client:load />
   </div>
   <EventDetailModal client:load />
   <AddToCalendarButton client:only="react" />

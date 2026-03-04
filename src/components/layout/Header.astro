@@ -221,31 +221,30 @@ const directoryLinks = ENTRY_TYPES.map((type) => ({
 </div>
 
 <script>
-  // --- Mobile menu ---
-  const menuToggle = document.getElementById("mobile-menu-toggle");
-  const menuClose = document.getElementById("mobile-menu-close");
-  const mobileMenu = document.getElementById("mobile-menu");
-
+  // --- Mobile menu (event delegation for resize resilience) ---
   function openMenu() {
+    const mobileMenu = document.getElementById("mobile-menu");
     if (!mobileMenu) return;
     mobileMenu.classList.remove("opacity-0", "invisible");
     mobileMenu.classList.add("opacity-100", "visible");
     document.body.style.overflow = "hidden";
-    menuToggle?.setAttribute("aria-expanded", "true");
+    document.getElementById("mobile-menu-toggle")?.setAttribute("aria-expanded", "true");
   }
 
   function closeMenu() {
+    const mobileMenu = document.getElementById("mobile-menu");
     if (!mobileMenu) return;
     mobileMenu.classList.add("opacity-0", "invisible");
     mobileMenu.classList.remove("opacity-100", "visible");
     document.body.style.overflow = "";
-    menuToggle?.setAttribute("aria-expanded", "false");
+    document.getElementById("mobile-menu-toggle")?.setAttribute("aria-expanded", "false");
   }
 
-  menuToggle?.addEventListener("click", openMenu);
-  menuClose?.addEventListener("click", closeMenu);
-  mobileMenu?.querySelectorAll("a").forEach((link) => {
-    link.addEventListener("click", closeMenu);
+  document.addEventListener("click", (e) => {
+    const target = (e.target as Element);
+    if (target.closest("#mobile-menu-toggle")) { openMenu(); return; }
+    if (target.closest("#mobile-menu-close")) { closeMenu(); return; }
+    if (target.closest("#mobile-menu a")) { closeMenu(); }
   });
 
   // --- Generic dropdown system ---

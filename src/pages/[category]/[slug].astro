@@ -53,11 +53,20 @@ const iconMap: Record<string, typeof Rocket> = {
   user: User,
 };
 
-const entryIcon = ENTRY_TYPE_CONFIG[entry.data.entryType as AtlasEntryType]?.icon;
+const entryIcon =
+  ENTRY_TYPE_CONFIG[entry.data.entryType as AtlasEntryType]?.icon;
 const EntryIcon = iconMap[entryIcon];
 
-const details: { label: string; value: string | number | undefined; icon?: typeof Rocket }[] = [
-  { label: "Categoria", value: typeLabels[entry.data.entryType], icon: EntryIcon },
+const details: {
+  label: string;
+  value: string | number | undefined;
+  icon?: typeof Rocket;
+}[] = [
+  {
+    label: "Categoria",
+    value: typeLabels[entry.data.entryType],
+    icon: EntryIcon,
+  },
   { label: "Fundada", value: entry.data.foundedYear },
   { label: "Equipo", value: entry.data.teamSize },
   { label: "Etapa", value: entry.data.stage },
@@ -94,9 +103,9 @@ const links: { label: string; url: string | undefined; icon: string }[] = [
   {
     label: "YouTube",
     url: entry.data.youtube
-      ? (entry.data.youtube.startsWith("http")
-          ? entry.data.youtube
-          : `https://youtube.com/@${entry.data.youtube}`)
+      ? entry.data.youtube.startsWith("http")
+        ? entry.data.youtube
+        : `https://youtube.com/@${entry.data.youtube}`
       : undefined,
     icon: "youtube",
   },
@@ -111,7 +120,7 @@ const links: { label: string; url: string | undefined; icon: string }[] = [
   description={entry.data.tagline}
   image={entry.data.coverImage?.src ?? entry.data.logo?.src}
 >
-  <div class="max-w-7xl mx-auto px-4 py-8">
+  <div class="max-w-7xl mx-auto px-4 py-4">
     {/* Breadcrumb */}
     <nav aria-label="Breadcrumb" class="text-xs font-mono text-muted mb-6">
       <a href="/" class="hover:text-accent transition-colors">INICIO</a>
@@ -212,8 +221,8 @@ const links: { label: string; url: string | undefined; icon: string }[] = [
               )
             }
             {
-              entry.data.hiring && (
-                entry.data.hiringUrl ? (
+              entry.data.hiring &&
+                (entry.data.hiringUrl ? (
                   <a
                     href={entry.data.hiringUrl}
                     target="_blank"
@@ -228,8 +237,7 @@ const links: { label: string; url: string | undefined; icon: string }[] = [
                     <Briefcase class="w-4 h-4" />
                     CONTRATANDO
                   </span>
-                )
-              )
+                ))
             }
             {
               entry.data.availableForHire && (
@@ -368,7 +376,9 @@ const links: { label: string; url: string | undefined; icon: string }[] = [
                   <div class="flex items-center justify-between">
                     <span class="text-sm text-muted">{detail.label}</span>
                     <span class="text-sm font-mono text-primary flex items-center gap-1.5">
-                      {detail.icon && <detail.icon class="w-4 h-4 text-accent" />}
+                      {detail.icon && (
+                        <detail.icon class="w-4 h-4 text-accent" />
+                      )}
                       {detail.value}
                     </span>
                   </div>

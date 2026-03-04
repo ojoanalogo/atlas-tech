@@ -256,9 +256,7 @@ function UpcomingEventsSidebar({
   );
 }
 
-export { UpcomingEventsSidebar };
-
-export default function EventCalendar({ calendarOnly = false }: { calendarOnly?: boolean }) {
+export default function EventCalendar() {
   const { events, eventsByDate, status, refetch } = useEventsData();
 
   const now = new Date();
@@ -357,9 +355,9 @@ export default function EventCalendar({ calendarOnly = false }: { calendarOnly?:
   }
 
   return (
-    <div className={`grid ${calendarOnly ? "" : "lg:grid-cols-9"} gap-4 overflow-hidden`}>
+    <div className="grid lg:grid-cols-9 gap-4 overflow-hidden">
       {/* Left column — desktop only */}
-      <div className={`hidden md:block ${calendarOnly ? "" : "lg:col-span-5"} min-w-0`}>
+      <div className="hidden md:block lg:col-span-5 min-w-0">
         {/* Desktop calendar */}
         <div className="bg-card border border-border rounded-lg p-4">
           <MonthNav className="mb-4" />
@@ -448,9 +446,7 @@ export default function EventCalendar({ calendarOnly = false }: { calendarOnly?:
       </div>
 
       {/* Right: Upcoming events sidebar */}
-      {!calendarOnly && (
-        <UpcomingEventsSidebar events={events} status={status} refetch={refetch} />
-      )}
+      <UpcomingEventsSidebar events={events} status={status} refetch={refetch} />
     </div>
   );
 }
