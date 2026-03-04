@@ -1,0 +1,47 @@
+---
+import EventsHeroSidebar from "../calendar/EventsHeroSidebar";
+import EventDetailModal from "../calendar/EventDetailModal";
+import AddToCalendarButton from "../calendar/AddToCalendarButton";
+import { CalendarDays, Plus } from "@lucide/astro";
+---
+
+<section id="eventos-hero" class="py-8 px-4">
+  <div
+    class="max-w-7xl lg:mx-auto flex flex-col lg:flex-row gap-16 items-center"
+  >
+    {/* Left: Text content */}
+    <div
+      class="space-y-6 flex-1 flex flex-col items-center text-center lg:items-start lg:text-left"
+    >
+      <div
+        class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-accent/10 border border-accent/20"
+      >
+        <CalendarDays class="w-3.5 h-3.5 text-accent" />
+        <span class="text-xs font-mono font-semibold text-accent tracking-wide"
+          >// DIRECTORIO</span
+        >
+      </div>
+
+      <h1
+        class="text-4xl md:text-5xl lg:text-hero font-sans font-bold text-primary leading-[1.1] tracking-tight"
+      >
+        EVENTOS TECH<br />
+        EN SINALOA
+      </h1>
+
+      <p
+        class="text-sm md:text-base font-mono text-muted leading-relaxed max-w-125"
+      >
+        Meetups, talleres, hackatones y conferencias. Conecta con la comunidad
+        tecnológica de Sinaloa y no te pierdas ni un solo evento.
+      </p>
+    </div>
+
+    {/* Right: Upcoming events sidebar (reused from calendar) */}
+    <div class="hidden lg:block w-full lg:w-125 shrink-0">
+      <EventsHeroSidebar client:visible />
+    </div>
+  </div>
+  <EventDetailModal client:load />
+  <AddToCalendarButton client:only="react" />
+</section>

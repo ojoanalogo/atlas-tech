@@ -1,0 +1,17 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import EventsHeroSection from "../components/sections/EventsHeroSection.astro";
+import CalendarSection from "../components/sections/CalendarSection.astro";
+import MatrixBackground from "../components/layout/MatrixBackground.astro";
+---
+
+<BaseLayout title="Eventos Tech en Sinaloa | Sinaloa Tech Atlas">
+  <MatrixBackground
+    movementDirection="up-left"
+    movementSpeed={0.04}
+    highlight={false}
+    slot="bg"
+  />
+  <EventsHeroSection />
+  <CalendarSection calendarOnly />
+</BaseLayout>

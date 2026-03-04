@@ -176,6 +176,20 @@ export default function SubmitWizard({ cities }: Props) {
   // Step 5: Imágenes & envío
   const logoRef = useRef<HTMLInputElement>(null);
   const coverRef = useRef<HTMLInputElement>(null);
+  const [logoPreview, setLogoPreview] = useState<string | null>(null);
+  const [coverPreview, setCoverPreview] = useState<string | null>(null);
+
+  function handleFilePreview(
+    file: File | undefined,
+    setter: (url: string | null) => void,
+  ) {
+    if (file) {
+      const url = URL.createObjectURL(file);
+      setter(url);
+    } else {
+      setter(null);
+    }
+  }
 
   function canAdvance(): boolean {
     switch (step) {
@@ -995,29 +1009,73 @@ export default function SubmitWizard({ cities }: Props) {
             Imágenes y envío
           </h2>
 
-          <div className="space-y-3">
-            <label className="block">
-              <span className="text-xs font-mono text-muted uppercase tracking-wider">
+          <div className="space-y-4">
+            <div>
+              <span className="text-xs font-mono text-muted uppercase tracking-wider block mb-1">
                 Logo
               </span>
               <input
                 ref={logoRef}
                 type="file"
                 accept="image/*"
-                className="mt-1 w-full text-sm text-muted font-mono file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border file:border-border file:text-sm file:font-mono file:font-semibold file:bg-card file:text-primary hover:file:border-accent file:transition-colors file:cursor-pointer"
+                onChange={(e) =>
+                  handleFilePreview(e.target.files?.[0], setLogoPreview)
+                }
+                className="w-full text-sm text-muted font-mono file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border file:border-border file:text-sm file:font-mono file:font-semibold file:bg-card file:text-primary hover:file:border-accent file:transition-colors file:cursor-pointer"
               />
-            </label>
-            <label className="block">
-              <span className="text-xs font-mono text-muted uppercase tracking-wider">
+              {logoPreview && (
+                <div className="mt-2 relative w-20 h-20">
+                  <img
+                    src={logoPreview}
+                    alt="Logo preview"
+                    className="w-20 h-20 rounded-lg border border-border object-cover"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setLogoPreview(null);
+                      if (logoRef.current) logoRef.current.value = "";
+                    }}
+                    className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-red-500 text-white flex items-center justify-center hover:bg-red-600 transition-colors"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </div>
+              )}
+            </div>
+            <div>
+              <span className="text-xs font-mono text-muted uppercase tracking-wider block mb-1">
                 Imagen de portada
               </span>
               <input
                 ref={coverRef}
                 type="file"
                 accept="image/*"
-                className="mt-1 w-full text-sm text-muted font-mono file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border file:border-border file:text-sm file:font-mono file:font-semibold file:bg-card file:text-primary hover:file:border-accent file:transition-colors file:cursor-pointer"
+                onChange={(e) =>
+                  handleFilePreview(e.target.files?.[0], setCoverPreview)
+                }
+                className="w-full text-sm text-muted font-mono file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border file:border-border file:text-sm file:font-mono file:font-semibold file:bg-card file:text-primary hover:file:border-accent file:transition-colors file:cursor-pointer"
               />
-            </label>
+              {coverPreview && (
+                <div className="mt-2 relative">
+                  <img
+                    src={coverPreview}
+                    alt="Cover preview"
+                    className="w-full max-h-48 rounded-lg border border-border object-cover"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setCoverPreview(null);
+                      if (coverRef.current) coverRef.current.value = "";
+                    }}
+                    className="absolute top-2 right-2 w-6 h-6 rounded-full bg-red-500 text-white flex items-center justify-center hover:bg-red-600 transition-colors"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Review summary */}
