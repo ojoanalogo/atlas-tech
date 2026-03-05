@@ -1,5 +1,5 @@
 ---
-import { ExternalLink } from "@lucide/astro";
+import { ExternalLink, Rss } from "@lucide/astro";
 
 interface Props {
   x?: string;
@@ -11,7 +11,8 @@ const { x } = Astro.props;
 {
   x && (
     <div class="bg-card/90 backdrop-blur-sm border border-border rounded-lg p-6">
-      <h2 class="font-mono text-xs text-muted uppercase tracking-wider mb-4">
+      <h2 class="font-mono text-xs text-muted uppercase tracking-wider mb-4 flex items-center gap-2">
+        <Rss class="w-4 h-4 text-accent" />
         Actividad
       </h2>
       <div>

@@ -16,7 +16,9 @@ function formatDateBadge(dateStr: string): { day: string; month: string } {
   const date = new Date(y, m - 1, d);
   return {
     day: String(d),
-    month: date.toLocaleDateString("es-MX", { month: "short" }).replace(".", ""),
+    month: date
+      .toLocaleDateString("es-MX", { month: "short" })
+      .replace(".", ""),
   };
 }
 
@@ -30,14 +32,14 @@ function EventCard({ ev }: { ev: TechEvent }) {
     <button
       type="button"
       onClick={() => openEventDetail(ev)}
-      className="w-full bg-[var(--color-card)] border border-[var(--color-border)] rounded-lg p-3 flex items-center gap-3 text-left transition-all duration-200 hover:border-[var(--color-accent)]/40 hover:shadow-sm cursor-pointer group"
+      className="w-full bg-card border border-border rounded-lg p-3 flex items-center gap-3 text-left transition-all duration-200 hover:border-[var(--color-accent)]/40 hover:shadow-sm cursor-pointer group"
     >
       {/* Date badge */}
-      <div className="w-12 h-12 rounded-lg bg-[var(--color-accent)]/10 border border-[var(--color-accent)]/20 flex flex-col items-center justify-center shrink-0">
-        <span className="text-base font-sans font-bold text-[var(--color-accent)] leading-none">
+      <div className="w-12 h-12 rounded-lg bg-accent/10 border border-accent/20 flex flex-col items-center justify-center shrink-0">
+        <span className="text-base font-sans font-bold text-accent leading-none">
           {day}
         </span>
-        <span className="text-2xs font-mono font-semibold text-[var(--color-accent)] uppercase leading-tight">
+        <span className="text-2xs font-mono font-semibold text-accent uppercase leading-tight">
           {month}
         </span>
       </div>
@@ -45,7 +47,7 @@ function EventCard({ ev }: { ev: TechEvent }) {
       {/* Info */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
-          <span className="text-sm font-sans font-semibold text-[var(--color-primary)] group-hover:text-[var(--color-accent)] transition-colors truncate">
+          <span className="text-sm font-sans font-semibold text-primary group-hover:text-accent transition-colors truncate">
             {ev.title}
           </span>
           <span
@@ -60,12 +62,12 @@ function EventCard({ ev }: { ev: TechEvent }) {
         </div>
         <div className="flex items-center gap-2 mt-0.5">
           {ev.organizer && (
-            <span className="text-xs font-mono text-[var(--color-muted)] truncate">
+            <span className="text-xs font-mono text-muted truncate">
               {ev.organizer}
             </span>
           )}
           {ev.startTime && (
-            <span className="text-xs font-mono text-[var(--color-muted)]">
+            <span className="text-xs font-mono text-muted">
               · {ev.startTime}
             </span>
           )}
@@ -79,18 +81,18 @@ function EventCard({ ev }: { ev: TechEvent }) {
       </div>
 
       {/* Arrow */}
-      <ArrowRight className="w-4 h-4 text-[var(--color-muted)] group-hover:text-[var(--color-accent)] transition-colors shrink-0" />
+      <ArrowRight className="w-4 h-4 text-muted group-hover:text-accent transition-colors shrink-0" />
     </button>
   );
 }
 
 function SkeletonCard() {
   return (
-    <div className="bg-[var(--color-card)] border border-[var(--color-border)] rounded-lg p-3 flex items-center gap-3">
-      <div className="w-12 h-12 rounded-lg bg-[var(--color-elevated)] animate-pulse shrink-0" />
+    <div className="bg-card border border-border rounded-lg p-3 flex items-center gap-3">
+      <div className="w-12 h-12 rounded-lg bg-elevated animate-pulse shrink-0" />
       <div className="flex-1 space-y-2">
-        <div className="h-4 w-3/4 rounded bg-[var(--color-elevated)] animate-pulse" />
-        <div className="h-3 w-1/2 rounded bg-[var(--color-elevated)] animate-pulse" />
+        <div className="h-4 w-3/4 rounded bg-elevated animate-pulse" />
+        <div className="h-3 w-1/2 rounded bg-elevated animate-pulse" />
       </div>
     </div>
   );
@@ -124,16 +126,23 @@ export default function UpcomingEventsStrip() {
   if (!isLoading && upcoming.length === 0) return null;
 
   const items = isLoading
-    ? Array.from({ length: 3 }).map((_, i) => ({ key: `skeleton-${i}`, skeleton: true as const }))
-    : upcoming.map((ev, i) => ({ key: `${i}-${ev.date}-${ev.title}`, skeleton: false as const, ev }));
+    ? Array.from({ length: 3 }).map((_, i) => ({
+        key: `skeleton-${i}`,
+        skeleton: true as const,
+      }))
+    : upcoming.map((ev, i) => ({
+        key: `${i}-${ev.date}-${ev.title}`,
+        skeleton: false as const,
+        ev,
+      }));
 
   return (
     <div>
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <CalendarDays className="w-4 h-4 text-[var(--color-accent)]" />
-          <h2 className="text-sm font-mono font-semibold text-[var(--color-muted)] tracking-wide uppercase">
+          <CalendarDays className="w-4 h-4 text-accent" />
+          <h2 className="text-sm font-mono font-semibold text-muted tracking-wide uppercase">
             Próximos eventos
           </h2>
         </div>
@@ -145,7 +154,7 @@ export default function UpcomingEventsStrip() {
               .querySelector("#calendario")
               ?.scrollIntoView({ behavior: "smooth" });
           }}
-          className="inline-flex items-center gap-1 text-xs font-mono font-medium text-[var(--color-accent)] hover:underline"
+          className="inline-flex items-center gap-1 text-xs font-mono font-medium text-accent hover:underline"
         >
           Ver calendario
           <ArrowRight className="w-3 h-3" />
@@ -161,10 +170,7 @@ export default function UpcomingEventsStrip() {
         >
           <CarouselContent className="-ml-3">
             {items.map((item) => (
-              <CarouselItem
-                key={item.key}
-                className="pl-3 basis-[85%]"
-              >
+              <CarouselItem key={item.key} className={`pl-3 ${items.length === 1 ? "basis-full" : "basis-[85%]"}`}>
                 {item.skeleton ? <SkeletonCard /> : <EventCard ev={item.ev} />}
               </CarouselItem>
             ))}
@@ -183,7 +189,7 @@ export default function UpcomingEventsStrip() {
       </div>
 
       {/* Desktop grid */}
-      <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+      <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-3">
         {items.map((item) =>
           item.skeleton ? (
             <SkeletonCard key={item.key} />

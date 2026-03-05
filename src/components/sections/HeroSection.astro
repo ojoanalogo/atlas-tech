@@ -60,7 +60,7 @@ const { cityCounts = {} } = Astro.props;
     </div>
 
     {/* Right: Hero Map Card */}
-    <div class="hidden lg:block w-full lg:w-125 shrink-0">
+    <div class="hidden lg:block w-full lg:w-110 xl:w-125 shrink-0">
       <div
         class="bg-card border border-border rounded-lg p-4 flex flex-col gap-4 h-[45vh]"
       >
@@ -81,12 +81,7 @@ const { cityCounts = {} } = Astro.props;
         <div
           class="flex-1 bg-elevated border border-border rounded overflow-hidden"
         >
-          <SinaloaMap
-            compact
-            linkOnClick
-            cityCounts={cityCounts}
-            client:idle
-          />
+          <SinaloaMap compact linkOnClick cityCounts={cityCounts} client:idle />
         </div>
       </div>
     </div>
