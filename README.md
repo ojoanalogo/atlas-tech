@@ -1,8 +1,7 @@
 <div align="center">
   <img src=".github/preview.png" alt="Atlas Tech Preview" width="100%" />
   <h1>Atlas Tech</h1>
-  <p><strong>Directorio del ecosistema tecnologico estatal</strong></p>
-  <p><em>Codigo abierto · Bajo costo · Listo para tu estado</em></p>
+  <p><strong>Directorio del ecosistema tecnologico de Sinaloa</strong></p>
 
 <a href="https://atlas-sinaloa.tech"><img src="https://img.shields.io/badge/🌐_sitio-atlas--sinaloa.tech-0969da?style=for-the-badge" alt="Sitio web" /></a>
 
@@ -12,7 +11,7 @@
 <img src="https://img.shields.io/badge/react-19-61dafb?style=flat-square&logo=react&logoColor=white" alt="React" />
 <img src="https://img.shields.io/badge/tailwind-4-06b6d4?style=flat-square&logo=tailwindcss&logoColor=white" alt="Tailwind" />
 <img src="https://img.shields.io/badge/cloudflare_pages-f38020?style=flat-square&logo=cloudflarepages&logoColor=white" alt="Cloudflare Pages" />
-<img src="https://img.shields.io/github/license/mxarc/atlas-tech?style=flat-square" alt="License" />
+<img src="https://img.shields.io/github/license/ojoanalogo/atlas-tech?style=flat-square" alt="License" />
 
 </div>
 
