@@ -1,17 +1,22 @@
 <div align="center">
   <img src=".github/preview.png" alt="Atlas Tech Preview" width="100%" />
   <h1>Atlas Tech</h1>
-  <p>Directorio del ecosistema tecnologico estatal</p>
+  <p><strong>Directorio del ecosistema tecnologico estatal</strong></p>
+  <p><em>Codigo abierto · Bajo costo · Listo para tu estado</em></p>
 
-<a href="https://atlas-sinaloa.tech"><img src="https://img.shields.io/badge/sitio-atlas--sinaloa.tech-blue?style=flat-square" alt="Sitio web" /></a>
-<img src="https://img.shields.io/badge/astro-5.x-purple?style=flat-square&logo=astro" alt="Astro" />
-<img src="https://img.shields.io/badge/react-19-blue?style=flat-square&logo=react" alt="React" />
-<img src="https://img.shields.io/badge/tailwind-4-cyan?style=flat-square&logo=tailwindcss" alt="Tailwind" />
-<img src="https://img.shields.io/badge/hosting-Cloudflare%20Pages-orange?style=flat-square&logo=cloudflarepages" alt="Cloudflare Pages" />
+<a href="https://atlas-sinaloa.tech"><img src="https://img.shields.io/badge/🌐_sitio-atlas--sinaloa.tech-0969da?style=for-the-badge" alt="Sitio web" /></a>
+
+<br />
+
+<img src="https://img.shields.io/badge/astro-5.x-bc52ee?style=flat-square&logo=astro&logoColor=white" alt="Astro" />
+<img src="https://img.shields.io/badge/react-19-61dafb?style=flat-square&logo=react&logoColor=white" alt="React" />
+<img src="https://img.shields.io/badge/tailwind-4-06b6d4?style=flat-square&logo=tailwindcss&logoColor=white" alt="Tailwind" />
+<img src="https://img.shields.io/badge/cloudflare_pages-f38020?style=flat-square&logo=cloudflarepages&logoColor=white" alt="Cloudflare Pages" />
+<img src="https://img.shields.io/github/license/mxarc/atlas-tech?style=flat-square" alt="License" />
 
 </div>
 
-<br />
+---
 
 Sitio estatico construido con Astro, React y Tailwind CSS, pensado para ser de bajo costo: los unicos gastos son el dominio y el tiempo invertido.
 
