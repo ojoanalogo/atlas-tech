@@ -1,9 +1,30 @@
 import type { CollectionEntry } from "astro:content";
 import type { AtlasEntryType } from "../config";
-import { CITY_IDS, emptyTypeCounts } from "../config";
+import { CITY_IDS, SITE_URL, emptyTypeCounts } from "../config";
 
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+
+/**
+ * Append UTM parameters to an outbound URL so directory entries
+ * can attribute inbound traffic back to this site.
+ */
+export function buildTrackedUrl(
+  url: string,
+  slug: string,
+  medium = "directorio",
+): string {
+  try {
+    const u = new URL(url);
+    u.searchParams.set("utm_source", new URL(SITE_URL).hostname);
+    u.searchParams.set("utm_medium", medium);
+    u.searchParams.set("utm_campaign", slug);
+    return u.toString();
+  } catch {
+    // If the URL is invalid (e.g. mailto:), return it unchanged
+    return url;
+  }
+}
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));

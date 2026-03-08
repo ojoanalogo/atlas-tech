@@ -39,6 +39,8 @@ import {
   Cog,
 } from "@lucide/astro";
 import SocialActivity from "../../components/sections/SocialActivity.astro";
+import ShareButton from "../../components/ui/ShareButton.tsx";
+import { buildTrackedUrl } from "../../utils";
 
 export async function getStaticPaths() {
   const entries = await getCollection("atlas");
@@ -94,46 +96,57 @@ const details: {
   { label: "Modelo", value: entry.data.businessModel, icon: Target },
 ].filter((d) => d.value !== undefined);
 
+const track = (url: string | undefined) =>
+  url ? buildTrackedUrl(url, entry.slug) : undefined;
+
 const links: { label: string; url: string | undefined; icon: string }[] = [
-  { label: "Sitio web", url: entry.data.website, icon: "globe" },
+  { label: "Sitio web", url: track(entry.data.website), icon: "globe" },
   {
     label: "X",
-    url: entry.data.x ? `https://x.com/${entry.data.x}` : undefined,
+    url: track(entry.data.x ? `https://x.com/${entry.data.x}` : undefined),
     icon: "x",
   },
-  { label: "LinkedIn", url: entry.data.linkedin, icon: "linkedin" },
+  { label: "LinkedIn", url: track(entry.data.linkedin), icon: "linkedin" },
   {
     label: "GitHub",
-    url: entry.data.github
-      ? `https://github.com/${entry.data.github}`
-      : undefined,
+    url: track(
+      entry.data.github
+        ? `https://github.com/${entry.data.github}`
+        : undefined,
+    ),
     icon: "github",
   },
   {
     label: "Instagram",
-    url: entry.data.instagram
-      ? `https://instagram.com/${entry.data.instagram}`
-      : undefined,
+    url: track(
+      entry.data.instagram
+        ? `https://instagram.com/${entry.data.instagram}`
+        : undefined,
+    ),
     icon: "instagram",
   },
   {
     label: "YouTube",
-    url: entry.data.youtube
-      ? entry.data.youtube.startsWith("http")
-        ? entry.data.youtube
-        : `https://youtube.com/@${entry.data.youtube}`
-      : undefined,
+    url: track(
+      entry.data.youtube
+        ? entry.data.youtube.startsWith("http")
+          ? entry.data.youtube
+          : `https://youtube.com/@${entry.data.youtube}`
+        : undefined,
+    ),
     icon: "youtube",
   },
-  { label: "Discord", url: entry.data.discord, icon: "discord" },
-  { label: "Telegram", url: entry.data.telegram, icon: "telegram" },
-  { label: "Portafolio", url: entry.data.portfolio, icon: "globe" },
+  { label: "Discord", url: track(entry.data.discord), icon: "discord" },
+  { label: "Telegram", url: track(entry.data.telegram), icon: "telegram" },
+  { label: "Portafolio", url: track(entry.data.portfolio), icon: "globe" },
   {
     label: "Email",
     url: entry.data.email ? `mailto:${entry.data.email}` : undefined,
     icon: "mail",
   },
 ].filter((l) => l.url !== undefined);
+
+const pageUrl = Astro.url.href;
 
 // Determine layout mode: compact for sparse entries, full for rich ones
 const sidebarCardCount =
@@ -247,7 +260,7 @@ const isCompactLayout = sidebarCardCount <= 2 && !entry.data.coverImage;
             {
               entry.data.website && (
                 <a
-                  href={entry.data.website}
+                  href={track(entry.data.website)}
                   target="_blank"
                   rel="noopener noreferrer"
                   class="inline-flex items-center gap-2 px-4 py-2 bg-accent text-accent-foreground font-mono font-semibold text-sm rounded-lg hover:bg-accent/90 transition-colors"
@@ -292,6 +305,11 @@ const isCompactLayout = sidebarCardCount <= 2 && !entry.data.coverImage;
                 </span>
               )
             }
+            <ShareButton
+              client:load
+              title={`${entry.data.name} — TECH_ATLAS`}
+              url={pageUrl}
+            />
           </div>
 
           {/* Compact layout: inline details strip */}

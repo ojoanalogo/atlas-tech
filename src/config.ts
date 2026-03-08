@@ -1,4 +1,5 @@
 export const SITE_TITLE = "TECH_ATLAS";
+export const SITE_URL = "https://atlas-sinaloa.tech";
 
 export const DEFAULT_PAGINATION = 18;
 
