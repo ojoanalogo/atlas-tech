@@ -38,6 +38,7 @@ import {
   Wrench,
   Cog,
 } from "@lucide/astro";
+import EntryCard from "../../components/entries/EntryCard.astro";
 import SocialActivity from "../../components/sections/SocialActivity.astro";
 import ShareButton from "../../components/ui/ShareButton.tsx";
 import { buildTrackedUrl } from "../../utils";
@@ -49,12 +50,29 @@ export async function getStaticPaths() {
       category: CATEGORY_URL_MAP[entry.data.entryType as AtlasEntryType],
       slug: entry.slug,
     },
-    props: { entry },
+    props: { entry, allEntries: entries },
   }));
 }
 
-const { entry } = Astro.props;
+const { entry, allEntries } = Astro.props;
 const { Content } = await entry.render();
+
+// "Mira más" suggestions: same entryType > same city > random
+const others = allEntries.filter((e) => e.slug !== entry.slug);
+const sameType = others.filter(
+  (e) => e.data.entryType === entry.data.entryType,
+);
+const sameCity = others.filter(
+  (e) =>
+    e.data.city === entry.data.city &&
+    e.data.entryType !== entry.data.entryType,
+);
+const rest = others.filter(
+  (e) =>
+    e.data.entryType !== entry.data.entryType &&
+    e.data.city !== entry.data.city,
+);
+const suggestions = [...sameType, ...sameCity, ...rest].slice(0, 3);
 
 const typeLabels: Record<string, string> = Object.fromEntries(
   Object.entries(ENTRY_TYPE_CONFIG).map(([k, v]) => [
@@ -110,9 +128,7 @@ const links: { label: string; url: string | undefined; icon: string }[] = [
   {
     label: "GitHub",
     url: track(
-      entry.data.github
-        ? `https://github.com/${entry.data.github}`
-        : undefined,
+      entry.data.github ? `https://github.com/${entry.data.github}` : undefined,
     ),
     icon: "github",
   },
@@ -179,11 +195,13 @@ const isCompactLayout = sidebarCardCount <= 2 && !entry.data.coverImage;
       <span class="text-primary">{entry.data.name.toUpperCase()}</span>
     </nav>
 
-    <div class:list={[
-      isCompactLayout
-        ? "max-w-3xl mx-auto"
-        : "grid lg:grid-cols-[1fr_20rem] gap-8"
-    ]}>
+    <div
+      class:list={[
+        isCompactLayout
+          ? "max-w-3xl mx-auto"
+          : "grid lg:grid-cols-[1fr_20rem] gap-8",
+      ]}
+    >
       {/* Main column */}
       <div class="space-y-8">
         {/* Cover image — only if entry has a cover */}
@@ -199,25 +217,28 @@ const isCompactLayout = sidebarCardCount <= 2 && !entry.data.coverImage;
                 />
               </div>
               {/* Logo overlapping cover at bottom-left */}
-              {
-                entry.data.logo && (
-                  <div class="absolute -bottom-7 left-5">
-                    <Image
-                      src={entry.data.logo}
-                      alt={`${entry.data.name} logo`}
-                      width={140}
-                      height={72}
-                      class="h-14 w-auto max-w-[140px] rounded-xl border-4 border-card bg-card object-contain shadow-lg px-1"
-                    />
-                  </div>
-                )
-              }
+              {entry.data.logo && (
+                <div class="absolute -bottom-7 left-5">
+                  <Image
+                    src={entry.data.logo}
+                    alt={`${entry.data.name} logo`}
+                    width={140}
+                    height={72}
+                    class="h-14 w-auto max-w-[140px] rounded-xl border-4 border-card bg-card object-contain shadow-lg px-1"
+                  />
+                </div>
+              )}
             </div>
           )
         }
 
         {/* Header */}
-        <div class:list={["space-y-4", entry.data.coverImage && entry.data.logo ? "pt-4" : ""]}>
+        <div
+          class:list={[
+            "space-y-4",
+            entry.data.coverImage && entry.data.logo ? "pt-4" : "",
+          ]}
+        >
           <div class="flex items-center gap-3">
             {/* Logo inline when no cover image */}
             {
@@ -313,59 +334,89 @@ const isCompactLayout = sidebarCardCount <= 2 && !entry.data.coverImage;
           </div>
 
           {/* Compact layout: inline details strip */}
-          {isCompactLayout && (
-            <div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-secondary">
-              <span class="inline-flex items-center gap-1.5">
-                <MapPin class="w-3.5 h-3.5 text-accent" />
-                {entry.data.city === "global" ? "Global" : getCityName(entry.data.city)}, {entry.data.state}
-              </span>
-              {details.filter(d => d.label !== "Categoria").map((detail) => (
+          {
+            isCompactLayout && (
+              <div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-secondary">
                 <span class="inline-flex items-center gap-1.5">
-                  <detail.icon class="w-3.5 h-3.5 text-accent" />
-                  {detail.label}: <span class="font-mono text-primary">{detail.value}</span>
+                  <MapPin class="w-3.5 h-3.5 text-accent" />
+                  {entry.data.city === "global"
+                    ? "Global"
+                    : getCityName(entry.data.city)}
+                  , {entry.data.state}
                 </span>
-              ))}
-              {links.map((link) => (
-                <a
-                  href={link.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="inline-flex items-center gap-1 text-secondary hover:text-accent transition-colors"
-                >
-                  {link.icon === "globe" && <Globe class="w-3.5 h-3.5" />}
-                  {link.icon === "x" && (
-                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-                    </svg>
-                  )}
-                  {link.icon === "instagram" && (
-                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M7.0301.084c-1.2768.0602-2.1487.264-2.911.5634-.7888.3075-1.4575.72-2.1228 1.3877-.6652.6677-1.075 1.3368-1.3802 2.127-.2954.7638-.4956 1.6365-.552 2.914-.0564 1.2775-.0689 1.6882-.0626 4.947.0062 3.2586.0206 3.6671.0825 4.9473.061 1.2765.264 2.1482.5635 2.9107.308.7889.72 1.4573 1.388 2.1228.6679.6655 1.3365 1.0743 2.1285 1.38.7632.295 1.6361.4961 2.9134.552 1.2773.056 1.6884.069 4.9462.0627 3.2578-.0062 3.668-.0207 4.9478-.0814 1.28-.0607 2.147-.2652 2.9098-.5633.7889-.3086 1.4578-.72 2.1228-1.3881.665-.6682 1.0745-1.3378 1.3795-2.1284.2957-.7632.4966-1.636.552-2.9124.056-1.2809.0692-1.6898.063-4.948-.0063-3.2583-.021-3.6668-.0817-4.9465-.0607-1.2797-.264-2.1487-.5633-2.9117-.3084-.7889-.72-1.4568-1.3876-2.1228C21.2982 1.33 20.628.9208 19.8504.6165 19.0872.321 18.2143.12 16.9366.0667 15.6588.0107 15.2479-.0022 11.9999.0009 8.7519.0037 8.3424.0177 7.0689.0827l.0012-.0003z" />
-                    </svg>
-                  )}
-                  {link.icon === "linkedin" && (
-                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
-                    </svg>
-                  )}
-                  {link.icon === "github" && (
-                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" />
-                    </svg>
-                  )}
-                  {link.icon === "youtube" && (
-                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
-                    </svg>
-                  )}
-                  {link.icon === "discord" && <MessageCircle class="w-3.5 h-3.5" />}
-                  {link.icon === "telegram" && <Send class="w-3.5 h-3.5" />}
-                  {link.icon === "mail" && <Mail class="w-3.5 h-3.5" />}
-                  {link.label}
-                </a>
-              ))}
-            </div>
-          )}
+                {details
+                  .filter((d) => d.label !== "Categoria")
+                  .map((detail) => (
+                    <span class="inline-flex items-center gap-1.5">
+                      <detail.icon class="w-3.5 h-3.5 text-accent" />
+                      {detail.label}:{" "}
+                      <span class="font-mono text-primary">{detail.value}</span>
+                    </span>
+                  ))}
+                {links.map((link) => (
+                  <a
+                    href={link.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="inline-flex items-center gap-1 text-secondary hover:text-accent transition-colors"
+                  >
+                    {link.icon === "globe" && <Globe class="w-3.5 h-3.5" />}
+                    {link.icon === "x" && (
+                      <svg
+                        class="w-3.5 h-3.5"
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                      >
+                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                      </svg>
+                    )}
+                    {link.icon === "instagram" && (
+                      <svg
+                        class="w-3.5 h-3.5"
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                      >
+                        <path d="M7.0301.084c-1.2768.0602-2.1487.264-2.911.5634-.7888.3075-1.4575.72-2.1228 1.3877-.6652.6677-1.075 1.3368-1.3802 2.127-.2954.7638-.4956 1.6365-.552 2.914-.0564 1.2775-.0689 1.6882-.0626 4.947.0062 3.2586.0206 3.6671.0825 4.9473.061 1.2765.264 2.1482.5635 2.9107.308.7889.72 1.4573 1.388 2.1228.6679.6655 1.3365 1.0743 2.1285 1.38.7632.295 1.6361.4961 2.9134.552 1.2773.056 1.6884.069 4.9462.0627 3.2578-.0062 3.668-.0207 4.9478-.0814 1.28-.0607 2.147-.2652 2.9098-.5633.7889-.3086 1.4578-.72 2.1228-1.3881.665-.6682 1.0745-1.3378 1.3795-2.1284.2957-.7632.4966-1.636.552-2.9124.056-1.2809.0692-1.6898.063-4.948-.0063-3.2583-.021-3.6668-.0817-4.9465-.0607-1.2797-.264-2.1487-.5633-2.9117-.3084-.7889-.72-1.4568-1.3876-2.1228C21.2982 1.33 20.628.9208 19.8504.6165 19.0872.321 18.2143.12 16.9366.0667 15.6588.0107 15.2479-.0022 11.9999.0009 8.7519.0037 8.3424.0177 7.0689.0827l.0012-.0003z" />
+                      </svg>
+                    )}
+                    {link.icon === "linkedin" && (
+                      <svg
+                        class="w-3.5 h-3.5"
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                      >
+                        <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+                      </svg>
+                    )}
+                    {link.icon === "github" && (
+                      <svg
+                        class="w-3.5 h-3.5"
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                      >
+                        <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" />
+                      </svg>
+                    )}
+                    {link.icon === "youtube" && (
+                      <svg
+                        class="w-3.5 h-3.5"
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                      >
+                        <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+                      </svg>
+                    )}
+                    {link.icon === "discord" && (
+                      <MessageCircle class="w-3.5 h-3.5" />
+                    )}
+                    {link.icon === "telegram" && <Send class="w-3.5 h-3.5" />}
+                    {link.icon === "mail" && <Mail class="w-3.5 h-3.5" />}
+                    {link.label}
+                  </a>
+                ))}
+              </div>
+            )
+          }
         </div>
 
         {/* About */}
@@ -433,7 +484,7 @@ const isCompactLayout = sidebarCardCount <= 2 && !entry.data.coverImage;
               </h2>
               <div class="flex flex-wrap gap-2">
                 {entry.data.services.map((service) => (
-                  <span class="text-xs font-mono px-2 py-1 rounded bg-purple-500/10 text-purple-400 border border-purple-500/20">
+                  <span class="text-xs font-mono px-2 py-1 rounded bg-elevated text-secondary border border-border">
                     {service}
                   </span>
                 ))}
@@ -452,7 +503,7 @@ const isCompactLayout = sidebarCardCount <= 2 && !entry.data.coverImage;
               </h2>
               <div class="flex flex-wrap gap-2">
                 {entry.data.technologies.map((tech) => (
-                  <span class="text-xs font-mono px-2 py-1 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                  <span class="text-xs font-mono px-2 py-1 rounded bg-elevated text-secondary border border-border">
                     {tech}
                   </span>
                 ))}
@@ -483,143 +534,135 @@ const isCompactLayout = sidebarCardCount <= 2 && !entry.data.coverImage;
         <SocialActivity x={entry.data.x} />
       </div>
 
-      {!isCompactLayout && (
-      <div class="space-y-4">
-        {/* Details card */}
-        {
-          details.length > 0 && (
+      {
+        !isCompactLayout && (
+          <div class="space-y-4">
+            {/* Details card */}
+            {details.length > 0 && (
+              <div class="bg-card/90 backdrop-blur-sm border border-border rounded-lg p-5">
+                <h2 class="font-mono text-xs text-muted uppercase tracking-wider mb-4 flex items-center gap-2">
+                  <LayoutList class="w-4 h-4 text-accent" />
+                  Detalles
+                </h2>
+                <div class="space-y-3">
+                  {details.map((detail) => (
+                    <div class="flex items-center justify-between">
+                      <span class="text-sm text-muted flex items-center gap-1.5">
+                        <detail.icon class="w-3.5 h-3.5 text-muted" />
+                        {detail.label}
+                      </span>
+                      <span class="text-sm font-mono text-primary">
+                        {detail.value}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Location card */}
             <div class="bg-card/90 backdrop-blur-sm border border-border rounded-lg p-5">
               <h2 class="font-mono text-xs text-muted uppercase tracking-wider mb-4 flex items-center gap-2">
-                <LayoutList class="w-4 h-4 text-accent" />
-                Detalles
+                <MapPin class="w-4 h-4 text-accent" />
+                Ubicacion
               </h2>
-              <div class="space-y-3">
-                {details.map((detail) => (
-                  <div class="flex items-center justify-between">
-                    <span class="text-sm text-muted flex items-center gap-1.5">
-                      <detail.icon class="w-3.5 h-3.5 text-muted" />
-                      {detail.label}
-                    </span>
-                    <span class="text-sm font-mono text-primary">
-                      {detail.value}
-                    </span>
-                  </div>
-                ))}
+              <div class="flex items-center gap-2 text-sm text-primary">
+                <MapPin class="w-4 h-4 text-accent shrink-0" />
+                <span>
+                  {entry.data.city === "global"
+                    ? "Global"
+                    : getCityName(entry.data.city)}
+                </span>
               </div>
+              <p class="text-xs text-muted mt-1 ml-6">
+                {entry.data.state}, {entry.data.country}
+              </p>
             </div>
-          )
-        }
 
-        {/* Location card */}
-        <div
-          class="bg-card/90 backdrop-blur-sm border border-border rounded-lg p-5"
-        >
-          <h2
-            class="font-mono text-xs text-muted uppercase tracking-wider mb-4 flex items-center gap-2"
-          >
-            <MapPin class="w-4 h-4 text-accent" />
-            Ubicacion
-          </h2>
-          <div class="flex items-center gap-2 text-sm text-primary">
-            <MapPin class="w-4 h-4 text-accent shrink-0" />
-            <span
-              >{
-                entry.data.city === "global"
-                  ? "Global"
-                  : getCityName(entry.data.city)
-              }</span
-            >
+            {/* Links card */}
+            {links.length > 0 && (
+              <div class="bg-card/90 backdrop-blur-sm border border-border rounded-lg p-5">
+                <h2 class="font-mono text-xs text-muted uppercase tracking-wider mb-4 flex items-center gap-2">
+                  <LinkIcon class="w-4 h-4 text-accent" />
+                  Enlaces
+                </h2>
+                <div class="space-y-2">
+                  {links.map((link) => (
+                    <a
+                      href={link.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="flex items-center gap-2 text-sm text-secondary hover:text-accent transition-colors"
+                    >
+                      {/* Globe (website) */}
+                      {link.icon === "globe" && <Globe class="w-4 h-4" />}
+                      {/* X / Twitter */}
+                      {link.icon === "x" && (
+                        <svg
+                          class="w-4 h-4"
+                          viewBox="0 0 24 24"
+                          fill="currentColor"
+                        >
+                          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                        </svg>
+                      )}
+                      {/* LinkedIn */}
+                      {link.icon === "linkedin" && (
+                        <svg
+                          class="w-4 h-4"
+                          viewBox="0 0 24 24"
+                          fill="currentColor"
+                        >
+                          <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+                        </svg>
+                      )}
+                      {/* GitHub */}
+                      {link.icon === "github" && (
+                        <svg
+                          class="w-4 h-4"
+                          viewBox="0 0 24 24"
+                          fill="currentColor"
+                        >
+                          <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" />
+                        </svg>
+                      )}
+                      {/* Instagram */}
+                      {link.icon === "instagram" && (
+                        <svg
+                          class="w-4 h-4"
+                          viewBox="0 0 24 24"
+                          fill="currentColor"
+                        >
+                          <path d="M7.0301.084c-1.2768.0602-2.1487.264-2.911.5634-.7888.3075-1.4575.72-2.1228 1.3877-.6652.6677-1.075 1.3368-1.3802 2.127-.2954.7638-.4956 1.6365-.552 2.914-.0564 1.2775-.0689 1.6882-.0626 4.947.0062 3.2586.0206 3.6671.0825 4.9473.061 1.2765.264 2.1482.5635 2.9107.308.7889.72 1.4573 1.388 2.1228.6679.6655 1.3365 1.0743 2.1285 1.38.7632.295 1.6361.4961 2.9134.552 1.2773.056 1.6884.069 4.9462.0627 3.2578-.0062 3.668-.0207 4.9478-.0814 1.28-.0607 2.147-.2652 2.9098-.5633.7889-.3086 1.4578-.72 2.1228-1.3881.665-.6682 1.0745-1.3378 1.3795-2.1284.2957-.7632.4966-1.636.552-2.9124.056-1.2809.0692-1.6898.063-4.948-.0063-3.2583-.021-3.6668-.0817-4.9465-.0607-1.2797-.264-2.1487-.5633-2.9117-.3084-.7889-.72-1.4568-1.3876-2.1228C21.2982 1.33 20.628.9208 19.8504.6165 19.0872.321 18.2143.12 16.9366.0667 15.6588.0107 15.2479-.0022 11.9999.0009 8.7519.0037 8.3424.0177 7.0689.0827l.0012-.0003zm-.2073 2.3102c1.2568-.0567 1.6334-.0689 4.8492-.0625 3.2157.0063 3.5906.021 4.8495.0827 1.1644.0531 1.7975.2479 2.2183.4117.5576.2168.9556.4758 1.3742.8943.4184.4185.6776.8162.8945 1.3741.1636.4202.3583 1.0537.4113 2.2179.0624 1.2589.0762 1.6338.0825 4.8492.0063 3.2155-.0059 3.5906-.0684 4.8495-.0618 1.1646-.252 1.7977-.4156 2.218-.2167.5579-.4756.9558-.8942 1.3742-.4182.4188-.816.6778-1.3741.8944-.4202.1636-1.0539.3584-2.2185.4116-1.2585.0623-1.6332.0764-4.8494.0827-3.2161.0062-3.5907-.006-4.8497-.0685-1.1644-.0618-1.7977-.252-2.2178-.4156-.558-.2167-.9562-.4756-1.3742-.8943-.4185-.4182-.6778-.816-.8944-1.3742-.1637-.4202-.3585-1.0539-.4117-2.2181-.0623-1.2588-.0764-1.6334-.0826-4.8495-.0062-3.216.0061-3.5907.0685-4.8495.0617-1.1644.252-1.7976.4155-2.2178.2168-.558.4757-.9562.8943-1.3742.4185-.4185.8162-.6778 1.3742-.8944.4203-.1636 1.0539-.3584 2.218-.4117zm9.9233 3.3544a1.4348 1.4348 0 1 0 0 2.8695 1.4348 1.4348 0 0 0 0-2.8695zm-6.7253 1.7197a4.862 4.862 0 1 0 .001 9.7235 4.862 4.862 0 0 0-.001-9.7235zm0 2.139a2.7232 2.7232 0 1 1 0 5.4464 2.7232 2.7232 0 0 1 0-5.4464z" />
+                        </svg>
+                      )}
+                      {/* YouTube */}
+                      {link.icon === "youtube" && (
+                        <svg
+                          class="w-4 h-4"
+                          viewBox="0 0 24 24"
+                          fill="currentColor"
+                        >
+                          <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+                        </svg>
+                      )}
+                      {/* Discord */}
+                      {link.icon === "discord" && (
+                        <MessageCircle class="w-4 h-4" />
+                      )}
+                      {/* Telegram */}
+                      {link.icon === "telegram" && <Send class="w-4 h-4" />}
+                      {/* Mail */}
+                      {link.icon === "mail" && <Mail class="w-4 h-4" />}
+                      {link.label}
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
-          <p class="text-xs text-muted mt-1 ml-6">
-            {entry.data.state}, {entry.data.country}
-          </p>
-        </div>
-
-        {/* Links card */}
-        {
-          links.length > 0 && (
-            <div class="bg-card/90 backdrop-blur-sm border border-border rounded-lg p-5">
-              <h2 class="font-mono text-xs text-muted uppercase tracking-wider mb-4 flex items-center gap-2">
-                <LinkIcon class="w-4 h-4 text-accent" />
-                Enlaces
-              </h2>
-              <div class="space-y-2">
-                {links.map((link) => (
-                  <a
-                    href={link.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="flex items-center gap-2 text-sm text-secondary hover:text-accent transition-colors"
-                  >
-                    {/* Globe (website) */}
-                    {link.icon === "globe" && <Globe class="w-4 h-4" />}
-                    {/* X / Twitter */}
-                    {link.icon === "x" && (
-                      <svg
-                        class="w-4 h-4"
-                        viewBox="0 0 24 24"
-                        fill="currentColor"
-                      >
-                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-                      </svg>
-                    )}
-                    {/* LinkedIn */}
-                    {link.icon === "linkedin" && (
-                      <svg
-                        class="w-4 h-4"
-                        viewBox="0 0 24 24"
-                        fill="currentColor"
-                      >
-                        <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
-                      </svg>
-                    )}
-                    {/* GitHub */}
-                    {link.icon === "github" && (
-                      <svg
-                        class="w-4 h-4"
-                        viewBox="0 0 24 24"
-                        fill="currentColor"
-                      >
-                        <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" />
-                      </svg>
-                    )}
-                    {/* Instagram */}
-                    {link.icon === "instagram" && (
-                      <svg
-                        class="w-4 h-4"
-                        viewBox="0 0 24 24"
-                        fill="currentColor"
-                      >
-                        <path d="M7.0301.084c-1.2768.0602-2.1487.264-2.911.5634-.7888.3075-1.4575.72-2.1228 1.3877-.6652.6677-1.075 1.3368-1.3802 2.127-.2954.7638-.4956 1.6365-.552 2.914-.0564 1.2775-.0689 1.6882-.0626 4.947.0062 3.2586.0206 3.6671.0825 4.9473.061 1.2765.264 2.1482.5635 2.9107.308.7889.72 1.4573 1.388 2.1228.6679.6655 1.3365 1.0743 2.1285 1.38.7632.295 1.6361.4961 2.9134.552 1.2773.056 1.6884.069 4.9462.0627 3.2578-.0062 3.668-.0207 4.9478-.0814 1.28-.0607 2.147-.2652 2.9098-.5633.7889-.3086 1.4578-.72 2.1228-1.3881.665-.6682 1.0745-1.3378 1.3795-2.1284.2957-.7632.4966-1.636.552-2.9124.056-1.2809.0692-1.6898.063-4.948-.0063-3.2583-.021-3.6668-.0817-4.9465-.0607-1.2797-.264-2.1487-.5633-2.9117-.3084-.7889-.72-1.4568-1.3876-2.1228C21.2982 1.33 20.628.9208 19.8504.6165 19.0872.321 18.2143.12 16.9366.0667 15.6588.0107 15.2479-.0022 11.9999.0009 8.7519.0037 8.3424.0177 7.0689.0827l.0012-.0003zm-.2073 2.3102c1.2568-.0567 1.6334-.0689 4.8492-.0625 3.2157.0063 3.5906.021 4.8495.0827 1.1644.0531 1.7975.2479 2.2183.4117.5576.2168.9556.4758 1.3742.8943.4184.4185.6776.8162.8945 1.3741.1636.4202.3583 1.0537.4113 2.2179.0624 1.2589.0762 1.6338.0825 4.8492.0063 3.2155-.0059 3.5906-.0684 4.8495-.0618 1.1646-.252 1.7977-.4156 2.218-.2167.5579-.4756.9558-.8942 1.3742-.4182.4188-.816.6778-1.3741.8944-.4202.1636-1.0539.3584-2.2185.4116-1.2585.0623-1.6332.0764-4.8494.0827-3.2161.0062-3.5907-.006-4.8497-.0685-1.1644-.0618-1.7977-.252-2.2178-.4156-.558-.2167-.9562-.4756-1.3742-.8943-.4185-.4182-.6778-.816-.8944-1.3742-.1637-.4202-.3585-1.0539-.4117-2.2181-.0623-1.2588-.0764-1.6334-.0826-4.8495-.0062-3.216.0061-3.5907.0685-4.8495.0617-1.1644.252-1.7976.4155-2.2178.2168-.558.4757-.9562.8943-1.3742.4185-.4185.8162-.6778 1.3742-.8944.4203-.1636 1.0539-.3584 2.218-.4117zm9.9233 3.3544a1.4348 1.4348 0 1 0 0 2.8695 1.4348 1.4348 0 0 0 0-2.8695zm-6.7253 1.7197a4.862 4.862 0 1 0 .001 9.7235 4.862 4.862 0 0 0-.001-9.7235zm0 2.139a2.7232 2.7232 0 1 1 0 5.4464 2.7232 2.7232 0 0 1 0-5.4464z" />
-                      </svg>
-                    )}
-                    {/* YouTube */}
-                    {link.icon === "youtube" && (
-                      <svg
-                        class="w-4 h-4"
-                        viewBox="0 0 24 24"
-                        fill="currentColor"
-                      >
-                        <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
-                      </svg>
-                    )}
-                    {/* Discord */}
-                    {link.icon === "discord" && (
-                      <MessageCircle class="w-4 h-4" />
-                    )}
-                    {/* Telegram */}
-                    {link.icon === "telegram" && <Send class="w-4 h-4" />}
-                    {/* Mail */}
-                    {link.icon === "mail" && <Mail class="w-4 h-4" />}
-                    {link.label}
-                  </a>
-                ))}
-              </div>
-            </div>
-          )
-        }
-      </div>
-      )}
+        )
+      }
     </div>
   </div>
 </BaseLayout>
