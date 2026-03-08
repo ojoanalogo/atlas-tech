@@ -64,6 +64,58 @@ export default function AtcbPortal() {
       buttonStyle="round"
       size="2"
       lightMode="bodyScheme"
+      styleLight={[
+        "--btn-background: transparent",
+        "--btn-hover-background: #f3f2ef",
+        "--btn-border: #d4d4d8",
+        "--btn-hover-border: transparent",
+        "--btn-text: #18181b",
+        "--btn-hover-text: #18181b",
+        "--btn-border-radius: 0.5rem",
+        "--btn-padding-x: 0.75rem",
+        "--btn-padding-y: 0.5rem",
+        "--wrapper-padding: 0px",
+        "--btn-shadow: none",
+        "--btn-hover-shadow: none",
+        "--btn-active-shadow: none",
+        "--btn-font-weight: 400",
+        "--font: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace",
+        "--list-background: #ffffff",
+        "--list-hover-background: #f3f2ef",
+        "--list-text: #18181b",
+        "--list-hover-text: #1a7a4f",
+        "--list-close-background: #f3f2ef",
+        "--list-close-text: #71717a",
+        "--list-border-radius: 0.5rem",
+        "--list-shadow: 0 4px 12px rgb(0 0 0 / 8%)",
+        "--overlay-background: rgb(0 0 0 / 50%)",
+      ].join("; ")}
+      styleDark={[
+        "--btn-background: transparent",
+        "--btn-hover-background: #141414",
+        "--btn-border: #2f2f2f",
+        "--btn-hover-border: transparent",
+        "--btn-text: #ffffff",
+        "--btn-hover-text: #ffffff",
+        "--btn-border-radius: 0.5rem",
+        "--btn-padding-x: 0.75rem",
+        "--btn-padding-y: 0.5rem",
+        "--wrapper-padding: 0px",
+        "--btn-shadow: none",
+        "--btn-hover-shadow: none",
+        "--btn-active-shadow: none",
+        "--btn-font-weight: 400",
+        "--font: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace",
+        "--list-background: #0a0a0a",
+        "--list-hover-background: #141414",
+        "--list-text: #ffffff",
+        "--list-hover-text: #42ab7a",
+        "--list-close-background: #141414",
+        "--list-close-text: #6b6b6b",
+        "--list-border-radius: 0.5rem",
+        "--list-shadow: 0 4px 12px rgb(0 0 0 / 24%)",
+        "--overlay-background: rgb(0 0 0 / 60%)",
+      ].join("; ")}
       language="es"
       trigger="click"
       forceOverlay
