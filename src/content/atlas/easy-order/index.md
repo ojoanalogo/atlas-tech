@@ -1,6 +1,7 @@
 ---
 entryType: "startup"
 name: "easy order"
+publishDate: 2026-03-08
 verified: true
 tagline: "Sistema inteligente de pedidos para restaurantes"
 city: "culiacan"

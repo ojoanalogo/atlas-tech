@@ -1,6 +1,7 @@
 ---
 entryType: "consultory"
 name: "Nexgen Systems"
+publishDate: 2026-03-08
 verified: true
 tagline: "SaaS, Web Apps y Agentes IA para empresas"
 city: "culiacan"
