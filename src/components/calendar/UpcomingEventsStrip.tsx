@@ -32,7 +32,7 @@ function EventCard({ ev }: { ev: TechEvent }) {
     <button
       type="button"
       onClick={() => openEventDetail(ev)}
-      className="w-full bg-card border border-border rounded-lg p-3 flex items-center gap-3 text-left transition-all duration-200 hover:border-[var(--color-accent)]/40 hover:shadow-sm cursor-pointer group"
+      className="w-full h-full bg-card border border-border rounded-lg p-3 flex items-center gap-3 text-left transition-all duration-200 hover:border-[var(--color-accent)]/40 hover:shadow-sm cursor-pointer group"
     >
       {/* Date badge */}
       <div className="w-12 h-12 rounded-lg bg-accent/10 border border-accent/20 flex flex-col items-center justify-center shrink-0">
