@@ -11,7 +11,7 @@ tags: ["consultoria", "productos", "ia"]
 verified: true
 website: "https://molecula.digital"
 publishDate: 2026-03-01
-featured: true
+featured: false
 ---
 
 # Molecula Digital
