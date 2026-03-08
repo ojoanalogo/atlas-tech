@@ -96,11 +96,13 @@ const details: {
   label: string;
   value: string | number | undefined;
   icon: typeof Rocket;
+  valueIcon?: typeof Rocket;
 }[] = [
   {
     label: "Categoria",
     value: typeLabels[entry.data.entryType],
-    icon: EntryIcon,
+    icon: Tag,
+    valueIcon: EntryIcon,
   },
   { label: "Fundada", value: entry.data.foundedYear, icon: Calendar },
   { label: "Equipo", value: entry.data.teamSize, icon: Users },
@@ -165,10 +167,9 @@ const links: { label: string; url: string | undefined; icon: string }[] = [
 const pageUrl = Astro.url.href;
 
 // Determine layout mode: compact for sparse entries, full for rich ones
-const sidebarCardCount =
-  (details.length > 0 ? 1 : 0) + 1 + (links.length > 0 ? 1 : 0);
-// 1 = location card (always present)
-const isCompactLayout = sidebarCardCount <= 2 && !entry.data.coverImage;
+const sidebarCardCount = 1 + (links.length > 0 ? 1 : 0);
+// 1 = details card (always present, now includes location)
+const isCompactLayout = sidebarCardCount <= 1 && !entry.data.coverImage;
 ---
 
 <BaseLayout
@@ -538,45 +539,36 @@ const isCompactLayout = sidebarCardCount <= 2 && !entry.data.coverImage;
         !isCompactLayout && (
           <div class="space-y-4">
             {/* Details card */}
-            {details.length > 0 && (
-              <div class="bg-card/90 backdrop-blur-sm border border-border rounded-lg p-5">
-                <h2 class="font-mono text-xs text-muted uppercase tracking-wider mb-4 flex items-center gap-2">
-                  <LayoutList class="w-4 h-4 text-accent" />
-                  Detalles
-                </h2>
-                <div class="space-y-3">
-                  {details.map((detail) => (
-                    <div class="flex items-center justify-between">
-                      <span class="text-sm text-muted flex items-center gap-1.5">
-                        <detail.icon class="w-3.5 h-3.5 text-muted" />
-                        {detail.label}
-                      </span>
-                      <span class="text-sm font-mono text-primary">
-                        {detail.value}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Location card */}
             <div class="bg-card/90 backdrop-blur-sm border border-border rounded-lg p-5">
               <h2 class="font-mono text-xs text-muted uppercase tracking-wider mb-4 flex items-center gap-2">
-                <MapPin class="w-4 h-4 text-accent" />
-                Ubicacion
+                <LayoutList class="w-4 h-4 text-accent" />
+                Detalles
               </h2>
-              <div class="flex items-center gap-2 text-sm text-primary">
-                <MapPin class="w-4 h-4 text-accent shrink-0" />
-                <span>
-                  {entry.data.city === "global"
-                    ? "Global"
-                    : getCityName(entry.data.city)}
-                </span>
+              <div class="space-y-3">
+                <div class="flex items-center justify-between">
+                  <span class="text-sm text-muted flex items-center gap-1.5">
+                    <MapPin class="w-3.5 h-3.5 text-muted" />
+                    Ubicacion
+                  </span>
+                  <span class="text-sm font-mono text-primary">
+                    {entry.data.city === "global"
+                      ? "Global"
+                      : getCityName(entry.data.city)}{entry.data.state ? `, ${entry.data.state}` : ""}
+                  </span>
+                </div>
+                {details.map((detail) => (
+                  <div class="flex items-center justify-between">
+                    <span class="text-sm text-muted flex items-center gap-1.5">
+                      <detail.icon class="w-3.5 h-3.5 text-muted" />
+                      {detail.label}
+                    </span>
+                    <span class="text-sm font-mono text-primary flex items-center gap-1.5">
+                      {detail.valueIcon && <detail.valueIcon class="w-3.5 h-3.5 text-accent" />}
+                      {detail.value}
+                    </span>
+                  </div>
+                ))}
               </div>
-              <p class="text-xs text-muted mt-1 ml-6">
-                {entry.data.state}, {entry.data.country}
-              </p>
             </div>
 
             {/* Links card */}
