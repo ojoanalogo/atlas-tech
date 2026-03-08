@@ -2,7 +2,6 @@
 entryType: "startup"
 name: "Lucci.ai"
 tagline: "Lucci te permitirá probar diversos modelos de inteligencia artificial para automatizar operaciones diarias."
-description: ""
 city: "culiacan"
 state: "Sinaloa"
 country: "México"

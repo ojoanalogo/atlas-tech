@@ -2,7 +2,6 @@
 entryType: "community"
 name: "4to Piso"
 tagline: "Ecosistema de emprendimiento e innovación en Sinaloa"
-description: "Espacio de emprendimiento ubicado en el cuarto piso del Parque de Emprendimiento e Innovación Sinaloa (PEIS) en el Tec de Monterrey Campus Sinaloa. Ofrece coworking, makerspace, laboratorio de Design Thinking y programas de aceleración para emprendedores."
 logo: ./logo.png
 coverImage: ./cover.webp
 city: "culiacan"

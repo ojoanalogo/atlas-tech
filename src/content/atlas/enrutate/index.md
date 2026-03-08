@@ -2,7 +2,6 @@
 entryType: "startup"
 name: "Enrutate"
 tagline: "Facilitamos el uso de transporte público a través del uso de plataformas digitales"
-description: ""
 city: "culiacan"
 state: "Sinaloa"
 country: "México"

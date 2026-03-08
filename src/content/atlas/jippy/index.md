@@ -2,7 +2,6 @@
 entryType: "startup"
 name: Jippy
 tagline: "Cada compra cuenta una historia. Jippy te da el mapa completo: quién es tu mejor cliente, quién está por irse y qué hacer al respecto."
-description: ""
 city: "culiacan"
 state: "Sinaloa"
 country: "México"

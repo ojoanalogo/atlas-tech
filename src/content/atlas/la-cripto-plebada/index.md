@@ -2,7 +2,6 @@
 entryType: "community"
 name: "La Cripto Plebada"
 tagline: "Tecnología, comunidad y construcción colectiva."
-description: "La Cripto Plebada es una comunidad tecnológica enfocada en el aprendizaje colaborativo y la apropiación crítica de herramientas digitales. Impulsamos espacios de formación, diálogo y construcción en torno a nuevas tecnologías, promoviendo el pensamiento crítico y la participación activa de jóvenes en el ecosistema digital."
 logo: ./logo.png
 coverImage: ./cover.jpg
 city: "culiacan"

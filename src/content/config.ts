@@ -1,7 +1,9 @@
 import { defineCollection, z } from "astro:content";
 import { ALL_CITY_IDS, ENTRY_TYPES } from "../config";
 
-const cityEnum = z.enum(ALL_CITY_IDS as readonly [string, ...string[]]);
+const cityEnum = z.enum(
+  ALL_CITY_IDS as unknown as readonly [string, ...string[]],
+);
 const entryTypeEnum = z.enum(ENTRY_TYPES);
 
 const atlasSchema = ({ image }: { image: Function }) =>
@@ -10,7 +12,6 @@ const atlasSchema = ({ image }: { image: Function }) =>
     entryType: entryTypeEnum,
     name: z.string(),
     tagline: z.string().optional(),
-    description: z.string(),
     logo: image().optional(),
     coverImage: image().optional(),
     city: cityEnum,
@@ -36,6 +37,7 @@ const atlasSchema = ({ image }: { image: Function }) =>
     technologies: z.array(z.string()).optional(),
     hiring: z.boolean().optional(),
     hiringUrl: z.string().url().optional(),
+    businessModel: z.string().optional(),
 
     // Community extras
     memberCount: z.number().optional(),

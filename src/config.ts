@@ -220,6 +220,67 @@ export const PLATFORM_OPTIONS = [
   { value: "Otro", label: "Otro" },
 ] as const;
 
+export const SECTOR_OPTIONS = [
+  { value: "Desarrollo Web", label: "Desarrollo Web" },
+  { value: "Desarrollo Mobile", label: "Desarrollo Mobile" },
+  { value: "SaaS", label: "SaaS" },
+  { value: "Fintech", label: "Fintech" },
+  { value: "Edtech", label: "Edtech" },
+  { value: "HealthTech", label: "HealthTech" },
+  { value: "AgriTech", label: "AgriTech" },
+  { value: "E-commerce", label: "E-commerce" },
+  { value: "IA / Machine Learning", label: "IA / Machine Learning" },
+  { value: "Ciberseguridad", label: "Ciberseguridad" },
+  { value: "IoT", label: "IoT" },
+  { value: "MarTech", label: "MarTech" },
+  { value: "LegalTech", label: "LegalTech" },
+  { value: "Logística", label: "Logística" },
+  { value: "Gaming", label: "Gaming" },
+  { value: "Blockchain / Web3", label: "Blockchain / Web3" },
+  { value: "Cloud / Infraestructura", label: "Cloud / Infraestructura" },
+  { value: "Data & Analytics", label: "Data & Analytics" },
+  { value: "Consultoría IT", label: "Consultoría IT" },
+  { value: "Automatización", label: "Automatización" },
+  { value: "Otro", label: "Otro" },
+] as const;
+
+export const MEETUP_FREQUENCY_OPTIONS = [
+  { value: "Permanente (online)", label: "Permanente (online)" },
+  { value: "Semanal", label: "Semanal" },
+  { value: "Quincenal", label: "Quincenal" },
+  { value: "Mensual", label: "Mensual" },
+  { value: "Trimestral", label: "Trimestral" },
+  { value: "Por evento", label: "Por evento" },
+  { value: "Otro", label: "Otro" },
+] as const;
+
+export const FOCUS_AREA_OPTIONS = [
+  { value: "Desarrollo Web", label: "Desarrollo Web" },
+  { value: "Desarrollo Mobile", label: "Desarrollo Mobile" },
+  { value: "IA / Machine Learning", label: "IA / Machine Learning" },
+  { value: "Emprendimiento", label: "Emprendimiento" },
+  { value: "Diseño UX/UI", label: "Diseño UX/UI" },
+  { value: "Ciberseguridad", label: "Ciberseguridad" },
+  { value: "Open Source", label: "Open Source" },
+  { value: "Gaming", label: "Gaming" },
+  { value: "Blockchain / Web3", label: "Blockchain / Web3" },
+  { value: "DevOps / Cloud", label: "DevOps / Cloud" },
+  { value: "Data Science", label: "Data Science" },
+  { value: "Networking", label: "Networking" },
+  { value: "Otro", label: "Otro" },
+] as const;
+
+export const BUSINESS_MODEL_OPTIONS = [
+  { value: "B2B", label: "B2B" },
+  { value: "B2C", label: "B2C" },
+  { value: "B2B2C", label: "B2B2C" },
+  { value: "Marketplace", label: "Marketplace" },
+  { value: "SaaS", label: "SaaS" },
+  { value: "Freemium", label: "Freemium" },
+  { value: "Open Source", label: "Open Source" },
+  { value: "Otro", label: "Otro" },
+] as const;
+
 export type SocialPlatform = "x" | "github" | "instagram" | "linkedin";
 
 export interface SocialLink {

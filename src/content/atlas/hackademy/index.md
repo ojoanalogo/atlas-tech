@@ -2,7 +2,6 @@
 entryType: "startup"
 name: "Hackademy"
 tagline: "Hackademy es  un modelo de entrenamiento en desarrollo de software"
-description: ""
 city: "culiacan"
 state: "Sinaloa"
 country: "México"

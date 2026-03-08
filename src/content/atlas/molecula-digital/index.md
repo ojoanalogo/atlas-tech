@@ -2,7 +2,6 @@
 entryType: "consultory"
 name: "Molecula Digital"
 tagline: "Productos digitales inteligentes que transforman la manera en que trabajas"
-description: "Integramos sistemas inteligentes que eliminan el trabajo repetitivo. Desde un chatbot hasta una operación completa. Empezamos rápido y escalamos contigo."
 city: "culiacan"
 logo: logo.png
 coverImage: cover.jpg
@@ -16,3 +15,5 @@ featured: true
 ---
 
 # Molecula Digital
+
+Integramos sistemas inteligentes que eliminan el trabajo repetitivo. Desde un chatbot hasta una operación completa. Empezamos rápido y escalamos contigo.

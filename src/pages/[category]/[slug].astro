@@ -23,6 +23,7 @@ import {
   Info,
   LayoutList,
   Link as LinkIcon,
+  Mail,
   MapPin,
   MessageCircle,
   Monitor,
@@ -90,6 +91,7 @@ const details: {
   { label: "Plataforma", value: entry.data.platform, icon: Monitor },
   { label: "Rol", value: entry.data.role, icon: UserCheck },
   { label: "Empresa", value: entry.data.company, icon: Building },
+  { label: "Modelo", value: entry.data.businessModel, icon: Target },
 ].filter((d) => d.value !== undefined);
 
 const links: { label: string; url: string | undefined; icon: string }[] = [
@@ -126,6 +128,11 @@ const links: { label: string; url: string | undefined; icon: string }[] = [
   { label: "Discord", url: entry.data.discord, icon: "discord" },
   { label: "Telegram", url: entry.data.telegram, icon: "telegram" },
   { label: "Portafolio", url: entry.data.portfolio, icon: "globe" },
+  {
+    label: "Email",
+    url: entry.data.email ? `mailto:${entry.data.email}` : undefined,
+    icon: "mail",
+  },
 ].filter((l) => l.url !== undefined);
 
 // Determine layout mode: compact for sparse entries, full for rich ones
@@ -335,6 +342,7 @@ const isCompactLayout = sidebarCardCount <= 2 && !entry.data.coverImage;
                   )}
                   {link.icon === "discord" && <MessageCircle class="w-3.5 h-3.5" />}
                   {link.icon === "telegram" && <Send class="w-3.5 h-3.5" />}
+                  {link.icon === "mail" && <Mail class="w-3.5 h-3.5" />}
                   {link.label}
                 </a>
               ))}
@@ -583,6 +591,8 @@ const isCompactLayout = sidebarCardCount <= 2 && !entry.data.coverImage;
                     )}
                     {/* Telegram */}
                     {link.icon === "telegram" && <Send class="w-4 h-4" />}
+                    {/* Mail */}
+                    {link.icon === "mail" && <Mail class="w-4 h-4" />}
                     {link.label}
                   </a>
                 ))}

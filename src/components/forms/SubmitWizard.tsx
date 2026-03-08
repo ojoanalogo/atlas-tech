@@ -25,6 +25,10 @@ import {
   STAGE_OPTIONS,
   TEAM_SIZE_OPTIONS,
   PLATFORM_OPTIONS,
+  SECTOR_OPTIONS,
+  MEETUP_FREQUENCY_OPTIONS,
+  FOCUS_AREA_OPTIONS,
+  BUSINESS_MODEL_OPTIONS,
   type AtlasEntryType,
 } from "../../config";
 
@@ -147,7 +151,9 @@ export default function SubmitWizard({ cities }: Props) {
   const [memberCount, setMemberCount] = useState("");
   const [meetupFrequency, setMeetupFrequency] = useState("");
   const [platform, setPlatform] = useState("");
-  const [focusAreas, setFocusAreas] = useState("");
+  const [focusAreas, setFocusAreas] = useState<string[]>([]);
+  const [focusAreaInput, setFocusAreaInput] = useState("");
+  const [businessModel, setBusinessModel] = useState("");
   const [role, setRole] = useState("");
   const [company, setCompany] = useState("");
   const [skills, setSkills] = useState("");
@@ -224,6 +230,26 @@ export default function SubmitWizard({ cities }: Props) {
     setTags(tags.filter((t) => t !== tag));
   }
 
+  function addFocusArea(area: string) {
+    const a = area.trim();
+    if (a && !focusAreas.includes(a) && focusAreas.length < 10) {
+      setFocusAreas([...focusAreas, a]);
+      setFocusAreaInput("");
+    }
+  }
+
+  function removeFocusArea(area: string) {
+    setFocusAreas(focusAreas.filter((a) => a !== area));
+  }
+
+  function csvToArray(value: string): string[] | undefined {
+    const arr = value
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
+    return arr.length > 0 ? arr : undefined;
+  }
+
   function buildPayload() {
     return {
       entryType,
@@ -231,32 +257,32 @@ export default function SubmitWizard({ cities }: Props) {
       tagline: tagline || undefined,
       description,
       city,
-      links: {
-        website: website || undefined,
-        x: x || undefined,
-        instagram: instagram || undefined,
-        linkedin: linkedin || undefined,
-        github: github || undefined,
-        youtube: youtube || undefined,
-        discord: discord || undefined,
-        telegram: telegram || undefined,
-      },
+      // Flat link fields (match Astro schema)
+      website: website || undefined,
+      x: x || undefined,
+      instagram: instagram || undefined,
+      linkedin: linkedin || undefined,
+      github: github || undefined,
+      youtube: youtube || undefined,
+      discord: discord || undefined,
+      telegram: telegram || undefined,
       tags: tags.length > 0 ? tags : undefined,
-      foundedYear: foundedYear || undefined,
+      foundedYear: foundedYear ? Number(foundedYear) : undefined,
       stage: stage || undefined,
       teamSize: teamSize || undefined,
       sector: sector || undefined,
-      services: services || undefined,
-      technologies: technologies || undefined,
+      services: csvToArray(services),
+      technologies: csvToArray(technologies),
       hiring: hiring || undefined,
       hiringUrl: hiringUrl || undefined,
-      memberCount: memberCount || undefined,
+      memberCount: memberCount ? Number(memberCount) : undefined,
       meetupFrequency: meetupFrequency || undefined,
       platform: platform || undefined,
-      focusAreas: focusAreas || undefined,
+      focusAreas: focusAreas.length > 0 ? focusAreas : undefined,
+      businessModel: businessModel || undefined,
       role: role || undefined,
       company: company || undefined,
-      skills: skills || undefined,
+      skills: csvToArray(skills),
       email: email || undefined,
       portfolio: portfolio || undefined,
       availableForHire: availableForHire || undefined,
@@ -453,7 +479,7 @@ export default function SubmitWizard({ cities }: Props) {
             </label>
             <label className="block">
               <span className="text-xs font-mono text-muted uppercase tracking-wider">
-                Descripción *
+                Acerca de *
               </span>
               <textarea
                 value={description}
@@ -465,6 +491,10 @@ export default function SubmitWizard({ cities }: Props) {
                 }
                 className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-hidden focus:border-accent transition-colors resize-y"
               />
+              <p className="text-xs text-muted mt-1 font-mono">
+                Este texto será el contenido principal de tu entrada en el
+                directorio.
+              </p>
             </label>
             <label className="block">
               <span className="text-xs font-mono text-muted uppercase tracking-wider">
@@ -500,6 +530,23 @@ export default function SubmitWizard({ cities }: Props) {
                 : "Campos específicos según el tipo de proyecto. Todos opcionales."}
           </p>
           <div className="space-y-3">
+            <label className="block">
+              <span className="text-xs font-mono text-muted uppercase tracking-wider">
+                Sector
+              </span>
+              <select
+                value={sector}
+                onChange={(e) => setSector(e.target.value)}
+                className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm focus:outline-hidden focus:border-accent transition-colors"
+              >
+                <option value="">Selecciona</option>
+                {SECTOR_OPTIONS.map((o) => (
+                  <option key={o.value} value={o.value}>
+                    {o.label}
+                  </option>
+                ))}
+              </select>
+            </label>
             {(entryType === "startup" ||
               entryType === "business" ||
               entryType === "consultory") && (
@@ -556,18 +603,6 @@ export default function SubmitWizard({ cities }: Props) {
                 </label>
                 <label className="block">
                   <span className="text-xs font-mono text-muted uppercase tracking-wider">
-                    Sector
-                  </span>
-                  <input
-                    type="text"
-                    value={sector}
-                    onChange={(e) => setSector(e.target.value)}
-                    placeholder="ej. Fintech, SaaS, Edtech"
-                    className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-hidden focus:border-accent transition-colors"
-                  />
-                </label>
-                <label className="block">
-                  <span className="text-xs font-mono text-muted uppercase tracking-wider">
                     Servicios
                   </span>
                   <input
@@ -619,6 +654,23 @@ export default function SubmitWizard({ cities }: Props) {
                     />
                   </label>
                 )}
+                <label className="block">
+                  <span className="text-xs font-mono text-muted uppercase tracking-wider">
+                    Modelo de negocio
+                  </span>
+                  <select
+                    value={businessModel}
+                    onChange={(e) => setBusinessModel(e.target.value)}
+                    className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm focus:outline-hidden focus:border-accent transition-colors"
+                  >
+                    <option value="">Selecciona</option>
+                    {BUSINESS_MODEL_OPTIONS.map((o) => (
+                      <option key={o.value} value={o.value}>
+                        {o.label}
+                      </option>
+                    ))}
+                  </select>
+                </label>
               </>
             )}
             {entryType === "community" && (
@@ -639,13 +691,18 @@ export default function SubmitWizard({ cities }: Props) {
                   <span className="text-xs font-mono text-muted uppercase tracking-wider">
                     Frecuencia de meetups
                   </span>
-                  <input
-                    type="text"
+                  <select
                     value={meetupFrequency}
                     onChange={(e) => setMeetupFrequency(e.target.value)}
-                    placeholder="ej. Semanal, Mensual, Permanente"
-                    className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-hidden focus:border-accent transition-colors"
-                  />
+                    className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm focus:outline-hidden focus:border-accent transition-colors"
+                  >
+                    <option value="">Selecciona</option>
+                    {MEETUP_FREQUENCY_OPTIONS.map((o) => (
+                      <option key={o.value} value={o.value}>
+                        {o.label}
+                      </option>
+                    ))}
+                  </select>
                 </label>
                 <label className="block">
                   <span className="text-xs font-mono text-muted uppercase tracking-wider">
@@ -664,18 +721,73 @@ export default function SubmitWizard({ cities }: Props) {
                     ))}
                   </select>
                 </label>
-                <label className="block">
-                  <span className="text-xs font-mono text-muted uppercase tracking-wider">
+                <div className="block">
+                  <span className="text-xs font-mono text-muted uppercase tracking-wider block mb-1">
                     Áreas de enfoque
                   </span>
-                  <input
-                    type="text"
-                    value={focusAreas}
-                    onChange={(e) => setFocusAreas(e.target.value)}
-                    placeholder="ej. IA, Web Dev, Emprendimiento (separados por coma)"
-                    className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-hidden focus:border-accent transition-colors"
-                  />
-                </label>
+                  <div className="flex gap-2 flex-wrap mb-2">
+                    {FOCUS_AREA_OPTIONS.map((o) => (
+                      <button
+                        key={o.value}
+                        type="button"
+                        onClick={() => addFocusArea(o.value)}
+                        disabled={
+                          focusAreas.includes(o.value) ||
+                          focusAreas.length >= 10
+                        }
+                        className={`text-xs font-mono px-2 py-1 rounded border transition-colors disabled:opacity-40 ${
+                          focusAreas.includes(o.value)
+                            ? "border-accent bg-accent/10 text-accent"
+                            : "border-border bg-card text-muted hover:border-accent/50 hover:text-accent"
+                        }`}
+                      >
+                        {o.label}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={focusAreaInput}
+                      onChange={(e) => setFocusAreaInput(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          addFocusArea(focusAreaInput);
+                        }
+                      }}
+                      placeholder="Otra área personalizada"
+                      className="flex-1 px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-hidden focus:border-accent transition-colors"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => addFocusArea(focusAreaInput)}
+                      disabled={focusAreas.length >= 10}
+                      className="px-3 py-2 rounded-lg border border-border bg-card text-muted hover:text-accent hover:border-accent transition-colors disabled:opacity-40"
+                    >
+                      <Plus className="w-4 h-4" />
+                    </button>
+                  </div>
+                  {focusAreas.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      {focusAreas.map((area) => (
+                        <span
+                          key={area}
+                          className="inline-flex items-center gap-1 text-xs font-mono px-2 py-1 rounded bg-accent/10 text-accent border border-accent/20"
+                        >
+                          {area}
+                          <button
+                            type="button"
+                            onClick={() => removeFocusArea(area)}
+                            className="hover:text-red-400 transition-colors"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </>
             )}
             {entryType === "person" && (

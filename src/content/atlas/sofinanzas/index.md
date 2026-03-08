@@ -2,7 +2,6 @@
 entryType: "startup"
 name: "Sofinanzas"
 tagline: "Tu aliada para mantener tus finanzas bajo control con inteligencia artificial a través de WhatsApp."
-description: "SofIA es un asistente inteligente de finanzas personales que permite registrar gastos por WhatsApp mediante texto, notas de voz o fotos de recibos. Categoriza automáticamente los gastos, crea presupuestos personalizados y ofrece reportes detallados para mejorar los hábitos financieros."
 city: "culiacan"
 state: "Sinaloa"
 country: "México"

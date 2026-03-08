@@ -2,7 +2,6 @@
 entryType: "startup"
 name: "Demontrail"
 tagline: "Hacemos juegos que se sienten. PC • Móvil • VR | Co-Dev Orgullosamente sinaloenses, con visión global."
-description: "Espacio de emprendimiento ubicado en el cuarto piso del Parque de Emprendimiento e Innovación Sinaloa (PEIS) en el Tec de Monterrey Campus Sinaloa. Ofrece coworking, makerspace, laboratorio de Design Thinking y programas de aceleración para emprendedores."
 city: "culiacan"
 logo: logo.png
 coverImage: screamers.jpg
