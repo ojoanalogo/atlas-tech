@@ -174,7 +174,7 @@ const isCompactLayout = sidebarCardCount <= 1 && !entry.data.coverImage;
 
 <BaseLayout
   title={`${entry.data.name} — TECH_ATLAS`}
-  description={entry.data.tagline}
+  description={entry.data.tagline || `${entry.data.name} en el ecosistema tech de Sinaloa`}
   image={entry.data.coverImage?.src ?? entry.data.logo?.src}
 >
   <div class="max-w-7xl mx-auto px-4 py-4">

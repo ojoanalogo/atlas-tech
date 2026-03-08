@@ -1,15 +1,16 @@
 ---
 import { ClientRouter } from "astro:transitions";
 import "../../styles/global.css";
+import { SITE_DESCRIPTION } from "../../config";
 
 export interface Props {
   title: string;
-  description: string;
+  description?: string;
   image?: string;
   article?: boolean;
 }
 
-const { title, description, image = "/og.png", article = false } = Astro.props;
+const { title, description = SITE_DESCRIPTION, image = "/og.png", article = false } = Astro.props;
 
 const isProd = import.meta.env.PROD;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
