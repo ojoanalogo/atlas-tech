@@ -18,7 +18,7 @@ export function buildTrackedUrl(
     const u = new URL(url);
     u.searchParams.set("utm_source", new URL(SITE_URL).hostname);
     u.searchParams.set("utm_medium", medium);
-    u.searchParams.set("utm_campaign", slug);
+    u.searchParams.set("utm_content", slug);
     return u.toString();
   } catch {
     // If the URL is invalid (e.g. mailto:), return it unchanged
