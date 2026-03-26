@@ -15,6 +15,7 @@ sector: "LegalTech"
 technologies: ["Nextjs","PGLite","React","TailwindCSS"]
 businessModel: "Open Source"
 logo: "fiscalio-logo.png"
+coverImage: "cover.png"
 publishDate: 2026-03-26
 verified: true
 ---
