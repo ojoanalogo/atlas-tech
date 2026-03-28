@@ -1,17 +1,6 @@
+# Local dev: only run Postgres + MinIO, app runs via `pnpm dev`
+# Usage: docker compose -f docker-compose.dev.yml up -d
 services:
-  app:
-    build: .
-    ports:
-      - "3000:3000"
-    env_file:
-      - .env.docker
-    depends_on:
-      postgres:
-        condition: service_healthy
-      minio:
-        condition: service_healthy
-    restart: unless-stopped
-
   postgres:
     image: postgres:16-alpine
     ports:
@@ -46,7 +35,6 @@ services:
       timeout: 5s
       retries: 5
 
-  # Creates the default bucket on startup
   minio-init:
     image: minio/mc
     depends_on:
