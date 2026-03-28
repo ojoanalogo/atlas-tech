@@ -240,6 +240,27 @@ export const FAQS = [
   },
 ]
 
+export interface AtlasCategory {
+  type: AtlasEntryType
+  label: string
+  description: string
+  icon: string
+  slug: string
+}
+
+const DISPLAY_CATEGORIES: AtlasEntryType[] = ['startup', 'consultory', 'community', 'person']
+
+export const ATLAS_CATEGORIES: AtlasCategory[] = DISPLAY_CATEGORIES.map((type) => ({
+  type,
+  label: ENTRY_TYPE_CONFIG[type].labelPlural,
+  description: ENTRY_TYPE_CONFIG[type].description,
+  icon: ENTRY_TYPE_CONFIG[type].icon,
+  slug: ENTRY_TYPE_CONFIG[type].slug,
+}))
+
+export const N8N_WEBHOOK_URL =
+  'https://n8n.operations.molecula.digital/webhook/55010ced-85fd-4778-b212-d07d238066e0'
+
 export const SOCIAL_LINKS = [
   {
     platform: 'github' as const,
