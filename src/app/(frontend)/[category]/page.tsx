@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import { getPublishedEntries } from '@/lib/payload'
 import { buildCityOptions } from '@/lib/utils'
 import { ENTRY_TYPE_CONFIG, URL_CATEGORY_MAP, type AtlasEntryType } from '@/config'
-import { DirectoryFilter } from '@/components/entries/DirectoryFilter'
+import DirectoryFilter from '@/components/entries/DirectoryFilter'
 import { DirectoryGrid } from '@/components/entries/DirectoryGrid'
 import { notFound } from 'next/navigation'
 

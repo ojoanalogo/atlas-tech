@@ -5,11 +5,11 @@ import { FAQS, SITE_URL } from '@/config'
 import { HeroSection } from '@/components/sections/HeroSection'
 import { CategorySection } from '@/components/sections/CategorySection'
 import { FeaturedSection } from '@/components/sections/FeaturedSection'
-import { MapSection } from '@/components/sections/MapSection'
+import MapSection from '@/components/sections/MapSection'
 import { CalendarSection } from '@/components/sections/CalendarSection'
 import { FaqSection } from '@/components/sections/FaqSection'
 import { CtaSection } from '@/components/sections/CtaSection'
-import { UpcomingEventsStrip } from '@/components/calendar/UpcomingEventsStrip'
+import UpcomingEventsStrip from '@/components/calendar/UpcomingEventsStrip'
 
 export default async function HomePage() {
   const [entriesResult, featuredResult] = await Promise.all([
