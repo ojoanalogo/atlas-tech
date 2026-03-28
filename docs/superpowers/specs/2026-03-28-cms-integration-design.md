@@ -29,10 +29,10 @@ Single Next.js application with Payload CMS v3 embedded, deployed as a Docker co
 │  ┌────────────────────────────────────┐  │
 │  │          Next.js App               │  │
 │  │                                    │  │
-│  │  ┌─────────────┐ ┌─────────────┐  │  │
-│  │  │ Payload CMS │ │ better-auth │  │  │
-│  │  │ (embedded)  │ │ (Google)    │  │  │
-│  │  └─────────────┘ └─────────────┘  │  │
+│  │  ┌─────────────┐ ┌─────────────┐   │  │
+│  │  │ Payload CMS │ │ better-auth │   │  │
+│  │  │ (embedded)  │ │ (Google)    │   │  │
+│  │  └─────────────┘ └─────────────┘   │  │
 │  │                                    │  │
 │  │  Public Site                       │  │
 │  │  - Static: entries, news, events   │  │
@@ -98,7 +98,7 @@ All 5 entry types in one collection: startup, community, business, consultory, p
 - `website` — URL
 - `x`, `instagram`, `linkedin`, `github`, `youtube` — social handles
 - `publishDate` — date
-- `owner` — email (links to better-auth user)
+- `owner` — text, stores better-auth user ID (links to `auth.users`)
 - `body` — Lexical rich text (replaces raw markdown)
 - `status` — draft/published (Payload built-in)
 
@@ -135,7 +135,7 @@ All 5 entry types in one collection: startup, community, business, consultory, p
 - `compensation` — text (flexible format)
 - `tags` — array of text
 - `contactUrl` — URL
-- `postedBy` — email (links to better-auth user)
+- `postedBy` — text, stores better-auth user ID (links to `auth.users`)
 - `entry` — optional relationship to entries (company-linked job)
 - `expiresAt` — date (auto-expire after 30 days, configurable)
 - `status` — draft/published (moderated)
@@ -192,7 +192,7 @@ Stores file metadata; actual files stored in Cloudflare R2.
 
 ### Connection between auth systems
 
-The link between better-auth public users and Payload documents is the **user's email** — stored in better-auth's `auth.users` table and as the `owner`/`postedBy` text field on Payload documents (not a Payload relationship, since it crosses schema boundaries). API routes validate the better-auth session, then stamp the authenticated user's email onto submissions. Payload access control uses this email to filter "my content" queries from the dashboard.
+The link between better-auth public users and Payload documents is the **user's ID** — stored in better-auth's `auth.users` table and as the `owner`/`postedBy` text field on Payload documents (not a Payload relationship, since it crosses schema boundaries). API routes validate the better-auth session, then stamp the authenticated user's ID onto submissions. Payload access control uses this ID to filter "my content" queries from the dashboard.
 
 ---
 
