@@ -44,14 +44,14 @@ const { cityCounts = {} } = Astro.props;
       <div class="flex flex-wrap gap-4 justify-center lg:justify-start">
         <a
           href="/directorio"
-          class="inline-flex items-center gap-2.5 px-6 py-3.5 bg-accent text-accent-foreground font-mono font-bold text-xs rounded hover:bg-accent/90 transition-colors"
+          class="inline-flex items-center gap-2.5 px-6 py-3.5 bg-accent uppercase text-accent-foreground font-mono font-bold text-xs rounded hover:bg-accent/90 transition-colors"
         >
           <Search class="w-4 h-4" />
           Explorar directorio
         </a>
         <a
           href="/directorio/submit"
-          class="inline-flex items-center gap-2.5 px-6 py-3.5 bg-card border border-border text-primary font-mono font-semibold text-xs rounded hover:border-accent/50 hover:text-accent transition-colors"
+          class="inline-flex items-center gap-2.5 px-6 py-3.5 bg-card uppercase border border-border text-primary font-mono font-semibold text-xs rounded hover:border-accent/50 hover:text-accent transition-colors"
         >
           <Plus class="w-4 h-4" />
           Agregar proyecto
@@ -62,7 +62,7 @@ const { cityCounts = {} } = Astro.props;
     {/* Right: Hero Map Card */}
     <div class="hidden lg:block w-full lg:w-110 xl:w-125 shrink-0">
       <div
-        class="bg-card border border-border rounded-lg p-4 flex flex-col gap-4 h-[45vh]"
+        class="bg-card border border-border rounded-xl p-4 flex flex-col gap-4 h-[45vh]"
       >
         {/* Map header */}
         <div class="flex items-center justify-between">
