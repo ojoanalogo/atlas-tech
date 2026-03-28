@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Rocket, Users, Briefcase, User, Menu, X, Map, CalendarDays, Plus } from 'lucide-react'
 import { ThemeToggle } from '@/components/ui/ThemeToggle'
+import { UserMenu } from '@/components/auth/UserMenu'
 import { ENTRY_TYPE_CONFIG, ENTRY_TYPES } from '@/config'
 
 const iconMap: Record<string, React.ReactNode> = {
@@ -92,6 +93,7 @@ export function Header() {
             Mapa
           </Link>
           <ThemeToggle />
+          <UserMenu />
           <Link
             href="/directorio/submit"
             className="ml-2 flex items-center gap-1 px-3 py-1.5 text-xs font-mono font-medium bg-accent text-accent-foreground rounded-md hover:bg-accent/90 transition-colors"
@@ -103,6 +105,7 @@ export function Header() {
 
         <div className="flex md:hidden items-center gap-2">
           <ThemeToggle />
+          <UserMenu />
           <button onClick={() => setMobileOpen(!mobileOpen)} className="p-2 text-secondary hover:text-primary">
             {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
@@ -124,6 +127,7 @@ export function Header() {
             <Link href="/noticias" className="block px-4 py-3 text-sm font-mono text-secondary hover:text-primary rounded-md hover:bg-elevated">Noticias</Link>
             <Link href="/empleos" className="block px-4 py-3 text-sm font-mono text-secondary hover:text-primary rounded-md hover:bg-elevated">Empleos</Link>
             <Link href="/#map" className="block px-4 py-3 text-sm font-mono text-secondary hover:text-primary rounded-md hover:bg-elevated">Mapa</Link>
+            <Link href="/dashboard" className="block px-4 py-3 text-sm font-mono text-secondary hover:text-primary rounded-md hover:bg-elevated">Dashboard</Link>
             <div className="h-px bg-border my-2" />
             <Link href="/directorio/submit" className="flex items-center justify-center gap-2 mx-4 py-3 text-sm font-mono font-medium bg-accent text-accent-foreground rounded-md">
               <Plus className="w-4 h-4" />
