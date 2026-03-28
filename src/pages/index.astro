@@ -14,6 +14,8 @@ import HeroSection from "../components/sections/HeroSection.astro";
 import MapSection from "../components/sections/MapSection.tsx";
 import CategorySection from "../components/sections/CategorySection.astro";
 import FeaturedSection from "../components/sections/FeaturedSection.astro";
+import FaqSection from "../components/sections/FaqSection.astro";
+import { FAQS } from "../config";
 import MatrixBackground from "../components/layout/MatrixBackground.astro";
 
 const allEntries = await getCollection("atlas");
@@ -21,9 +23,12 @@ const counts = countByType(allEntries);
 const featured = getFeaturedEntries(allEntries);
 const cityCounts = groupByCity(allEntries);
 const cityTypeCounts = countByTypeAndCity(allEntries);
+
+const totalEntries = Math.floor(allEntries.length / 5) * 5;
+const homeDescription = `Explora ${totalEntries}+ startups, consultorías, comunidades y talento tech en Sinaloa. Encuentra empresas, conecta con la comunidad y pon tu proyecto en el mapa.`;
 ---
 
-<BaseLayout>
+<BaseLayout title="Tech Atlas | Directorio del Ecosistema Tech de Sinaloa" description={homeDescription}>
   <link
     slot="head"
     rel="preload"
@@ -31,6 +36,50 @@ const cityTypeCounts = countByTypeAndCity(allEntries);
     as="fetch"
     crossorigin
   />
+  <script slot="head" type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Tech Atlas",
+    "url": "https://atlas-sinaloa.tech",
+    "logo": "https://atlas-sinaloa.tech/android-chrome-512x512.png",
+    "description": homeDescription,
+    "sameAs": [
+      "https://github.com/ojoanalogo/atlas-tech"
+    ],
+    "areaServed": {
+      "@type": "State",
+      "name": "Sinaloa",
+      "containedInPlace": {
+        "@type": "Country",
+        "name": "México"
+      }
+    }
+  })} />
+  <script slot="head" type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": FAQS.map((faq) => ({
+      "@type": "Question",
+      "name": faq.question,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": faq.answer,
+      },
+    })),
+  })} />
+  <script slot="head" type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "SiteNavigationElement",
+    "name": ["Startups", "Consultorías", "Comunidades", "Personas", "Eventos", "Directorio"],
+    "url": [
+      "https://atlas-sinaloa.tech/startups",
+      "https://atlas-sinaloa.tech/consultoras",
+      "https://atlas-sinaloa.tech/comunidades",
+      "https://atlas-sinaloa.tech/personas",
+      "https://atlas-sinaloa.tech/eventos",
+      "https://atlas-sinaloa.tech/directorio",
+    ],
+  })} />
   <MatrixBackground
     movementDirection="up-left"
     movementSpeed={0.04}
@@ -51,5 +100,6 @@ const cityTypeCounts = countByTypeAndCity(allEntries);
     client:visible
   />
   <CalendarSection />
+  <FaqSection />
   <CtaSection />
 </BaseLayout>

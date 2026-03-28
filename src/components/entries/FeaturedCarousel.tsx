@@ -72,6 +72,8 @@ export default function FeaturedCarousel({
                     <img
                       src={entry.coverSrc}
                       alt={entry.name}
+                      width={320}
+                      height={144}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       loading="lazy"
                     />
@@ -80,6 +82,8 @@ export default function FeaturedCarousel({
                       <img
                         src={entry.logoSrc}
                         alt={`${entry.name} logo`}
+                        width={64}
+                        height={64}
                         className="w-16 h-16 object-contain"
                         loading="lazy"
                       />
@@ -109,6 +113,8 @@ export default function FeaturedCarousel({
                       <img
                         src={entry.logoSrc}
                         alt={`${entry.name} logo`}
+                        width={24}
+                        height={24}
                         className="w-6 h-6 rounded border border-border object-cover shrink-0"
                         loading="lazy"
                       />

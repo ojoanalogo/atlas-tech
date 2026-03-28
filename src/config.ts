@@ -1,4 +1,4 @@
-export const SITE_TITLE = "TECH_ATLAS";
+export const SITE_TITLE = "Tech Atlas";
 export const SITE_URL = "https://atlas-sinaloa.tech";
 
 export const DEFAULT_PAGINATION = 18;
@@ -6,7 +6,7 @@ export const DEFAULT_PAGINATION = 18;
 export const EVENTS_SHEET_CSV_URL =
   "https://docs.google.com/spreadsheets/d/e/2PACX-1vSfpcM8hS7F6d7EZjYZe_IeM31VjNE-MarfJxjuK6BlAZPvsZJzVV5up-vnsejfnnSzrx4TLoe5jVG_/pub?output=csv";
 export const SITE_DESCRIPTION =
-  "Directorio del ecosistema tecnológico de Sinaloa — startups, consultorías, comunidades y personas.";
+  "Directorio del ecosistema tecnológico de Sinaloa. Encuentra startups, consultorías, comunidades y talento tech construyendo desde nuestro estado.";
 
 export const ENTRY_TYPES = [
   "startup",
@@ -106,14 +106,14 @@ export const NAV_LINKS: NavLink[] = [
   ...ENTRY_TYPES.map((type) => {
     const c = ENTRY_TYPE_CONFIG[type];
     return {
-      title: c.slug.toUpperCase(),
+      title: c.labelPlural,
       id: c.slug,
       url: `/${c.slug}`,
       tooltip: c.description,
     };
   }),
   {
-    title: "MAPA",
+    title: "Mapa",
     id: "mapa",
     url: "/#map",
     tooltip: "Mapa interactivo",
@@ -289,6 +289,34 @@ export interface SocialLink {
   url: string;
   label: string;
 }
+
+export const FAQS = [
+  {
+    question: "¿Por qué existe Tech Atlas?",
+    answer:
+      "Porque Sinaloa es mucho más que lo que sale en las noticias. Queremos una carta de presentación para el mundo: que se vea el talento, la innovación, la creatividad y todo lo que se está construyendo aquí. No todo tiene que ser una nota roja. Tech Atlas existe para contar esa otra historia.",
+  },
+  {
+    question: "¿Qué es Tech Atlas?",
+    answer:
+      "Tech Atlas es un directorio abierto del ecosistema tecnológico de Sinaloa. Reúne startups, consultorías, comunidades, empresas y profesionales tech que están construyendo desde nuestro estado.",
+  },
+  {
+    question: "¿Cómo puedo registrar mi proyecto o empresa?",
+    answer:
+      'Puedes registrarte de forma gratuita desde la sección "Agregar proyecto". Solo necesitas llenar un formulario con la información básica de tu startup, consultoría, comunidad o perfil profesional.',
+  },
+  {
+    question: "¿Es gratuito aparecer en el directorio?",
+    answer:
+      "Sí, Tech Atlas es completamente gratuito y de código abierto. Cualquier proyecto o profesional tech de Sinaloa puede registrarse sin costo.",
+  },
+  {
+    question: "¿Qué tipo de proyectos pueden registrarse?",
+    answer:
+      "Startups, consultorías de tecnología, comunidades tech, empresas establecidas y profesionales independientes del sector tecnológico en Sinaloa. Si estás construyendo algo relacionado con tecnología desde nuestro estado, tienes un lugar aquí.",
+  },
+] as const;
 
 export const SOCIAL_LINKS: SocialLink[] = [
   {

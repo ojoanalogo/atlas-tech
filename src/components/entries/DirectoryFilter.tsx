@@ -298,11 +298,11 @@ export default function DirectoryFilter({
   useEffect(() => {
     const munName = cities.find((m) => m.id === activeCity)?.name;
     if (munName) {
-      document.title = `${munName} — TECH_ATLAS`;
+      document.title = `${munName} | Tech Atlas`;
     } else if (activeType && typeLabels[activeType]) {
-      document.title = `${typeLabels[activeType]} — TECH_ATLAS`;
+      document.title = `${typeLabels[activeType]} | Tech Atlas`;
     } else {
-      document.title = "Directorio — TECH_ATLAS";
+      document.title = "Directorio | Tech Atlas";
     }
   }, [activeType, activeCity, cities, typeLabels]);
 

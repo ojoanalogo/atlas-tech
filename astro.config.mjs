@@ -8,5 +8,6 @@ export default defineConfig({
   integrations: [react(), sitemap()],
   site: "https://atlas-sinaloa.tech",
   compressHTML: true,
+  trailingSlash: "never",
   vite: { plugins: [tailwindcss()] },
 });
