@@ -1,11 +1,18 @@
+# dependencies
+node_modules/
+
+# next.js
+.next/
+out/
+
 # build output
 dist/
 
-# generated types
-.astro/
-
-# dependencies
-node_modules/
+# environment variables
+.env
+.env.local
+.env.production
+.env*.local
 
 # logs
 npm-debug.log*
@@ -13,9 +20,19 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
-# environment variables
-.env
-.env.production
-
 # macOS-specific files
 .DS_Store
+
+# IDE
+*.swp
+*.swo
+
+# Payload generated
+src/app/(payload)/admin/importMap.js
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Vercel
+.vercel

@@ -1,49 +1,39 @@
 {
   "name": "atlas-tech",
+  "version": "0.1.0",
+  "private": true,
   "type": "module",
-  "version": "0.0.1",
   "license": "MIT",
   "scripts": {
-    "dev": "astro dev",
-    "start:dev": "astro dev",
-    "build": "astro build",
-    "preview": "astro preview",
-    "astro": "astro"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "generate:types": "payload generate:types",
+    "generate:importmap": "payload generate:importmap"
   },
   "dependencies": {
-    "@astrojs/react": "4.4.2",
-    "@astrojs/sitemap": "3.7.0",
-    "@lucide/astro": "0.575.0",
-    "add-to-calendar-button-react": "^2.13.8",
-    "astro": "5.18.0",
-    "class-variance-authority": "0.7.1",
-    "clsx": "2.1.1",
-    "d3-geo": "3.1.1",
-    "embla-carousel-auto-scroll": "8.6.0",
-    "embla-carousel-react": "8.6.0",
-    "lucide-react": "0.575.0",
-    "radix-ui": "1.4.3",
-    "react": "19.2.4",
-    "react-dom": "19.2.4",
-    "react-simple-maps": "3.0.0",
-    "tailwind-merge": "3.5.0"
+    "@payloadcms/db-postgres": "^3.80.0",
+    "@payloadcms/next": "^3.80.0",
+    "@payloadcms/richtext-lexical": "^3.80.0",
+    "@payloadcms/storage-s3": "^3.80.0",
+    "@payloadcms/ui": "^3.80.0",
+    "graphql": "^16.10.0",
+    "next": "15.4.11",
+    "payload": "^3.80.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "sharp": "^0.32.6"
   },
   "devDependencies": {
-    "@tailwindcss/typography": "0.5.19",
-    "@tailwindcss/vite": "4.2.1",
-    "@types/d3-geo": "3.1.0",
-    "@types/node": "24.10.15",
-    "@types/react": "19.2.14",
-    "@types/react-dom": "19.2.3",
-    "@types/react-simple-maps": "^3.0.6",
-    "sharp": "0.34.5",
-    "tailwindcss": "4.2.1"
+    "@tailwindcss/typography": "^0.5.19",
+    "@types/node": "^22.15.3",
+    "@types/react": "^19.1.2",
+    "@types/react-dom": "^19.1.2",
+    "typescript": "^5.8.3"
   },
-  "pnpm": {
-    "overrides": {
-      "react": "$react",
-      "react-dom": "$react-dom"
-    }
+  "engines": {
+    "node": "^18.20.2 || >=20.9.0"
   },
   "packageManager": "pnpm@10.5.2+sha512.da9dc28cd3ff40d0592188235ab25d3202add8a207afbedc682220e4a0029ffbff4562102b9e6e46b4e3f9e8bd53e6d05de48544b0c57d4b0179e22c76d1199b"
 }
