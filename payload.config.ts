@@ -11,6 +11,7 @@ import { Users } from './src/collections/Users'
 import { Entries } from './src/collections/Entries'
 import { News } from './src/collections/News'
 import { Jobs } from './src/collections/Jobs'
+import { Events } from './src/collections/Events'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -22,7 +23,7 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
-  collections: [Media, Users, Entries, News, Jobs],
+  collections: [Media, Users, Entries, News, Jobs, Events],
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
     outputFile: path.resolve(dirname, 'src/payload-types.ts'),
