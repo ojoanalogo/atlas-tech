@@ -2,8 +2,19 @@ import { withPayload } from '@payloadcms/next/withPayload'
 import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
-  // Your Next.js config here
   output: 'standalone',
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '*.r2.cloudflarestorage.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'media.atlas-sinaloa.tech',
+      },
+    ],
+  },
 }
 
 export default withPayload(nextConfig)
