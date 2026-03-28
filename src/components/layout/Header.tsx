@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Rocket, Users, Briefcase, User, Menu, X, Map, CalendarDays, Plus } from 'lucide-react'
-import { ThemeToggle } from '@/components/ui/ThemeToggle'
+import ThemeToggle from '@/components/ui/ThemeToggle'
 import { UserMenu } from '@/components/auth/UserMenu'
 import { ENTRY_TYPE_CONFIG, ENTRY_TYPES } from '@/config'
 
