@@ -183,6 +183,15 @@ export const Entries: CollectionConfig = {
         description: 'better-auth user ID of the entry owner',
       },
     },
+    {
+      name: 'moderationNote',
+      type: 'textarea',
+      admin: {
+        position: 'sidebar',
+        description: 'Rejection reason or feedback for the entry owner',
+        condition: (data) => data._status === 'draft',
+      },
+    },
     // --- Rich text body ---
     {
       name: 'body',

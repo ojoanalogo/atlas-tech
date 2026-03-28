@@ -115,6 +115,15 @@ export const Jobs: CollectionConfig = {
       },
     },
     {
+      name: 'moderationNote',
+      type: 'textarea',
+      admin: {
+        position: 'sidebar',
+        description: 'Rejection reason or feedback for the job poster',
+        condition: (data) => data._status === 'draft',
+      },
+    },
+    {
       name: 'entry',
       type: 'relationship',
       relationTo: 'entries',
