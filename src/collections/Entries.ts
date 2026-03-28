@@ -1,5 +1,6 @@
 import type { CollectionConfig } from 'payload'
 import { isAdminOrModerator, publicRead } from '../access/roles'
+import { revalidateEntry } from '../hooks/revalidateOnPublish'
 import {
   CITY_SELECT_OPTIONS,
   ENTRY_TYPES,
@@ -40,6 +41,9 @@ export const Entries: CollectionConfig = {
     drafts: {
       autosave: false,
     },
+  },
+  hooks: {
+    afterChange: [revalidateEntry],
   },
   fields: [
     // --- Base fields ---

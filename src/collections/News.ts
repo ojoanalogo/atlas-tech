@@ -1,5 +1,6 @@
 import type { CollectionConfig } from 'payload'
 import { isAdminOrEditor, publicRead } from '../access/roles'
+import { revalidateEntry } from '../hooks/revalidateOnPublish'
 
 export const News: CollectionConfig = {
   slug: 'news',
@@ -18,6 +19,9 @@ export const News: CollectionConfig = {
     drafts: {
       autosave: false,
     },
+  },
+  hooks: {
+    afterChange: [revalidateEntry],
   },
   fields: [
     {
