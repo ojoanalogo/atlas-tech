@@ -8,6 +8,7 @@ import sharp from 'sharp'
 
 import { Media } from './src/collections/Media'
 import { Users } from './src/collections/Users'
+import { Entries } from './src/collections/Entries'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -19,7 +20,7 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
-  collections: [Media, Users],
+  collections: [Media, Users, Entries],
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
     outputFile: path.resolve(dirname, 'src/payload-types.ts'),
