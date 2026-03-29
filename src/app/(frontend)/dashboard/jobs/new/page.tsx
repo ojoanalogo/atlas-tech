@@ -3,21 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { AuthGuard } from '@/components/auth/AuthGuard'
-import { CITY_SELECT_OPTIONS } from '@/config'
-
-const JOB_TYPES = [
-  { value: 'full-time', label: 'Tiempo completo' },
-  { value: 'part-time', label: 'Medio tiempo' },
-  { value: 'contract', label: 'Contrato' },
-  { value: 'freelance', label: 'Freelance' },
-  { value: 'volunteer', label: 'Voluntariado' },
-]
-
-const MODALITIES = [
-  { value: 'remote', label: 'Remoto' },
-  { value: 'in-person', label: 'Presencial' },
-  { value: 'hybrid', label: 'Híbrido' },
-]
+import { CITY_SELECT_OPTIONS, JOB_TYPE_OPTIONS, MODALITY_OPTIONS } from '@/config'
 
 export default function NewJobPage() {
   const router = useRouter()
@@ -96,13 +82,13 @@ export default function NewJobPage() {
               <div>
                 <label htmlFor="type" className="block text-xs font-mono text-muted mb-1">Tipo *</label>
                 <select id="type" name="type" required className="w-full px-3 py-2 bg-background border border-border rounded-md text-sm text-primary">
-                  {JOB_TYPES.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
+                  {JOB_TYPE_OPTIONS.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
                 </select>
               </div>
               <div>
                 <label htmlFor="modality" className="block text-xs font-mono text-muted mb-1">Modalidad *</label>
                 <select id="modality" name="modality" required className="w-full px-3 py-2 bg-background border border-border rounded-md text-sm text-primary">
-                  {MODALITIES.map((m) => <option key={m.value} value={m.value}>{m.label}</option>)}
+                  {MODALITY_OPTIONS.map((m) => <option key={m.value} value={m.value}>{m.label}</option>)}
                 </select>
               </div>
             </div>

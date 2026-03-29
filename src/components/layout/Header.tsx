@@ -1,12 +1,13 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Rocket, Users, Briefcase, User, Menu, X, Map, CalendarDays, Plus, FolderOpen, Newspaper, LayoutDashboard, Microscope } from 'lucide-react'
 import ThemeToggle from '@/components/ui/ThemeToggle'
 import { UserMenu } from '@/components/auth/UserMenu'
 import { ENTRY_TYPE_CONFIG, ENTRY_TYPES } from '@/config'
+import { useClickOutside } from '@/hooks/useClickOutside'
 
 const iconMap: Record<string, React.ReactNode> = {
   rocket: <Rocket className="w-4 h-4" />,
@@ -22,15 +23,7 @@ export function Header() {
   const dropdownRef = useRef<HTMLDivElement>(null)
   const pathname = usePathname()
 
-  useEffect(() => {
-    function handleClick(e: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
-        setDropdownOpen(false)
-      }
-    }
-    document.addEventListener('click', handleClick)
-    return () => document.removeEventListener('click', handleClick)
-  }, [])
+  useClickOutside(dropdownRef, useCallback(() => setDropdownOpen(false), []))
 
   useEffect(() => {
     setMobileOpen(false)

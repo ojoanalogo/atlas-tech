@@ -1,22 +1,17 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useCallback } from 'react'
 import Link from 'next/link'
 import { useSession, signOut } from '@/lib/auth-client'
 import { LogOut, LayoutDashboard } from 'lucide-react'
+import { useClickOutside } from '@/hooks/useClickOutside'
 
 export function UserMenu() {
   const { data: session, isPending } = useSession()
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
 
-  useEffect(() => {
-    function handleClick(e: MouseEvent) {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
-    }
-    document.addEventListener('click', handleClick)
-    return () => document.removeEventListener('click', handleClick)
-  }, [])
+  useClickOutside(ref, useCallback(() => setOpen(false), []))
 
   if (isPending) {
     return <div className="w-8 h-8 rounded-full bg-elevated animate-pulse" />

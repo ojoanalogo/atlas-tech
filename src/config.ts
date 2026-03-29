@@ -158,6 +158,23 @@ export const CITY_SELECT_OPTIONS = ALL_CITY_IDS.map((id) => ({
   value: id,
 }))
 
+export const JOB_TYPE_LABELS: Record<string, string> = {
+  'full-time': 'Tiempo completo',
+  'part-time': 'Medio tiempo',
+  contract: 'Contrato',
+  freelance: 'Freelance',
+  volunteer: 'Voluntariado',
+}
+
+export const MODALITY_LABELS: Record<string, string> = {
+  remote: 'Remoto',
+  'in-person': 'Presencial',
+  hybrid: 'Híbrido',
+}
+
+export const JOB_TYPE_OPTIONS = Object.entries(JOB_TYPE_LABELS).map(([value, label]) => ({ value, label }))
+export const MODALITY_OPTIONS = Object.entries(MODALITY_LABELS).map(([value, label]) => ({ value, label }))
+
 export const STAGE_OPTIONS = [
   { value: 'Idea', label: 'Idea' },
   { value: 'Bootstrap', label: 'Bootstrap' },

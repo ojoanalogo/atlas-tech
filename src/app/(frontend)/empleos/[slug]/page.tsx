@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { RichText } from '@payloadcms/richtext-lexical/react'
 import { getJobBySlug } from '@/lib/payload'
-import { getCityName } from '@/config'
+import { getCityName, JOB_TYPE_LABELS, MODALITY_LABELS } from '@/config'
 import { flattenArray } from '@/lib/utils'
 import { Tag } from '@/components/ui/Tag'
 import { ExternalLink } from '@/components/ui/ExternalLink'
@@ -15,20 +15,6 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const job = await getJobBySlug(slug)
   if (!job) return { title: 'Not Found' }
   return { title: `${job.title} — Empleos` }
-}
-
-const typeLabels: Record<string, string> = {
-  'full-time': 'Tiempo completo',
-  'part-time': 'Medio tiempo',
-  contract: 'Contrato',
-  freelance: 'Freelance',
-  volunteer: 'Voluntariado',
-}
-
-const modalityLabels: Record<string, string> = {
-  remote: 'Remoto',
-  'in-person': 'Presencial',
-  hybrid: 'Híbrido',
 }
 
 export default async function JobDetailPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -56,11 +42,11 @@ export default async function JobDetailPage({ params }: { params: Promise<{ slug
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
           <div className="bg-card border border-border rounded-lg p-3">
             <p className="text-2xs font-mono text-muted uppercase">Tipo</p>
-            <p className="text-sm text-primary font-medium flex items-center gap-1"><Briefcase className="w-3.5 h-3.5" />{typeLabels[job.type as string] || job.type}</p>
+            <p className="text-sm text-primary font-medium flex items-center gap-1"><Briefcase className="w-3.5 h-3.5" />{JOB_TYPE_LABELS[job.type as string] || job.type}</p>
           </div>
           <div className="bg-card border border-border rounded-lg p-3">
             <p className="text-2xs font-mono text-muted uppercase">Modalidad</p>
-            <p className="text-sm text-primary font-medium flex items-center gap-1"><Clock className="w-3.5 h-3.5" />{modalityLabels[job.modality as string] || job.modality}</p>
+            <p className="text-sm text-primary font-medium flex items-center gap-1"><Clock className="w-3.5 h-3.5" />{MODALITY_LABELS[job.modality as string] || job.modality}</p>
           </div>
           {job.city && (
             <div className="bg-card border border-border rounded-lg p-3">

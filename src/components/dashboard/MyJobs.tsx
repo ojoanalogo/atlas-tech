@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { getCityName } from '@/config'
+import { getCityName, JOB_TYPE_LABELS } from '@/config'
 import { Clock, CheckCircle, XCircle } from 'lucide-react'
 
 interface Job {
@@ -16,14 +16,6 @@ interface Job {
   moderationNote?: string
   expiresAt: string
   updatedAt: string
-}
-
-const typeLabels: Record<string, string> = {
-  'full-time': 'Tiempo completo',
-  'part-time': 'Medio tiempo',
-  contract: 'Contrato',
-  freelance: 'Freelance',
-  volunteer: 'Voluntariado',
 }
 
 export function MyJobs() {
@@ -78,7 +70,7 @@ export function MyJobs() {
                 </div>
                 <h3 className="font-semibold text-primary text-sm">{job.title}</h3>
                 <p className="text-2xs text-muted font-mono">
-                  {typeLabels[job.type] || job.type}
+                  {JOB_TYPE_LABELS[job.type] || job.type}
                   {job.city && ` · ${getCityName(job.city)}`}
                 </p>
                 {job.moderationNote && job._status === 'draft' && (

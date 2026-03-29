@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { getActiveJobs } from '@/lib/payload'
-import { getCityName } from '@/config'
+import { getCityName, JOB_TYPE_LABELS, MODALITY_LABELS } from '@/config'
 import { SectionHeading } from '@/components/ui/SectionHeading'
 import { Tag } from '@/components/ui/Tag'
 import { flattenArray } from '@/lib/utils'
@@ -10,20 +10,6 @@ import { MapPin, Clock, Briefcase } from 'lucide-react'
 export const metadata: Metadata = {
   title: 'Empleos',
   description: 'Ofertas de empleo y oportunidades en el ecosistema tech de Sinaloa.',
-}
-
-const typeLabels: Record<string, string> = {
-  'full-time': 'Tiempo completo',
-  'part-time': 'Medio tiempo',
-  contract: 'Contrato',
-  freelance: 'Freelance',
-  volunteer: 'Voluntariado',
-}
-
-const modalityLabels: Record<string, string> = {
-  remote: 'Remoto',
-  'in-person': 'Presencial',
-  hybrid: 'Híbrido',
 }
 
 export const dynamic = 'force-dynamic'
@@ -58,8 +44,8 @@ export default async function EmpleosPage() {
                     <h2 className="text-base font-semibold text-primary">{job.title as string}</h2>
                     {entryName && <p className="text-xs text-muted font-mono mt-0.5">{entryName}</p>}
                     <div className="flex flex-wrap items-center gap-3 mt-2 text-xs text-muted font-mono">
-                      <span className="flex items-center gap-1"><Briefcase className="w-3 h-3" />{typeLabels[job.type as string] || job.type}</span>
-                      <span className="flex items-center gap-1"><Clock className="w-3 h-3" />{modalityLabels[job.modality as string] || job.modality}</span>
+                      <span className="flex items-center gap-1"><Briefcase className="w-3 h-3" />{JOB_TYPE_LABELS[job.type as string] || job.type}</span>
+                      <span className="flex items-center gap-1"><Clock className="w-3 h-3" />{MODALITY_LABELS[job.modality as string] || job.modality}</span>
                       {job.city && <span className="flex items-center gap-1"><MapPin className="w-3 h-3" />{getCityName(job.city as string)}</span>}
                     </div>
                     {tags.length > 0 && (

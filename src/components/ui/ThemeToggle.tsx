@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { useTheme } from 'next-themes'
 import { Sun, Moon, Monitor, Check } from 'lucide-react'
+import { useClickOutside } from '@/hooks/useClickOutside'
 
 const OPTIONS = [
   { value: 'light', label: 'Claro', Icon: Sun },
@@ -18,14 +19,7 @@ export default function ThemeToggle({ className = '' }: { className?: string }) 
 
   useEffect(() => setMounted(true), [])
 
-  useEffect(() => {
-    if (!open) return
-    const handler = (e: MouseEvent) => {
-      if (!ref.current?.contains(e.target as Node)) setOpen(false)
-    }
-    document.addEventListener('click', handler, true)
-    return () => document.removeEventListener('click', handler, true)
-  }, [open])
+  useClickOutside(ref, useCallback(() => setOpen(false), []))
 
   const ActiveIcon = mounted
     ? (OPTIONS.find((o) => o.value === theme)?.Icon ?? Monitor)
