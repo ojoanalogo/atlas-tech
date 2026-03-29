@@ -1,4 +1,4 @@
-import type { TechEvent } from '../utils'
+import type { TechEvent } from '@/hooks/useEventsData'
 
 export const EVENT_DETAIL_EVENT = 'open-event-detail' as const
 
