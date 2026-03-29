@@ -1,5 +1,3 @@
-'use client'
-
 import { FAQS } from '@/config'
 
 export function FaqSection() {

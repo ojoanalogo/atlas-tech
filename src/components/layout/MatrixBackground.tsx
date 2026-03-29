@@ -5,7 +5,6 @@ import { useEffect, useRef } from 'react'
 interface MatrixBackgroundProps {
   movementDirection?: 'up-left' | 'down-right'
   movementSpeed?: number
-  highlight?: boolean
 }
 
 export function MatrixBackground({
