@@ -1,5 +1,6 @@
 import type { CollectionConfig } from 'payload'
 import { isAdminOrModerator, publicRead } from '../access/roles'
+import { revalidateEntry } from './hooks/revalidateOnPublish'
 import { CITY_SELECT_OPTIONS } from '../config'
 
 export const Jobs: CollectionConfig = {
@@ -19,6 +20,9 @@ export const Jobs: CollectionConfig = {
     drafts: {
       autosave: false,
     },
+  },
+  hooks: {
+    afterChange: [revalidateEntry],
   },
   fields: [
     {

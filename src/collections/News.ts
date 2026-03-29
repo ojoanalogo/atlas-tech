@@ -1,6 +1,6 @@
 import type { CollectionConfig } from 'payload'
 import { isAdminOrEditor, publicRead } from '../access/roles'
-import { revalidateEntry } from '../hooks/revalidateOnPublish'
+import { revalidateEntry } from './hooks/revalidateOnPublish'
 
 export const News: CollectionConfig = {
   slug: 'news',

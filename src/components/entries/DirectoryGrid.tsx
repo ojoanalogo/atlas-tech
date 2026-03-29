@@ -1,33 +1,39 @@
+import type { Entry, Media } from '@/payload-types'
 import { EntryCard } from './EntryCard'
 
 interface DirectoryGridProps {
-  entries: Array<Record<string, unknown>>
+  entries: Entry[]
 }
 
 export function DirectoryGrid({ entries }: DirectoryGridProps) {
   return (
     <div id="entries-grid" className="grid sm:grid-cols-2 xl:grid-cols-3 gap-4">
-      {entries.map((entry) => (
-        <div
-          key={entry.id as string}
-          className="entry-item"
-          data-type={entry.entryType as string}
-          data-city={entry.city as string}
-          data-name={(entry.name as string).toLowerCase()}
-          data-date={entry.publishDate ? (entry.publishDate as string).slice(0, 10) : ''}
-        >
-          <EntryCard
-            slug={entry.slug as string}
-            name={entry.name as string}
-            tagline={entry.tagline as string | undefined}
-            entryType={entry.entryType as any}
-            logo={entry.logo as any}
-            coverImage={entry.coverImage as any}
-            city={entry.city as string}
-            tags={entry.tags as any}
-          />
-        </div>
-      ))}
+      {entries.map((entry) => {
+        const logo = typeof entry.logo === 'object' && entry.logo !== null ? entry.logo as Media : null
+        const coverImage = typeof entry.coverImage === 'object' && entry.coverImage !== null ? entry.coverImage as Media : null
+
+        return (
+          <div
+            key={entry.id}
+            className="entry-item"
+            data-type={entry.entryType}
+            data-city={entry.city}
+            data-name={entry.name.toLowerCase()}
+            data-date={entry.publishDate ? entry.publishDate.slice(0, 10) : ''}
+          >
+            <EntryCard
+              slug={entry.slug}
+              name={entry.name}
+              tagline={entry.tagline ?? undefined}
+              entryType={entry.entryType}
+              logo={logo && logo.url ? { url: logo.url, alt: logo.alt } : null}
+              coverImage={coverImage && coverImage.url ? { url: coverImage.url, alt: coverImage.alt } : null}
+              city={entry.city}
+              tags={entry.tags ?? undefined}
+            />
+          </div>
+        )
+      })}
     </div>
   )
 }

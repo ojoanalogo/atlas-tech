@@ -8,14 +8,19 @@ export async function GET() {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const payload = await getPayloadClient()
-  const result = await payload.find({
-    collection: 'jobs',
-    where: { postedBy: { equals: session.user.id } },
-    limit: 50,
-    sort: '-updatedAt',
-    draft: true,
-  })
+  try {
+    const payload = await getPayloadClient()
+    const result = await payload.find({
+      collection: 'jobs',
+      where: { postedBy: { equals: session.user.id } },
+      limit: 50,
+      sort: '-updatedAt',
+      draft: true,
+    })
 
-  return NextResponse.json(result)
+    return NextResponse.json(result)
+  } catch (error) {
+    console.error('User jobs fetch failed:', error)
+    return NextResponse.json({ error: 'Failed to fetch jobs' }, { status: 500 })
+  }
 }

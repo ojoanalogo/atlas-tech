@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import type { Event, Media } from '@/payload-types'
 
 export interface TechEvent {
   id: string
@@ -40,6 +41,33 @@ function groupByDate(events: TechEvent[]): Record<string, TechEvent[]> {
   return map
 }
 
+function getImageUrl(image: Event['image']): string | null {
+  if (typeof image === 'object' && image !== null && (image as Media).url) {
+    return (image as Media).url ?? null
+  }
+  return null
+}
+
+function eventDocToTechEvent(doc: Event): TechEvent {
+  return {
+    id: String(doc.id),
+    title: doc.title,
+    organizer: doc.organizer || '',
+    date: doc.date || '',
+    startTime: doc.startTime || '',
+    endTime: doc.endTime || '',
+    description: '',
+    url: doc.url || '',
+    location: doc.location || '',
+    mapsUrl: doc.mapsUrl || '',
+    modality: doc.modality || 'in-person',
+    isInPerson: doc.modality === 'in-person',
+    meetLink: doc.meetLink || '',
+    image: getImageUrl(doc.image),
+    registerUrl: doc.registerUrl || '',
+  }
+}
+
 export function useEventsData(): UseEventsDataResult {
   const [events, setEvents] = useState<TechEvent[]>([])
   const [eventsByDate, setEventsByDate] = useState<Record<string, TechEvent[]>>({})
@@ -50,34 +78,8 @@ export function useEventsData(): UseEventsDataResult {
     try {
       const res = await fetch('/api/events?limit=200')
       if (!res.ok) throw new Error(`HTTP ${res.status}`)
-      const data = await res.json()
-      const docs: TechEvent[] = (data.docs || []).map((doc: Record<string, unknown>) => {
-        const imageField = doc.image as { url?: string } | string | null | undefined
-        let imageUrl: string | null = null
-        if (typeof imageField === 'string') {
-          imageUrl = imageField
-        } else if (imageField && typeof imageField === 'object' && 'url' in imageField) {
-          imageUrl = (imageField as { url: string }).url
-        }
-
-        return {
-          id: doc.id as string,
-          title: doc.title as string,
-          organizer: (doc.organizer as string) || '',
-          date: (doc.date as string) || '',
-          startTime: (doc.startTime as string) || '',
-          endTime: (doc.endTime as string) || '',
-          description: '',
-          url: (doc.url as string) || '',
-          location: (doc.location as string) || '',
-          mapsUrl: (doc.mapsUrl as string) || '',
-          modality: (doc.modality as string) || 'in-person',
-          isInPerson: (doc.modality as string) === 'in-person',
-          meetLink: (doc.meetLink as string) || '',
-          image: imageUrl,
-          registerUrl: (doc.registerUrl as string) || '',
-        }
-      })
+      const data: { docs: Event[] } = await res.json()
+      const docs: TechEvent[] = (data.docs || []).map(eventDocToTechEvent)
       setEvents(docs)
       setEventsByDate(groupByDate(docs))
       setStatus('fresh')
