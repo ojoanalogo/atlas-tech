@@ -13,6 +13,11 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'media.atlas-sinaloa.tech',
       },
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+        port: '9000',
+      },
     ],
   },
 }

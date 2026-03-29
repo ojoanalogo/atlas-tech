@@ -1,13 +1,19 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback, useMemo, memo } from "react";
+import dynamic from 'next/dynamic'
 import {
   SINALOA_CITIES,
   ENTRY_TYPE_CONFIG,
   emptyTypeCounts,
 } from "@/config";
 import type { AtlasEntryType } from "@/config";
-import SinaloaMap from "@/components/maps/SinaloaMap";
+
+const SinaloaMap = dynamic(() => import('@/components/maps/SinaloaMap'), {
+  ssr: false,
+  loading: () => <div className="w-full h-full bg-elevated animate-pulse rounded-lg" />,
+});
+
 import {
   MapPin,
   Rocket,

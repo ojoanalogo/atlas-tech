@@ -1,8 +1,10 @@
 import type { Metadata } from 'next'
+import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import { RichText } from '@payloadcms/richtext-lexical/react'
 import { getNewsBySlug, getPublishedNews } from '@/lib/payload'
 import { SectionHeading } from '@/components/ui/SectionHeading'
+import { SITE_URL } from '@/config'
 
 export async function generateStaticParams() {
   const result = await getPublishedNews()
@@ -29,6 +31,18 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ slu
 
   return (
     <article className="py-8 px-4">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{
+        __html: JSON.stringify({
+          '@context': 'https://schema.org',
+          '@type': 'NewsArticle',
+          headline: article.title,
+          description: article.excerpt || undefined,
+          datePublished: article.publishDate,
+          author: authorName ? { '@type': 'Person', name: authorName } : undefined,
+          image: coverUrl || undefined,
+          url: `${SITE_URL}/noticias/${article.slug}`,
+        }),
+      }} />
       <div className="max-w-3xl mx-auto">
         <nav className="text-xs font-mono text-muted mb-6 uppercase">
           <a href="/" className="hover:text-accent transition-colors">Inicio</a>
@@ -39,8 +53,8 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ slu
         </nav>
 
         {coverUrl && (
-          <div className="rounded-lg overflow-hidden mb-6 h-64">
-            <img src={coverUrl} alt={article.title as string} className="w-full h-full object-cover" />
+          <div className="relative rounded-lg overflow-hidden mb-6 h-64">
+            <Image src={coverUrl} alt={article.title as string} fill className="object-cover" sizes="(max-width: 768px) 100vw, 768px" priority />
           </div>
         )}
 

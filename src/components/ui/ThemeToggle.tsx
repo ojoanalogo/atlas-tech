@@ -21,6 +21,15 @@ export default function ThemeToggle({ className = '' }: { className?: string }) 
 
   useClickOutside(ref, useCallback(() => setOpen(false), []))
 
+  useEffect(() => {
+    if (!open) return
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') setOpen(false)
+    }
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [open])
+
   const ActiveIcon = mounted
     ? (OPTIONS.find((o) => o.value === theme)?.Icon ?? Monitor)
     : Monitor

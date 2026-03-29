@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { useSession, signOut } from '@/lib/auth-client'
 import { LogOut, LayoutDashboard } from 'lucide-react'
@@ -12,6 +13,15 @@ export function UserMenu() {
   const ref = useRef<HTMLDivElement>(null)
 
   useClickOutside(ref, useCallback(() => setOpen(false), []))
+
+  useEffect(() => {
+    if (!open) return
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') setOpen(false)
+    }
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [open])
 
   if (isPending) {
     return <div className="w-8 h-8 rounded-full bg-elevated animate-pulse" />
@@ -32,7 +42,7 @@ export function UserMenu() {
         title={user.name || user.email}
       >
         {user.image ? (
-          <img src={user.image} alt={user.name || ''} className="w-8 h-8 rounded-full object-cover" />
+          <Image src={user.image} alt={user.name || ''} width={32} height={32} className="w-8 h-8 rounded-full object-cover" />
         ) : (
           initials
         )}

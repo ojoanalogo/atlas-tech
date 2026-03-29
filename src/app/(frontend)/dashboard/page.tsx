@@ -7,6 +7,7 @@ import { Plus, Briefcase } from 'lucide-react'
 
 export const metadata: Metadata = {
   title: 'Dashboard',
+  robots: { index: false },
 }
 
 export default function DashboardPage() {

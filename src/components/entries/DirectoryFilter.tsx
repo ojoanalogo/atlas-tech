@@ -547,7 +547,7 @@ export default function DirectoryFilter({
       <h1 className="text-3xl md:text-4xl font-sans font-bold text-primary">
         {heading}
       </h1>
-      <p className="mt-2 text-secondary mb-6">
+      <p className="mt-2 text-secondary mb-6" aria-live="polite" aria-atomic="true">
         {isPaginated && matchedCount > 0 ? (
           <>
             <span className="font-bold">

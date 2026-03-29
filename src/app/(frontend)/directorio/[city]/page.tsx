@@ -11,7 +11,11 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: { params: Promise<{ city: string }> }): Promise<Metadata> {
   const { city } = await params
-  return { title: `Directorio — ${getCityName(city)}` }
+  const cityName = getCityName(city)
+  return {
+    title: `Directorio — ${cityName}`,
+    description: `Empresas, startups, comunidades y talento tech en ${cityName}, Sinaloa.`,
+  }
 }
 
 export default async function CityDirectoryPage({ params }: { params: Promise<{ city: string }> }) {

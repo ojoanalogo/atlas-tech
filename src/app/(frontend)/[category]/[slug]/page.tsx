@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import { getEntryBySlug, getPublishedEntries } from '@/lib/payload'
 import { buildTrackedUrl, flattenArray } from '@/lib/utils'
@@ -282,6 +283,18 @@ export default async function EntryDetailPage({
 
   return (
     <article className="max-w-7xl mx-auto px-4 py-4">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{
+        __html: JSON.stringify({
+          '@context': 'https://schema.org',
+          '@type': 'BreadcrumbList',
+          itemListElement: [
+            { '@type': 'ListItem', position: 1, name: 'Inicio', item: SITE_URL },
+            { '@type': 'ListItem', position: 2, name: 'Directorio', item: `${SITE_URL}/directorio` },
+            { '@type': 'ListItem', position: 3, name: config.labelPlural, item: `${SITE_URL}/${config.slug}` },
+            { '@type': 'ListItem', position: 4, name: entry.name },
+          ],
+        }),
+      }} />
       {/* Breadcrumb — 4 levels: Inicio > Directorio > Category > Name */}
       <nav aria-label="Breadcrumb" className="text-xs font-mono text-muted mb-6 uppercase">
         <a href="/" className="hover:text-accent transition-colors">
@@ -314,20 +327,25 @@ export default async function EntryDetailPage({
           {/* Cover image with aspect-video */}
           {coverUrl && (
             <div className="relative">
-              <div className="aspect-video rounded-lg overflow-hidden bg-elevated">
-                <img
+              <div className="relative aspect-video rounded-lg overflow-hidden bg-elevated">
+                <Image
                   src={coverUrl}
                   alt={entry.name as string}
-                  className="w-full h-full object-cover"
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, 1200px"
+                  priority
                 />
               </div>
               {/* Logo overlapping cover at bottom-left */}
               {logoUrl && (
                 <div className="absolute -bottom-7 left-5">
-                  <img
+                  <Image
                     src={logoUrl}
                     alt={`${entry.name as string} logo`}
-                    className="h-14 w-auto max-w-[140px] rounded-xl border-4 border-card bg-card object-contain shadow-lg px-1"
+                    width={56}
+                    height={56}
+                    className="object-contain rounded-xl border-4 border-card bg-card shadow-lg"
                   />
                 </div>
               )}
@@ -339,10 +357,12 @@ export default async function EntryDetailPage({
             <div className="flex items-center gap-3">
               {/* Logo inline when no cover image */}
               {!coverUrl && logoUrl && (
-                <img
+                <Image
                   src={logoUrl}
-                  alt={`${entry.name as string} logo`}
-                  className="h-14 w-auto max-w-[140px] rounded-xl border border-border bg-card object-contain shadow-sm px-1 shrink-0"
+                  alt={entry.name as string}
+                  width={56}
+                  height={56}
+                  className="object-contain rounded-xl border border-border bg-card shadow-sm shrink-0"
                 />
               )}
               <div>

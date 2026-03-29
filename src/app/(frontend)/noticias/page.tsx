@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Image from 'next/image'
 import Link from 'next/link'
 import { getPublishedNews } from '@/lib/payload'
 import { SectionHeading } from '@/components/ui/SectionHeading'
@@ -33,8 +34,8 @@ export default async function NoticiasPage() {
               >
                 <div className="flex flex-col sm:flex-row">
                   {coverUrl && (
-                    <div className="sm:w-48 h-40 sm:h-auto flex-shrink-0">
-                      <img src={coverUrl} alt={article.title as string} className="w-full h-full object-cover" loading="lazy" />
+                    <div className="relative sm:w-48 h-40 sm:h-auto flex-shrink-0">
+                      <Image src={coverUrl} alt={article.title as string} fill className="object-cover" sizes="192px" />
                     </div>
                   )}
                   <div className="p-4 flex-1">

@@ -3,6 +3,8 @@ import { SignInButton } from '@/components/auth/SignInButton'
 
 export const metadata: Metadata = {
   title: 'Iniciar sesion',
+  description: 'Inicia sesion en Tech Atlas para administrar tus proyectos y publicar empleos.',
+  robots: { index: false },
 }
 
 export default function SignInPage() {

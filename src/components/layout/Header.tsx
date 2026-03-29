@@ -26,6 +26,17 @@ export function Header() {
   useClickOutside(dropdownRef, useCallback(() => setDropdownOpen(false), []))
 
   useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') {
+        setDropdownOpen(false)
+        setMobileOpen(false)
+      }
+    }
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [])
+
+  useEffect(() => {
     setMobileOpen(false)
   }, [pathname])
 
@@ -37,6 +48,12 @@ export function Header() {
   return (
     <>
       <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
+        <a
+          href="#main"
+          className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[100] focus:px-4 focus:py-2 focus:bg-accent focus:text-accent-foreground focus:rounded-md focus:text-sm focus:font-mono"
+        >
+          Ir al contenido
+        </a>
         <div className="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2 font-mono text-sm font-bold text-primary shrink-0">
             <span className="text-accent">{'>'}</span> tech_atlas

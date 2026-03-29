@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { RichText } from '@payloadcms/richtext-lexical/react'
 import { getJobBySlug } from '@/lib/payload'
-import { getCityName, JOB_TYPE_LABELS, MODALITY_LABELS } from '@/config'
+import { getCityName, JOB_TYPE_LABELS, MODALITY_LABELS, SITE_URL } from '@/config'
 import { flattenArray } from '@/lib/utils'
 import { Tag } from '@/components/ui/Tag'
 import { ExternalLink } from '@/components/ui/ExternalLink'
@@ -27,6 +27,20 @@ export default async function JobDetailPage({ params }: { params: Promise<{ slug
 
   return (
     <article className="py-8 px-4">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{
+        __html: JSON.stringify({
+          '@context': 'https://schema.org',
+          '@type': 'JobPosting',
+          title: job.title,
+          description: 'See full description on page',
+          datePosted: job.createdAt,
+          validThrough: job.expiresAt,
+          employmentType: job.type === 'full-time' ? 'FULL_TIME' : job.type === 'part-time' ? 'PART_TIME' : 'OTHER',
+          jobLocationType: job.modality === 'remote' ? 'TELECOMMUTE' : undefined,
+          hiringOrganization: entryName ? { '@type': 'Organization', name: entryName } : undefined,
+          applicantLocationRequirements: job.city ? { '@type': 'State', name: 'Sinaloa' } : undefined,
+        }),
+      }} />
       <div className="max-w-3xl mx-auto">
         <nav className="text-xs font-mono text-muted mb-6 uppercase">
           <a href="/" className="hover:text-accent transition-colors">Inicio</a>

@@ -7,6 +7,7 @@ import { DirectoryGrid } from '@/components/entries/DirectoryGrid'
 
 export const metadata: Metadata = {
   title: 'Directorio',
+  description: 'Explora el directorio completo del ecosistema tecnológico de Sinaloa. Startups, consultorías, comunidades y talento tech.',
 }
 
 export default async function DirectoryPage() {
