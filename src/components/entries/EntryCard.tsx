@@ -1,6 +1,5 @@
 import Link from 'next/link'
 import { EntryBadge } from './EntryBadge'
-import { Tag } from '@/components/ui/Tag'
 import { getEntryUrl, getCityName, type AtlasEntryType } from '@/config'
 
 interface EntryCardProps {
@@ -21,26 +20,31 @@ export function EntryCard({ slug, name, tagline, entryType, logo, coverImage, ci
   const logoUrl = typeof logo === 'object' && logo?.url ? logo.url : null
 
   return (
-    <Link href={href} className="group block bg-card/90 backdrop-blur-sm border border-border rounded-lg overflow-hidden hover:border-accent/50 transition-colors">
+    <Link href={href} className="group flex flex-col h-full bg-card/90 backdrop-blur-sm border border-border rounded-lg overflow-hidden hover:border-accent/50 transition-colors">
       <div className="relative h-36 bg-elevated overflow-hidden">
         {coverUrl ? (
-          <img src={coverUrl} alt={name} className="w-full h-full object-cover" loading="lazy" />
+          <img src={coverUrl} alt={name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" />
         ) : logoUrl ? (
-          <div className="flex items-center justify-center h-full p-6">
+          <div className="flex items-center justify-center h-full p-6 bg-accent">
             <img src={logoUrl} alt={name} className="max-h-20 max-w-[80%] object-contain" loading="lazy" />
           </div>
         ) : (
-          <div className="flex items-center justify-center h-full text-muted text-3xl font-bold">{name.charAt(0)}</div>
+          <div className="flex items-center justify-center h-full bg-accent text-elevated text-5xl font-mono font-bold">{name.charAt(0)}</div>
+        )}
+        {coverUrl && logoUrl && (
+          <div className="absolute bottom-2 right-2 border border-border rounded-md bg-card p-0.5">
+            <img src={logoUrl} alt={name} className="h-8 w-8 object-contain rounded" loading="lazy" />
+          </div>
         )}
         <div className="absolute top-2 left-2"><EntryBadge entryType={entryType} /></div>
       </div>
-      <div className="p-4">
-        <h3 className="font-semibold text-primary text-sm line-clamp-1">{name}</h3>
-        {tagline && <p className="text-muted text-xs mt-1 line-clamp-2">{tagline}</p>}
+      <div className="p-4 space-y-2 flex-1 flex flex-col">
+        <h3 className="font-semibold text-primary text-sm line-clamp-1 group-hover:text-accent transition-colors">{name}</h3>
+        {tagline && <p className="text-secondary text-sm mt-1 line-clamp-2">{tagline}</p>}
         <p className="text-muted text-2xs font-mono mt-2">{getCityName(city)}</p>
         {displayTags.length > 0 && (
-          <div className="flex flex-wrap gap-1 mt-2">
-            {displayTags.map((tag) => <Tag key={tag} className="text-[10px]">{tag}</Tag>)}
+          <div className="flex flex-wrap gap-1 mt-auto pt-2">
+            {displayTags.map((tag) => <span key={tag} className="text-2xs font-mono px-1.5 py-0.5 rounded bg-elevated text-muted">{tag}</span>)}
           </div>
         )}
       </div>
