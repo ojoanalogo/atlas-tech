@@ -5,15 +5,18 @@ import { getEntryBySlug, getPublishedEntries } from '@/lib/payload'
 import { buildTrackedUrl, flattenArray } from '@/lib/utils'
 import {
   ENTRY_TYPE_CONFIG,
+  ENTRY_TYPE_LABELS,
   URL_CATEGORY_MAP,
   CATEGORY_URL_MAP,
   getCityName,
   SITE_URL,
   type AtlasEntryType,
 } from '@/config'
+import { extractImageUrl } from '@/lib/format'
 import { EntryBadge } from '@/components/entries/EntryBadge'
 import { EntryCard } from '@/components/entries/EntryCard'
 import { Tag } from '@/components/ui/Tag'
+import { Breadcrumb } from '@/components/ui/Breadcrumb'
 import ShareButton from '@/components/ui/ShareButton'
 import { ExternalLink } from '@/components/ui/ExternalLink'
 import {
@@ -195,14 +198,10 @@ export default async function EntryDetailPage({
   const skills = flattenArray(entry.skills as Array<{ skill: string }>, 'skill')
   const focusAreas = flattenArray(entry.focusAreas as Array<{ area: string }>, 'area')
 
-  const coverUrl = (entry.coverImage as { url: string } | null)?.url
-  const logoUrl = (entry.logo as { url: string } | null)?.url
+  const coverUrl = extractImageUrl(entry.coverImage)
+  const logoUrl = extractImageUrl(entry.logo)
   const isStartupLike = ['startup', 'business', 'consultory', 'research-center'].includes(
     entry.entryType as string,
-  )
-
-  const typeLabels: Record<string, string> = Object.fromEntries(
-    Object.entries(ENTRY_TYPE_CONFIG).map(([k, v]) => [k, v.labelPlural]),
   )
 
   const entryIcon = ENTRY_TYPE_CONFIG[entry.entryType as AtlasEntryType]?.icon
@@ -210,7 +209,7 @@ export default async function EntryDetailPage({
 
   /* ---------- Details for sidebar ---------- */
   const details: { label: string; value: string | number | undefined; Icon: LucideIcon; ValueIcon?: LucideIcon }[] = [
-    { label: 'Categoria', value: typeLabels[entry.entryType as string], Icon: TagIcon, ValueIcon: EntryIcon },
+    { label: 'Categoria', value: ENTRY_TYPE_LABELS[entry.entryType as string], Icon: TagIcon, ValueIcon: EntryIcon },
     { label: 'Fundada', value: entry.foundedYear as number | undefined, Icon: Calendar },
     { label: 'Equipo', value: entry.teamSize as string | undefined, Icon: Users },
     { label: 'Etapa', value: entry.stage as string | undefined, Icon: TrendingUp },
@@ -295,22 +294,12 @@ export default async function EntryDetailPage({
           ],
         }),
       }} />
-      {/* Breadcrumb — 4 levels: Inicio > Directorio > Category > Name */}
-      <nav aria-label="Breadcrumb" className="text-xs font-mono text-muted mb-6 uppercase">
-        <a href="/" className="hover:text-accent transition-colors">
-          Inicio
-        </a>
-        <span className="mx-2">/</span>
-        <a href="/directorio" className="hover:text-accent transition-colors">
-          Directorio
-        </a>
-        <span className="mx-2">/</span>
-        <a href={`/${config.slug}`} className="hover:text-accent transition-colors">
-          {config.labelPlural}
-        </a>
-        <span className="mx-2">/</span>
-        <span className="text-primary">{entry.name as string}</span>
-      </nav>
+      <Breadcrumb items={[
+        { label: 'Inicio', href: '/' },
+        { label: 'Directorio', href: '/directorio' },
+        { label: config.labelPlural, href: `/${config.slug}` },
+        { label: entry.name as string },
+      ]} />
 
       {/* Two-layout mode: compact (single column) vs full (grid with sidebar) */}
       <div

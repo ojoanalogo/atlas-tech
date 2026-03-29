@@ -35,19 +35,10 @@ export default async function CategoryPage({
   const categoryEntries = allEntries.filter((e) => e.entryType === entryType)
   const cities = buildCityOptions(categoryEntries)
 
-  const typeLabels: Record<string, string> = Object.fromEntries(
-    Object.entries(ENTRY_TYPE_CONFIG).map(([k, v]) => [k, v.labelPlural]),
-  )
-  const typeIcons: Record<string, string> = Object.fromEntries(
-    Object.entries(ENTRY_TYPE_CONFIG).map(([k, v]) => [k, v.icon]),
-  )
-
   return (
     <section className="py-4 px-4">
       <div className="max-w-7xl mx-auto">
         <DirectoryFilter
-          typeLabels={typeLabels}
-          typeIcons={typeIcons}
           cities={cities}
           totalCount={allEntries.length}
           initialType={entryType}

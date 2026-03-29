@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { CalendarDays, Clock, MapPin, ArrowRight, RefreshCw, Ticket, ChevronLeft, ChevronRight, Mail } from "lucide-react";
 import { useEventsData } from "@/hooks/useEventsData";
 import type { TechEvent } from "@/hooks/useEventsData";
+import { openEventDetail, EVENT_DETAIL_EVENT } from "@/lib/event-bus";
 
 const WEEKDAYS = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
 const MONTH_NAMES = [
@@ -42,10 +43,6 @@ function formatDate(dateStr: string): string {
   const [y, m, d] = dateStr.split("-").map(Number);
   const date = new Date(y, m - 1, d);
   return date.toLocaleDateString("es-MX", { day: "numeric", month: "short" });
-}
-
-function openEventDetail(ev: TechEvent) {
-  window.dispatchEvent(new CustomEvent("open-event-detail", { detail: ev }));
 }
 
 function EventTypeBadge({ isInPerson }: { isInPerson: boolean }) {
@@ -310,8 +307,8 @@ export default function EventCalendar() {
         }
       }
     };
-    window.addEventListener("open-event-detail", handler);
-    return () => window.removeEventListener("open-event-detail", handler);
+    window.addEventListener(EVENT_DETAIL_EVENT, handler);
+    return () => window.removeEventListener(EVENT_DETAIL_EVENT, handler);
   }, []);
 
   const isLoading = status === "loading" && events.length === 0;

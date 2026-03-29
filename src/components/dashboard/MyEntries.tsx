@@ -1,10 +1,10 @@
 'use client'
 
-import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { EntryBadge } from '@/components/entries/EntryBadge'
 import { getCityName, type AtlasEntryType } from '@/config'
 import { Clock, CheckCircle, XCircle, Pencil } from 'lucide-react'
+import { useUserResource } from '@/hooks/useUserResource'
 
 interface Entry {
   id: string
@@ -18,18 +18,7 @@ interface Entry {
 }
 
 export function MyEntries() {
-  const [entries, setEntries] = useState<Entry[]>([])
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    fetch('/api/user/entries')
-      .then((res) => res.json())
-      .then((data) => {
-        setEntries(data.docs || [])
-        setLoading(false)
-      })
-      .catch(() => setLoading(false))
-  }, [])
+  const { data: entries, loading } = useUserResource<Entry>('/api/user/entries')
 
   if (loading) return <div className="animate-pulse h-20 bg-elevated rounded-lg" />
 

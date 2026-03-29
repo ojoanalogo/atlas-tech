@@ -4,7 +4,9 @@ import { notFound } from 'next/navigation'
 import { RichText } from '@payloadcms/richtext-lexical/react'
 import { getNewsBySlug, getPublishedNews } from '@/lib/payload'
 import { SectionHeading } from '@/components/ui/SectionHeading'
+import { Breadcrumb } from '@/components/ui/Breadcrumb'
 import { SITE_URL } from '@/config'
+import { formatDateEs, extractImageUrl } from '@/lib/format'
 
 export async function generateStaticParams() {
   const result = await getPublishedNews()
@@ -26,7 +28,7 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ slu
   const article = await getNewsBySlug(slug)
   if (!article) notFound()
 
-  const coverUrl = (article.coverImage as { url: string } | null)?.url
+  const coverUrl = extractImageUrl(article.coverImage)
   const authorName = (article.author as { displayName?: string; email: string } | null)?.displayName || (article.author as { email: string } | null)?.email
 
   return (
@@ -44,13 +46,11 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ slu
         }),
       }} />
       <div className="max-w-3xl mx-auto">
-        <nav className="text-xs font-mono text-muted mb-6 uppercase">
-          <a href="/" className="hover:text-accent transition-colors">Inicio</a>
-          <span className="mx-2">/</span>
-          <a href="/noticias" className="hover:text-accent transition-colors">Noticias</a>
-          <span className="mx-2">/</span>
-          <span className="text-primary">{article.title as string}</span>
-        </nav>
+        <Breadcrumb items={[
+          { label: 'Inicio', href: '/' },
+          { label: 'Noticias', href: '/noticias' },
+          { label: article.title as string },
+        ]} />
 
         {coverUrl && (
           <div className="relative rounded-lg overflow-hidden mb-6 h-64">
@@ -59,9 +59,7 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ slu
         )}
 
         <SectionHeading>
-          {new Date(article.publishDate as string).toLocaleDateString('es-MX', {
-            year: 'numeric', month: 'long', day: 'numeric',
-          })}
+          {formatDateEs(article.publishDate as string)}
           {authorName && ` — ${authorName}`}
         </SectionHeading>
 

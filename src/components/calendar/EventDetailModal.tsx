@@ -14,6 +14,7 @@ import {
   Maximize2,
 } from "lucide-react";
 import type { TechEvent } from "@/hooks/useEventsData";
+import { EVENT_DETAIL_EVENT } from "@/lib/event-bus";
 
 export default function EventDetailModal() {
   const [event, setEvent] = useState<TechEvent | null>(null);
@@ -25,8 +26,8 @@ export default function EventDetailModal() {
       const detail = (e as CustomEvent).detail;
       if (detail?.title) setEvent(detail as TechEvent);
     };
-    window.addEventListener("open-event-detail", handler);
-    return () => window.removeEventListener("open-event-detail", handler);
+    window.addEventListener(EVENT_DETAIL_EVENT, handler);
+    return () => window.removeEventListener(EVENT_DETAIL_EVENT, handler);
   }, []);
 
   useEffect(() => {

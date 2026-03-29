@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import SubmitWizard from '@/components/forms/SubmitWizard'
 import { AuthGuard } from '@/components/auth/AuthGuard'
 import { SINALOA_CITIES } from '@/config'
+import { Breadcrumb } from '@/components/ui/Breadcrumb'
 
 export const metadata: Metadata = {
   title: 'Agregar Proyecto',
@@ -17,13 +18,11 @@ export default function SubmitPage() {
     <AuthGuard>
       <section className="py-4 px-4">
         <div className="max-w-2xl mx-auto">
-          <nav className="text-xs font-mono text-muted mb-6 uppercase">
-            <a href="/" className="hover:text-accent transition-colors">Inicio</a>
-            <span className="mx-2">/</span>
-            <a href="/directorio" className="hover:text-accent transition-colors">Directorio</a>
-            <span className="mx-2">/</span>
-            <span className="text-primary">Agregar proyecto</span>
-          </nav>
+          <Breadcrumb items={[
+            { label: 'Inicio', href: '/' },
+            { label: 'Directorio', href: '/directorio' },
+            { label: 'Agregar proyecto' },
+          ]} />
 
           <h1 className="text-3xl md:text-4xl font-sans font-bold text-primary mb-2">Agregar proyecto</h1>
           <p className="text-secondary mb-8">

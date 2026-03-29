@@ -4,7 +4,9 @@ import { RichText } from '@payloadcms/richtext-lexical/react'
 import { getJobBySlug } from '@/lib/payload'
 import { getCityName, JOB_TYPE_LABELS, MODALITY_LABELS, SITE_URL } from '@/config'
 import { flattenArray } from '@/lib/utils'
+import { formatDateEs } from '@/lib/format'
 import { Tag } from '@/components/ui/Tag'
+import { Breadcrumb } from '@/components/ui/Breadcrumb'
 import { ExternalLink } from '@/components/ui/ExternalLink'
 import { MapPin, Clock, Briefcase, ExternalLink as LinkIcon } from 'lucide-react'
 
@@ -42,13 +44,11 @@ export default async function JobDetailPage({ params }: { params: Promise<{ slug
         }),
       }} />
       <div className="max-w-3xl mx-auto">
-        <nav className="text-xs font-mono text-muted mb-6 uppercase">
-          <a href="/" className="hover:text-accent transition-colors">Inicio</a>
-          <span className="mx-2">/</span>
-          <a href="/empleos" className="hover:text-accent transition-colors">Empleos</a>
-          <span className="mx-2">/</span>
-          <span className="text-primary">{job.title as string}</span>
-        </nav>
+        <Breadcrumb items={[
+          { label: 'Inicio', href: '/' },
+          { label: 'Empleos', href: '/empleos' },
+          { label: job.title as string },
+        ]} />
 
         <h1 className="text-3xl font-bold text-primary mb-2">{job.title as string}</h1>
         {entryName && <p className="text-sm text-muted font-mono mb-4">Publicado por {entryName}</p>}
@@ -97,9 +97,7 @@ export default async function JobDetailPage({ params }: { params: Promise<{ slug
         </div>
 
         <p className="text-2xs text-muted font-mono mt-4 text-center">
-          Esta oferta expira el {new Date(job.expiresAt as string).toLocaleDateString('es-MX', {
-            year: 'numeric', month: 'long', day: 'numeric',
-          })}
+          Esta oferta expira el {formatDateEs(job.expiresAt as string)}
         </p>
       </div>
     </article>

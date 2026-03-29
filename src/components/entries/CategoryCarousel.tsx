@@ -1,7 +1,6 @@
 "use client"
 
 import { useMemo } from "react";
-import { Rocket, Briefcase, Users, User, Microscope } from "lucide-react";
 import AutoScroll from "embla-carousel-auto-scroll";
 import {
   Carousel,
@@ -10,14 +9,7 @@ import {
   CarouselPrevious,
   CarouselNext,
 } from "@/components/ui/Carousel";
-
-const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
-  rocket: Rocket,
-  briefcase: Briefcase,
-  users: Users,
-  user: User,
-  microscope: Microscope,
-};
+import { ENTRY_TYPE_ICON_MAP } from "@/lib/icons";
 
 export interface CategoryData {
   type: string;
@@ -52,7 +44,7 @@ export default function CategoryCarousel({
     >
       <CarouselContent className="-ml-3">
         {categories.map((category) => {
-          const Icon = iconMap[category.icon];
+          const Icon = ENTRY_TYPE_ICON_MAP[category.icon];
           return (
             <CarouselItem
               key={category.type}

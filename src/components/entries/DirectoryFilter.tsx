@@ -3,10 +3,6 @@
 import { useState, useEffect, useCallback, type ReactNode } from "react";
 import {
   SearchX,
-  Rocket,
-  Briefcase,
-  Users,
-  User,
   LayoutGrid,
   SlidersHorizontal,
   ChevronDown,
@@ -17,8 +13,11 @@ import {
 import {
   CATEGORY_URL_MAP,
   DEFAULT_PAGINATION,
+  ENTRY_TYPE_LABELS,
+  ENTRY_TYPE_ICONS,
   type AtlasEntryType,
 } from "@/config";
+import { ENTRY_TYPE_ICON_MAP } from "@/lib/icons";
 
 interface CityInfo {
   id: string;
@@ -38,8 +37,6 @@ const SORT_OPTIONS: { value: SortOption; label: string }[] = [
 ];
 
 interface Props {
-  typeLabels: Record<string, string>;
-  typeIcons: Record<string, string>;
   cities: CityInfo[];
   totalCount: number;
   initialType?: string;
@@ -47,13 +44,6 @@ interface Props {
   pageSize?: number;
   children?: ReactNode;
 }
-
-const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
-  rocket: Rocket,
-  briefcase: Briefcase,
-  users: Users,
-  user: User,
-};
 
 function typeToPath(type: string): string {
   const slug = CATEGORY_URL_MAP[type as AtlasEntryType];
@@ -213,8 +203,6 @@ function Pagination({
 
 /* ── DirectoryFilter ── */
 export default function DirectoryFilter({
-  typeLabels,
-  typeIcons,
   cities,
   totalCount,
   initialType = "",
@@ -222,6 +210,8 @@ export default function DirectoryFilter({
   pageSize = DEFAULT_PAGINATION,
   children,
 }: Props) {
+  const typeLabels = ENTRY_TYPE_LABELS;
+  const typeIcons = ENTRY_TYPE_ICONS;
   const [currentPage, setCurrentPage] = useState(1);
   const [currentSort, setCurrentSort] = useState<SortOption>(DEFAULT_SORT);
   const [matchedCount, setMatchedCount] = useState(totalCount);
@@ -410,7 +400,7 @@ export default function DirectoryFilter({
           </a>
 
           {Object.entries(typeLabels).map(([type, label]) => {
-            const IconComponent = ICON_MAP[typeIcons[type]] || LayoutGrid;
+            const IconComponent = ENTRY_TYPE_ICON_MAP[typeIcons[type]] || LayoutGrid;
             const isActive = activeType === type;
             return (
               <a

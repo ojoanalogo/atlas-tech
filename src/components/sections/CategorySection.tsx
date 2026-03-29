@@ -1,18 +1,10 @@
 import Link from 'next/link'
-import { Rocket, Briefcase, Users, User, Microscope } from 'lucide-react'
 import { ATLAS_CATEGORIES, type AtlasEntryType } from '@/config'
+import { ENTRY_TYPE_ICON_MAP } from '@/lib/icons'
 import CategoryCarousel from '@/components/entries/CategoryCarousel'
 
 interface CategorySectionProps {
   counts: Record<AtlasEntryType, number>
-}
-
-const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
-  rocket: Rocket,
-  briefcase: Briefcase,
-  users: Users,
-  user: User,
-  microscope: Microscope,
 }
 
 export function CategorySection({ counts }: CategorySectionProps) {
@@ -45,7 +37,7 @@ export function CategorySection({ counts }: CategorySectionProps) {
         {/* Grid for sm+ */}
         <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {ATLAS_CATEGORIES.map((category) => {
-            const Icon = iconMap[category.icon]
+            const Icon = ENTRY_TYPE_ICON_MAP[category.icon]
             return (
               <Link
                 key={category.type}

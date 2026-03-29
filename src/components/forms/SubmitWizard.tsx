@@ -3,10 +3,6 @@
 import { useState, useRef } from "react";
 import {
   Rocket,
-  Users,
-  Briefcase,
-  User,
-  Microscope,
   ArrowLeft,
   ArrowRight,
   Send,
@@ -21,6 +17,7 @@ import {
   Globe,
   UserCircle,
 } from "lucide-react";
+import { ENTRY_TYPE_ICON_MAP } from "@/lib/icons";
 import {
   ENTRY_TYPES as ALL_ENTRY_TYPES,
   ENTRY_TYPE_CONFIG,
@@ -46,19 +43,11 @@ interface Props {
   cities: CityOption[];
 }
 
-const ICON_MAP: Record<string, typeof Rocket> = {
-  rocket: Rocket,
-  users: Users,
-  briefcase: Briefcase,
-  microscope: Microscope,
-  user: User,
-};
-
 const ENTRY_TYPES = ALL_ENTRY_TYPES.map((type) => ({
   type,
   label: ENTRY_TYPE_CONFIG[type].label,
   desc: ENTRY_TYPE_CONFIG[type].description,
-  icon: ICON_MAP[ENTRY_TYPE_CONFIG[type].icon] || Rocket,
+  icon: ENTRY_TYPE_ICON_MAP[ENTRY_TYPE_CONFIG[type].icon] || Rocket,
 }));
 
 const STEPS = [

@@ -3,6 +3,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { getPublishedNews } from '@/lib/payload'
 import { SectionHeading } from '@/components/ui/SectionHeading'
+import { formatDateEs, extractImageUrl } from '@/lib/format'
 
 export const metadata: Metadata = {
   title: 'Noticias',
@@ -25,7 +26,7 @@ export default async function NoticiasPage() {
 
         <div className="space-y-6">
           {articles.map((article) => {
-            const coverUrl = (article.coverImage as { url: string } | null)?.url
+            const coverUrl = extractImageUrl(article.coverImage)
             return (
               <Link
                 key={article.id}
@@ -40,9 +41,7 @@ export default async function NoticiasPage() {
                   )}
                   <div className="p-4 flex-1">
                     <p className="text-2xs font-mono text-muted mb-1">
-                      {new Date(article.publishDate as string).toLocaleDateString('es-MX', {
-                        year: 'numeric', month: 'long', day: 'numeric',
-                      })}
+                      {formatDateEs(article.publishDate as string)}
                     </p>
                     <h2 className="text-lg font-semibold text-primary mb-1">{article.title as string}</h2>
                     {article.excerpt && (

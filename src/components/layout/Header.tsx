@@ -1,40 +1,19 @@
 'use client'
 
-import { useState, useRef, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Rocket, Users, Briefcase, User, Menu, X, Map, CalendarDays, Plus, FolderOpen, Newspaper, LayoutDashboard, Microscope } from 'lucide-react'
+import { Briefcase, Menu, X, Map, CalendarDays, Plus, FolderOpen, Newspaper } from 'lucide-react'
 import ThemeToggle from '@/components/ui/ThemeToggle'
 import { UserMenu } from '@/components/auth/UserMenu'
 import { ENTRY_TYPE_CONFIG, ENTRY_TYPES } from '@/config'
-import { useClickOutside } from '@/hooks/useClickOutside'
-
-const iconMap: Record<string, React.ReactNode> = {
-  rocket: <Rocket className="w-4 h-4" />,
-  users: <Users className="w-4 h-4" />,
-  briefcase: <Briefcase className="w-4 h-4" />,
-  user: <User className="w-4 h-4" />,
-  microscope: <Microscope className="w-4 h-4" />,
-}
+import { ENTRY_TYPE_ICON_MAP } from '@/lib/icons'
+import { useDisclosure } from '@/hooks/useDisclosure'
 
 export function Header() {
   const [mobileOpen, setMobileOpen] = useState(false)
-  const [dropdownOpen, setDropdownOpen] = useState(false)
-  const dropdownRef = useRef<HTMLDivElement>(null)
+  const dropdown = useDisclosure()
   const pathname = usePathname()
-
-  useClickOutside(dropdownRef, useCallback(() => setDropdownOpen(false), []))
-
-  useEffect(() => {
-    function handleKeyDown(e: KeyboardEvent) {
-      if (e.key === 'Escape') {
-        setDropdownOpen(false)
-        setMobileOpen(false)
-      }
-    }
-    document.addEventListener('keydown', handleKeyDown)
-    return () => document.removeEventListener('keydown', handleKeyDown)
-  }, [])
 
   useEffect(() => {
     setMobileOpen(false)
@@ -60,18 +39,18 @@ export function Header() {
           </Link>
 
           <nav className="hidden lg:flex items-center gap-1">
-            <div className="relative" ref={dropdownRef}>
+            <div className="relative" ref={dropdown.ref}>
               <button
-                onClick={() => setDropdownOpen(!dropdownOpen)}
+                onClick={dropdown.toggle}
                 className="flex items-center gap-1 px-3 py-1.5 text-xs font-mono text-secondary hover:text-primary rounded-md hover:bg-elevated transition-colors"
               >
                 <FolderOpen className="w-3.5 h-3.5" />
                 Directorio
-                <svg className={`w-3 h-3 transition-transform ${dropdownOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className={`w-3 h-3 transition-transform ${dropdown.open ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
               </button>
-              {dropdownOpen && (
+              {dropdown.open && (
                 <div className="absolute top-full left-0 mt-1 w-56 bg-card border border-border rounded-lg shadow-lg py-1 z-50">
                   <Link href="/directorio" className="block px-4 py-2 text-xs font-mono text-secondary hover:text-primary hover:bg-elevated transition-colors">
                     Ver todo
@@ -83,7 +62,7 @@ export function Header() {
                       href={`/${cat.slug}`}
                       className="flex items-center gap-2 px-4 py-2 text-xs font-mono text-secondary hover:text-primary hover:bg-elevated transition-colors"
                     >
-                      {iconMap[cat.icon]}
+                      {(() => { const Icon = ENTRY_TYPE_ICON_MAP[cat.icon]; return Icon ? <Icon className="w-4 h-4" /> : null })()}
                       {cat.labelPlural}
                     </Link>
                   ))}
@@ -162,7 +141,7 @@ export function Header() {
                 href={`/${cat.slug}`}
                 className="flex items-center gap-2 py-2 text-sm font-mono text-secondary hover:text-accent transition-colors"
               >
-                {iconMap[cat.icon]}
+                {(() => { const Icon = ENTRY_TYPE_ICON_MAP[cat.icon]; return Icon ? <Icon className="w-4 h-4" /> : null })()}
                 {cat.labelPlural}
               </Link>
             ))}

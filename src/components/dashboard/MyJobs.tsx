@@ -1,9 +1,9 @@
 'use client'
 
-import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { getCityName, JOB_TYPE_LABELS } from '@/config'
 import { Clock, CheckCircle, XCircle } from 'lucide-react'
+import { useUserResource } from '@/hooks/useUserResource'
 
 interface Job {
   id: string
@@ -19,18 +19,7 @@ interface Job {
 }
 
 export function MyJobs() {
-  const [jobs, setJobs] = useState<Job[]>([])
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    fetch('/api/user/jobs')
-      .then((res) => res.json())
-      .then((data) => {
-        setJobs(data.docs || [])
-        setLoading(false)
-      })
-      .catch(() => setLoading(false))
-  }, [])
+  const { data: jobs, loading } = useUserResource<Job>('/api/user/jobs')
 
   if (loading) return <div className="animate-pulse h-20 bg-elevated rounded-lg" />
 

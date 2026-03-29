@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { AuthGuard } from '@/components/auth/AuthGuard'
 import { CITY_SELECT_OPTIONS, JOB_TYPE_OPTIONS, MODALITY_OPTIONS } from '@/config'
+import { Breadcrumb } from '@/components/ui/Breadcrumb'
 
 export default function NewJobPage() {
   const router = useRouter()
@@ -63,11 +64,10 @@ export default function NewJobPage() {
     <AuthGuard>
       <section className="py-8 px-4">
         <div className="max-w-2xl mx-auto">
-          <nav className="text-xs font-mono text-muted mb-6 uppercase">
-            <a href="/dashboard" className="hover:text-accent transition-colors">Dashboard</a>
-            <span className="mx-2">/</span>
-            <span className="text-primary">Publicar empleo</span>
-          </nav>
+          <Breadcrumb items={[
+            { label: 'Dashboard', href: '/dashboard' },
+            { label: 'Publicar empleo' },
+          ]} />
 
           <h1 className="text-2xl font-bold text-primary mb-2">Publicar empleo</h1>
           <p className="text-sm text-muted mb-8">Tu oferta será revisada antes de publicarse.</p>

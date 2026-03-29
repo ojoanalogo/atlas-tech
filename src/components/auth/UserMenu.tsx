@@ -1,27 +1,14 @@
 'use client'
 
-import { useState, useRef, useEffect, useCallback } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useSession, signOut } from '@/lib/auth-client'
 import { LogOut, LayoutDashboard } from 'lucide-react'
-import { useClickOutside } from '@/hooks/useClickOutside'
+import { useDisclosure } from '@/hooks/useDisclosure'
 
 export function UserMenu() {
   const { data: session, isPending } = useSession()
-  const [open, setOpen] = useState(false)
-  const ref = useRef<HTMLDivElement>(null)
-
-  useClickOutside(ref, useCallback(() => setOpen(false), []))
-
-  useEffect(() => {
-    if (!open) return
-    function handleKeyDown(e: KeyboardEvent) {
-      if (e.key === 'Escape') setOpen(false)
-    }
-    document.addEventListener('keydown', handleKeyDown)
-    return () => document.removeEventListener('keydown', handleKeyDown)
-  }, [open])
+  const { open, setOpen, ref, toggle } = useDisclosure()
 
   if (isPending) {
     return <div className="w-8 h-8 rounded-full bg-elevated animate-pulse" />
@@ -37,7 +24,7 @@ export function UserMenu() {
   return (
     <div className="relative" ref={ref}>
       <button
-        onClick={() => setOpen(!open)}
+        onClick={toggle}
         className="w-8 h-8 rounded-full bg-accent text-accent-foreground flex items-center justify-center text-xs font-bold"
         title={user.name || user.email}
       >

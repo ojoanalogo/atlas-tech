@@ -1,9 +1,9 @@
 'use client'
 
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import { useTheme } from 'next-themes'
 import { Sun, Moon, Monitor, Check } from 'lucide-react'
-import { useClickOutside } from '@/hooks/useClickOutside'
+import { useDisclosure } from '@/hooks/useDisclosure'
 
 const OPTIONS = [
   { value: 'light', label: 'Claro', Icon: Sun },
@@ -13,22 +13,10 @@ const OPTIONS = [
 
 export default function ThemeToggle({ className = '' }: { className?: string }) {
   const { theme, setTheme, resolvedTheme } = useTheme()
-  const [open, setOpen] = useState(false)
+  const { open, setOpen, ref, toggle } = useDisclosure()
   const [mounted, setMounted] = useState(false)
-  const ref = useRef<HTMLDivElement>(null)
 
   useEffect(() => setMounted(true), [])
-
-  useClickOutside(ref, useCallback(() => setOpen(false), []))
-
-  useEffect(() => {
-    if (!open) return
-    function handleKeyDown(e: KeyboardEvent) {
-      if (e.key === 'Escape') setOpen(false)
-    }
-    document.addEventListener('keydown', handleKeyDown)
-    return () => document.removeEventListener('keydown', handleKeyDown)
-  }, [open])
 
   const ActiveIcon = mounted
     ? (OPTIONS.find((o) => o.value === theme)?.Icon ?? Monitor)
@@ -38,7 +26,7 @@ export default function ThemeToggle({ className = '' }: { className?: string }) 
     <div ref={ref} className={`relative ${className}`}>
       <button
         type="button"
-        onClick={(e) => { e.stopPropagation(); setOpen((v) => !v) }}
+        onClick={(e) => { e.stopPropagation(); toggle() }}
         aria-label="Cambiar tema"
         aria-haspopup="true"
         aria-expanded={open}

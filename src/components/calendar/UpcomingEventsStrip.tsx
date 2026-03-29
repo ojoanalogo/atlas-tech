@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/Carousel";
 import { useEventsData } from "@/hooks/useEventsData";
 import type { TechEvent } from "@/hooks/useEventsData";
+import { openEventDetail } from "@/lib/event-bus";
 
 function formatDateBadge(dateStr: string): { day: string; month: string } {
   const [y, m, d] = dateStr.split("-").map(Number);
@@ -22,10 +23,6 @@ function formatDateBadge(dateStr: string): { day: string; month: string } {
       .toLocaleDateString("es-MX", { month: "short" })
       .replace(".", ""),
   };
-}
-
-function openEventDetail(ev: TechEvent) {
-  window.dispatchEvent(new CustomEvent("open-event-detail", { detail: ev }));
 }
 
 function EventCard({ ev }: { ev: TechEvent }) {
