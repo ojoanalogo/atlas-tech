@@ -160,6 +160,34 @@ async function seed() {
       continue
     }
 
+    // Normalize select field values that may not match Payload options exactly
+    const stageMap: Record<string, string> = {
+      'Bootstrapping': 'Bootstrap',
+      'Boostrap': 'Bootstrap',
+      'bootstrapping': 'Bootstrap',
+      'bootstrap': 'Bootstrap',
+    }
+    const teamSizeMap: Record<string, string> = {
+      '1': '1-5',
+      '2': '1-5',
+      '3': '1-5',
+      '4': '1-5',
+      '5': '1-5',
+    }
+    const meetupFrequencyMap: Record<string, string> = {
+      'Permanente': 'Permanente (online)',
+    }
+
+    if (data.stage && stageMap[data.stage as string]) {
+      data.stage = stageMap[data.stage as string]
+    }
+    if (data.teamSize && teamSizeMap[data.teamSize as string]) {
+      data.teamSize = teamSizeMap[data.teamSize as string]
+    }
+    if (data.meetupFrequency && meetupFrequencyMap[data.meetupFrequency as string]) {
+      data.meetupFrequency = meetupFrequencyMap[data.meetupFrequency as string]
+    }
+
     // Map tags from string[] to Payload array format
     const tags = Array.isArray(data.tags)
       ? (data.tags as string[]).map((t) => ({ tag: t }))

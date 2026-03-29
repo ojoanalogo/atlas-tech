@@ -1,6 +1,28 @@
-import { revalidatePath, revalidateTag } from 'next/cache'
 import type { CollectionAfterChangeHook } from 'payload'
 import { ENTRY_TYPE_CONFIG, type AtlasEntryType } from '../config'
+
+/**
+ * Safely call revalidatePath/revalidateTag — these only work inside a Next.js
+ * request context. When Payload runs outside Next.js (e.g. seed scripts, CLI),
+ * they throw. We catch and ignore those errors.
+ */
+function safeRevalidatePath(path: string) {
+  try {
+    const { revalidatePath } = require('next/cache')
+    revalidatePath(path)
+  } catch {
+    // Outside Next.js request context — skip silently
+  }
+}
+
+function safeRevalidateTag(tag: string) {
+  try {
+    const { revalidateTag } = require('next/cache')
+    revalidateTag(tag)
+  } catch {
+    // Outside Next.js request context — skip silently
+  }
+}
 
 /**
  * Revalidate static pages when a document's publish status changes.
@@ -21,28 +43,27 @@ export const revalidateEntry: CollectionAfterChangeHook = ({
     const entryType = doc.entryType as AtlasEntryType
     const categorySlug = ENTRY_TYPE_CONFIG[entryType]?.slug
 
-    revalidatePath('/')
-    revalidatePath('/directorio')
+    safeRevalidatePath('/')
+    safeRevalidatePath('/directorio')
     if (categorySlug) {
-      revalidatePath(`/${categorySlug}`)
-      if (doc.slug) revalidatePath(`/${categorySlug}/${doc.slug}`)
+      safeRevalidatePath(`/${categorySlug}`)
+      if (doc.slug) safeRevalidatePath(`/${categorySlug}/${doc.slug}`)
     }
-    if (doc.city) revalidatePath(`/directorio/${doc.city}`)
+    if (doc.city) safeRevalidatePath(`/directorio/${doc.city}`)
   }
 
   if (collection.slug === 'news') {
-    revalidatePath('/')
-    revalidatePath('/noticias')
-    if (doc.slug) revalidatePath(`/noticias/${doc.slug}`)
+    safeRevalidatePath('/')
+    safeRevalidatePath('/noticias')
+    if (doc.slug) safeRevalidatePath(`/noticias/${doc.slug}`)
   }
 
   if (collection.slug === 'events') {
-    revalidatePath('/')
-    revalidatePath('/eventos')
+    safeRevalidatePath('/')
+    safeRevalidatePath('/eventos')
   }
 
-  // Also revalidate by tag for more granular control
-  revalidateTag(collection.slug)
+  safeRevalidateTag(collection.slug)
 
   return doc
 }
