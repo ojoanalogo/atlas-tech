@@ -6,6 +6,7 @@ import {
   Users,
   Briefcase,
   User,
+  Microscope,
   ArrowLeft,
   ArrowRight,
   Send,
@@ -49,6 +50,7 @@ const ICON_MAP: Record<string, typeof Rocket> = {
   rocket: Rocket,
   users: Users,
   briefcase: Briefcase,
+  microscope: Microscope,
   user: User,
 };
 
@@ -114,6 +116,15 @@ const TYPE_COPY: Record<
     successTitle: "Comunidad enviada",
     successMessage:
       "Tu comunidad ha sido recibida. La revisaremos y la agregaremos al directorio pronto.",
+  },
+  "research-center": {
+    entityName: "centro de investigación",
+    namePlaceholder: "Nombre del centro de investigación",
+    taglinePlaceholder: "Una frase corta que describe el centro",
+    descriptionPlaceholder: "Describe el centro de investigación en detalle",
+    successTitle: "Centro de investigación enviado",
+    successMessage:
+      "Tu centro de investigación ha sido recibido. Lo revisaremos y lo agregaremos al directorio pronto.",
   },
   person: {
     entityName: "perfil",
@@ -550,7 +561,8 @@ export default function SubmitWizard({ cities }: Props) {
             </label>
             {(entryType === "startup" ||
               entryType === "business" ||
-              entryType === "consultory") && (
+              entryType === "consultory" ||
+              entryType === "research-center") && (
               <>
                 <label className="block">
                   <span className="text-xs font-mono text-muted uppercase tracking-wider">

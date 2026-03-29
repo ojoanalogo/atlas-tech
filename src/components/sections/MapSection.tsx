@@ -13,6 +13,7 @@ import {
   Rocket,
   Users,
   Briefcase,
+  Microscope,
   User,
   Globe,
   Search,
@@ -90,6 +91,11 @@ function StatsContent({
           icon={<Briefcase className="w-4 h-4 text-accent shrink-0" />}
           value={stats.consultory || 0}
           label={ENTRY_TYPE_CONFIG.consultory.labelPlural}
+        />
+        <StatCard
+          icon={<Microscope className="w-4 h-4 text-accent shrink-0" />}
+          value={stats['research-center'] || 0}
+          label={ENTRY_TYPE_CONFIG['research-center'].labelPlural}
         />
         <StatCard
           icon={<User className="w-4 h-4 text-accent shrink-0" />}

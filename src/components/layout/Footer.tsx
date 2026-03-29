@@ -1,6 +1,5 @@
 import Link from 'next/link'
 import { ENTRY_TYPE_CONFIG, ENTRY_TYPES, SOCIAL_LINKS, SITE_TITLE } from '@/config'
-import { GithubIcon } from 'lucide-react'
 
 export function Footer() {
   const categories = ENTRY_TYPES.map((type) => ({ type, ...ENTRY_TYPE_CONFIG[type] }))
@@ -18,7 +17,6 @@ export function Footer() {
             </p>
             {SOCIAL_LINKS.map((link) => (
               <a key={link.platform} href={link.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-muted hover:text-accent mt-3 font-mono">
-                <GithubIcon className="w-3.5 h-3.5" />
                 {link.label}
               </a>
             ))}

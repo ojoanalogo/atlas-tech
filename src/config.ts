@@ -11,6 +11,7 @@ export const ENTRY_TYPES = [
   'community',
   'business',
   'consultory',
+  'research-center',
   'person',
 ] as const
 
@@ -57,6 +58,14 @@ export const ENTRY_TYPE_CONFIG: Record<AtlasEntryType, EntryTypeConfig> = {
     badgeColor: 'bg-amber-500/90 text-amber-50 border-amber-500/60',
     icon: 'briefcase',
     slug: 'consultoras',
+  },
+  'research-center': {
+    label: 'Centro de Investigación',
+    labelPlural: 'Centros de Investigación',
+    description: 'Centros de investigación y desarrollo tecnológico',
+    badgeColor: 'bg-cyan-500/90 text-cyan-50 border-cyan-500/60',
+    icon: 'microscope',
+    slug: 'centros-de-investigacion',
   },
   person: {
     label: 'Persona',
@@ -273,7 +282,7 @@ export interface AtlasCategory {
   slug: string
 }
 
-const DISPLAY_CATEGORIES: AtlasEntryType[] = ['startup', 'consultory', 'community', 'person']
+const DISPLAY_CATEGORIES: AtlasEntryType[] = ['startup', 'consultory', 'research-center', 'community', 'person']
 
 export const ATLAS_CATEGORIES: AtlasCategory[] = DISPLAY_CATEGORIES.map((type) => ({
   type,

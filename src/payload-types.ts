@@ -204,7 +204,7 @@ export interface User {
  */
 export interface Entry {
   id: number;
-  entryType: 'startup' | 'community' | 'business' | 'consultory' | 'person';
+  entryType: 'startup' | 'community' | 'business' | 'consultory' | 'research-center' | 'person';
   name: string;
   /**
    * URL-friendly identifier. Auto-generated from name if left empty.

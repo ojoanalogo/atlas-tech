@@ -15,8 +15,8 @@
 }
 
 @theme {
-  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
-  --font-sans: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-mono), "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  --font-sans: var(--font-sans), "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
   --breakpoint-xs: 30rem;
   --text-2xs: 0.625rem;
   --text-2xs--line-height: 1.2;

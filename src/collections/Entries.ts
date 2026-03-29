@@ -16,7 +16,7 @@ import {
 const entryTypeOptions = ENTRY_TYPES.map((t) => ({ label: t.charAt(0).toUpperCase() + t.slice(1), value: t }))
 
 const isStartupLike = (siblingData: Record<string, unknown>) =>
-  ['startup', 'business', 'consultory'].includes(siblingData.entryType as string)
+  ['startup', 'business', 'consultory', 'research-center'].includes(siblingData.entryType as string)
 
 const isCommunity = (siblingData: Record<string, unknown>) =>
   siblingData.entryType === 'community'

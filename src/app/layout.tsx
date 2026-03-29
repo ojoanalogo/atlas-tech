@@ -1,7 +1,18 @@
 import type { Metadata } from 'next'
+import { JetBrains_Mono, Space_Grotesk } from 'next/font/google'
 import { SITE_TITLE, SITE_DESCRIPTION, SITE_URL } from '@/config'
-import '@/styles/globals.css'
-import '@/styles/tooltip.css'
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ['latin'],
+  variable: '--font-mono',
+  display: 'swap',
+})
+
+const spaceGrotesk = Space_Grotesk({
+  subsets: ['latin'],
+  variable: '--font-sans',
+  display: 'swap',
+})
 
 export const metadata: Metadata = {
   title: {
@@ -30,23 +41,8 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="es-MX" suppressHydrationWarning>
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
-          rel="stylesheet"
-        />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `(function(){var t=localStorage.getItem("theme");if(t==="dark"||(t!=="light"&&window.matchMedia("(prefers-color-scheme: dark)").matches)){document.documentElement.classList.add("dark")}})()`,
-          }}
-        />
-      </head>
-      <body className="mx-auto font-sans w-full min-h-screen flex flex-col relative bg-background text-secondary selection:bg-accent selection:text-accent-foreground">
-        {children}
-      </body>
+    <html lang="es-MX" className={`${jetbrainsMono.variable} ${spaceGrotesk.variable}`} suppressHydrationWarning>
+      <body>{children}</body>
     </html>
   )
 }
