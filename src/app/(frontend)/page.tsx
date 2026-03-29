@@ -55,6 +55,25 @@ export default async function HomePage() {
           }),
         }}
       />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'SiteNavigationElement',
+            name: ['Startups', 'Consultorías', 'Comunidades', 'Centros de Investigación', 'Personas', 'Eventos', 'Directorio'],
+            url: [
+              `${SITE_URL}/startups`,
+              `${SITE_URL}/consultoras`,
+              `${SITE_URL}/comunidades`,
+              `${SITE_URL}/centros-de-investigacion`,
+              `${SITE_URL}/personas`,
+              `${SITE_URL}/eventos`,
+              `${SITE_URL}/directorio`,
+            ],
+          }),
+        }}
+      />
 
       <HeroSection cityCounts={cityCounts} />
 
