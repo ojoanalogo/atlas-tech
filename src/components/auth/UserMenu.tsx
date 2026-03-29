@@ -3,8 +3,7 @@
 import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import { useSession, signOut } from '@/lib/auth-client'
-import { SignInButton } from './SignInButton'
-import { LogOut, LayoutDashboard } from 'lucide-react'
+import { LogIn, LogOut, LayoutDashboard } from 'lucide-react'
 
 export function UserMenu() {
   const { data: session, isPending } = useSession()
@@ -24,7 +23,11 @@ export function UserMenu() {
   }
 
   if (!session) {
-    return <SignInButton className="px-3 py-1.5 text-xs font-mono text-secondary hover:text-primary rounded-md hover:bg-elevated transition-colors" />
+    return (
+      <Link href="/auth/sign-in" className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono text-secondary hover:text-primary rounded-md hover:bg-elevated transition-colors">
+        <LogIn className="w-3.5 h-3.5" /> Iniciar sesión
+      </Link>
+    )
   }
 
   const user = session.user

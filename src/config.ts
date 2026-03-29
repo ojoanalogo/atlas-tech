@@ -68,6 +68,31 @@ export const ENTRY_TYPE_CONFIG: Record<AtlasEntryType, EntryTypeConfig> = {
   },
 }
 
+export interface NavLink {
+  title: string
+  id?: string
+  url?: string
+  tooltip?: string
+}
+
+export const NAV_LINKS: NavLink[] = [
+  ...ENTRY_TYPES.map((type) => {
+    const c = ENTRY_TYPE_CONFIG[type]
+    return {
+      title: c.labelPlural,
+      id: c.slug,
+      url: `/${c.slug}`,
+      tooltip: c.description,
+    }
+  }),
+  {
+    title: 'Mapa',
+    id: 'mapa',
+    url: '/#map',
+    tooltip: 'Mapa interactivo',
+  },
+]
+
 export const CATEGORY_URL_MAP: Record<AtlasEntryType, string> = Object.fromEntries(
   Object.entries(ENTRY_TYPE_CONFIG).map(([k, v]) => [k, v.slug]),
 ) as Record<AtlasEntryType, string>
