@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { AuthGuard } from '@/components/auth/AuthGuard'
 import { MyEntries } from '@/components/dashboard/MyEntries'
 import { MyJobs } from '@/components/dashboard/MyJobs'
-import { Plus, Briefcase } from 'lucide-react'
+import { Plus, Briefcase, User } from 'lucide-react'
 
 export const metadata: Metadata = {
   title: 'Dashboard',
@@ -18,6 +18,12 @@ export default function DashboardPage() {
           <div className="flex items-center justify-between mb-8">
             <h1 className="text-2xl font-bold text-primary">Dashboard</h1>
             <div className="flex gap-2">
+              <Link
+                href="/dashboard/profile"
+                className="flex items-center gap-1 px-3 py-1.5 text-xs font-mono font-medium border border-border text-primary rounded-md hover:bg-elevated transition-colors"
+              >
+                <User className="w-3.5 h-3.5" /> Mi Perfil
+              </Link>
               <Link
                 href="/directorio/submit"
                 className="flex items-center gap-1 px-3 py-1.5 text-xs font-mono font-medium bg-accent text-accent-foreground rounded-md hover:bg-accent/90 transition-colors"
