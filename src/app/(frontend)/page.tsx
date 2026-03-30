@@ -8,7 +8,7 @@ import { FeaturedSection } from '@/components/sections/FeaturedSection'
 import MapSection from '@/components/sections/MapSection'
 import { CalendarSection } from '@/components/sections/CalendarSection'
 import { FaqSection } from '@/components/sections/FaqSection'
-import { CtaSection } from '@/components/sections/CtaSection'
+import { CombinedCtaSection } from '@/components/sections/CombinedCtaSection'
 import UpcomingEventsStrip from '@/components/calendar/UpcomingEventsStrip'
 
 export default async function HomePage() {
@@ -88,7 +88,7 @@ export default async function HomePage() {
       <MapSection cityCounts={cityCounts} cityTypeCounts={cityTypeCounts} />
       <CalendarSection />
       <FaqSection />
-      <CtaSection />
+      <CombinedCtaSection />
     </>
   )
 }
