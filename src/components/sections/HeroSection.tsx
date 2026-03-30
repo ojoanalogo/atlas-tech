@@ -1,12 +1,7 @@
-import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { MapPin, Search, Plus } from 'lucide-react'
 import { SINALOA_CITIES } from '@/config'
-
-const SinaloaMap = dynamic(() => import('@/components/maps/SinaloaMap'), {
-  ssr: false,
-  loading: () => <div className="w-full h-full bg-elevated animate-pulse rounded-lg" />,
-})
+import SinaloaMap from '@/components/maps/SinaloaMapLazy'
 
 interface HeroSectionProps {
   cityCounts?: Record<string, number>

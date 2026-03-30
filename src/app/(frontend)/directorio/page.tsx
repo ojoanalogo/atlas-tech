@@ -2,7 +2,6 @@ import type { Metadata } from 'next'
 import { getPublishedEntries } from '@/lib/payload'
 import { buildCityOptions } from '@/lib/utils'
 import DirectoryFilter from '@/components/entries/DirectoryFilter'
-import { DirectoryGrid } from '@/components/entries/DirectoryGrid'
 
 export const metadata: Metadata = {
   title: 'Directorio',
@@ -17,13 +16,7 @@ export default async function DirectoryPage() {
   return (
     <section className="py-4 px-4">
       <div className="max-w-7xl mx-auto">
-        <DirectoryFilter
-          cities={cities}
-          totalCount={entries.length}
-          pageSize={18}
-        >
-          <DirectoryGrid entries={entries} />
-        </DirectoryFilter>
+        <DirectoryFilter entries={entries} cities={cities} pageSize={18} />
       </div>
     </section>
   )

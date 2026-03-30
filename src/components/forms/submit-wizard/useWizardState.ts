@@ -1,0 +1,281 @@
+import { useReducer, useRef, useCallback } from "react";
+import { N8N_WEBHOOK_URL, type AtlasEntryType } from "@/config";
+
+export interface WizardState {
+  step: number;
+  entryType: AtlasEntryType | "";
+  // Step 1: Basic info
+  name: string;
+  tagline: string;
+  description: string;
+  city: string;
+  // Step 2: Details (type-specific)
+  foundedYear: string;
+  stage: string;
+  teamSize: string;
+  sector: string;
+  services: string;
+  technologies: string;
+  hiring: boolean;
+  hiringUrl: string;
+  memberCount: string;
+  meetupFrequency: string;
+  platform: string;
+  focusAreas: string[];
+  focusAreaInput: string;
+  businessModel: string;
+  role: string;
+  company: string;
+  skills: string;
+  email: string;
+  portfolio: string;
+  availableForHire: boolean;
+  availableForMentoring: boolean;
+  // Step 3: Links + Tags
+  website: string;
+  x: string;
+  instagram: string;
+  linkedin: string;
+  github: string;
+  youtube: string;
+  discord: string;
+  telegram: string;
+  tags: string[];
+  tagInput: string;
+  // Step 4: Contact (submitter info)
+  submitterName: string;
+  submitterEmail: string;
+  submitterPhone: string;
+  // Step 5: Submission
+  submitting: boolean;
+  result: "success" | "error" | null;
+  // Image previews
+  logoPreview: string | null;
+  coverPreview: string | null;
+}
+
+export type WizardAction =
+  | { type: "SET_FIELD"; field: string; value: unknown }
+  | { type: "NEXT_STEP" }
+  | { type: "PREV_STEP" }
+  | { type: "SET_STEP"; step: number }
+  | { type: "SUBMIT_START" }
+  | { type: "SUBMIT_SUCCESS" }
+  | { type: "SUBMIT_ERROR" }
+  | { type: "CLEAR_RESULT" }
+  | { type: "RESET" };
+
+const TOTAL_STEPS = 6;
+
+const initialState: WizardState = {
+  step: 0,
+  entryType: "",
+  name: "",
+  tagline: "",
+  description: "",
+  city: "",
+  foundedYear: "",
+  stage: "",
+  teamSize: "",
+  sector: "",
+  services: "",
+  technologies: "",
+  hiring: false,
+  hiringUrl: "",
+  memberCount: "",
+  meetupFrequency: "",
+  platform: "",
+  focusAreas: [],
+  focusAreaInput: "",
+  businessModel: "",
+  role: "",
+  company: "",
+  skills: "",
+  email: "",
+  portfolio: "",
+  availableForHire: false,
+  availableForMentoring: false,
+  website: "",
+  x: "",
+  instagram: "",
+  linkedin: "",
+  github: "",
+  youtube: "",
+  discord: "",
+  telegram: "",
+  tags: [],
+  tagInput: "",
+  submitterName: "",
+  submitterEmail: "",
+  submitterPhone: "",
+  submitting: false,
+  result: null,
+  logoPreview: null,
+  coverPreview: null,
+};
+
+function wizardReducer(state: WizardState, action: WizardAction): WizardState {
+  switch (action.type) {
+    case "SET_FIELD":
+      return { ...state, [action.field]: action.value };
+    case "NEXT_STEP":
+      return state.step < TOTAL_STEPS - 1
+        ? { ...state, step: state.step + 1 }
+        : state;
+    case "PREV_STEP":
+      return state.step > 0 ? { ...state, step: state.step - 1 } : state;
+    case "SET_STEP":
+      return { ...state, step: action.step };
+    case "SUBMIT_START":
+      return { ...state, submitting: true, result: null };
+    case "SUBMIT_SUCCESS":
+      return { ...state, submitting: false, result: "success" };
+    case "SUBMIT_ERROR":
+      return { ...state, submitting: false, result: "error" };
+    case "CLEAR_RESULT":
+      return { ...state, result: null };
+    case "RESET":
+      return initialState;
+    default:
+      return state;
+  }
+}
+
+function csvToArray(value: string): string[] | undefined {
+  const arr = value
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+  return arr.length > 0 ? arr : undefined;
+}
+
+function buildPayload(state: WizardState) {
+  return {
+    entryType: state.entryType,
+    name: state.name,
+    tagline: state.tagline || undefined,
+    description: state.description,
+    city: state.city,
+    website: state.website || undefined,
+    x: state.x || undefined,
+    instagram: state.instagram || undefined,
+    linkedin: state.linkedin || undefined,
+    github: state.github || undefined,
+    youtube: state.youtube || undefined,
+    discord: state.discord || undefined,
+    telegram: state.telegram || undefined,
+    tags: state.tags.length > 0 ? state.tags : undefined,
+    foundedYear: state.foundedYear ? Number(state.foundedYear) : undefined,
+    stage: state.stage || undefined,
+    teamSize: state.teamSize || undefined,
+    sector: state.sector || undefined,
+    services: csvToArray(state.services),
+    technologies: csvToArray(state.technologies),
+    hiring: state.hiring || undefined,
+    hiringUrl: state.hiringUrl || undefined,
+    memberCount: state.memberCount ? Number(state.memberCount) : undefined,
+    meetupFrequency: state.meetupFrequency || undefined,
+    platform: state.platform || undefined,
+    focusAreas: state.focusAreas.length > 0 ? state.focusAreas : undefined,
+    businessModel: state.businessModel || undefined,
+    role: state.role || undefined,
+    company: state.company || undefined,
+    skills: csvToArray(state.skills),
+    email: state.email || undefined,
+    portfolio: state.portfolio || undefined,
+    availableForHire: state.availableForHire || undefined,
+    availableForMentoring: state.availableForMentoring || undefined,
+    submitter: {
+      name: state.submitterName,
+      email: state.submitterEmail,
+      phone: state.submitterPhone || undefined,
+    },
+  };
+}
+
+function canAdvance(state: WizardState): boolean {
+  switch (state.step) {
+    case 0:
+      return state.entryType !== "";
+    case 1:
+      return (
+        state.name.trim() !== "" &&
+        state.description.trim() !== "" &&
+        state.city !== ""
+      );
+    case 4:
+      return (
+        state.submitterName.trim() !== "" &&
+        state.submitterEmail.trim() !== ""
+      );
+    default:
+      return true;
+  }
+}
+
+export function useWizardState() {
+  const [state, dispatch] = useReducer(wizardReducer, initialState);
+  const logoRef = useRef<HTMLInputElement>(null);
+  const coverRef = useRef<HTMLInputElement>(null);
+
+  const setField = useCallback(
+    (field: string, value: unknown) => {
+      dispatch({ type: "SET_FIELD", field, value });
+    },
+    [],
+  );
+
+  const nextStep = useCallback(() => {
+    if (canAdvance(state)) {
+      dispatch({ type: "NEXT_STEP" });
+    }
+  }, [state]);
+
+  const prevStep = useCallback(() => {
+    dispatch({ type: "PREV_STEP" });
+  }, []);
+
+  const clearResult = useCallback(() => {
+    dispatch({ type: "CLEAR_RESULT" });
+  }, []);
+
+  const submit = useCallback(async () => {
+    dispatch({ type: "SUBMIT_START" });
+
+    try {
+      const fd = new FormData();
+      fd.append("payload", JSON.stringify(buildPayload(state)));
+
+      const logoFile = logoRef.current?.files?.[0];
+      const coverFile = coverRef.current?.files?.[0];
+      if (logoFile) fd.append("logo", logoFile);
+      if (coverFile) fd.append("coverImage", coverFile);
+
+      const res = await fetch(N8N_WEBHOOK_URL, {
+        method: "POST",
+        body: fd,
+        headers: { Accept: "application/json" },
+      });
+
+      if (res.ok) {
+        dispatch({ type: "SUBMIT_SUCCESS" });
+      } else {
+        dispatch({ type: "SUBMIT_ERROR" });
+      }
+    } catch {
+      dispatch({ type: "SUBMIT_ERROR" });
+    }
+  }, [state]);
+
+  return {
+    state,
+    setField,
+    nextStep,
+    prevStep,
+    canAdvance: canAdvance(state),
+    submit,
+    clearResult,
+    logoRef,
+    coverRef,
+  };
+}

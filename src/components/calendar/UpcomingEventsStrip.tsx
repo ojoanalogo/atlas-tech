@@ -13,6 +13,7 @@ import {
 import { useEventsData } from "@/hooks/useEventsData";
 import type { TechEvent } from "@/hooks/useEventsData";
 import { openEventDetail } from "@/lib/event-bus";
+import EventTypeBadge from "./EventTypeBadge";
 
 function formatDateBadge(dateStr: string): { day: string; month: string } {
   const [y, m, d] = dateStr.split("-").map(Number);
@@ -49,14 +50,8 @@ function EventCard({ ev }: { ev: TechEvent }) {
           <span className="text-sm font-sans font-semibold text-primary group-hover:text-accent transition-colors truncate">
             {ev.title}
           </span>
-          <span
-            className={`shrink-0 text-2xs font-mono font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded ${
-              ev.isInPerson
-                ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400"
-                : "bg-blue-500/15 text-blue-600 dark:text-blue-400"
-            }`}
-          >
-            {ev.isInPerson ? "Presencial" : "Virtual"}
+          <span className="shrink-0">
+            <EventTypeBadge isInPerson={ev.isInPerson} />
           </span>
         </div>
         <div className="flex items-center gap-2 mt-0.5">

@@ -3,7 +3,6 @@ import { getPublishedEntries } from '@/lib/payload'
 import { buildCityOptions } from '@/lib/utils'
 import { ALL_CITY_IDS, getCityName } from '@/config'
 import DirectoryFilter from '@/components/entries/DirectoryFilter'
-import { DirectoryGrid } from '@/components/entries/DirectoryGrid'
 
 export async function generateStaticParams() {
   return ALL_CITY_IDS.filter((id) => id !== 'global').map((city) => ({ city }))
@@ -27,14 +26,7 @@ export default async function CityDirectoryPage({ params }: { params: Promise<{ 
   return (
     <section className="py-4 px-4">
       <div className="max-w-7xl mx-auto">
-        <DirectoryFilter
-          cities={cities}
-          totalCount={entries.length}
-          initialCity={city}
-          pageSize={18}
-        >
-          <DirectoryGrid entries={entries} />
-        </DirectoryFilter>
+        <DirectoryFilter entries={entries} cities={cities} initialCity={city} pageSize={18} />
       </div>
     </section>
   )

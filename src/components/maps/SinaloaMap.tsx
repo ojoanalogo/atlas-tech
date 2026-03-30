@@ -6,117 +6,16 @@ import React, {
   useRef,
   useEffect,
   useMemo,
-  memo,
 } from "react";
 import { geoIdentity, geoPath } from "d3-geo";
 import { ComposableMap, Geographies, Geography } from "react-simple-maps";
-import {
-  type LucideIcon,
-  Rocket,
-  Code,
-  Users,
-  Cpu,
-  Lightbulb,
-  Globe,
-  Terminal,
-  Building2,
-  Wifi,
-  BrainCircuit,
-  Blocks,
-  Handshake,
-  ZoomIn,
-  ZoomOut,
-  RotateCcw,
-  Lock,
-  Unlock,
-} from "lucide-react";
+import { useMapInteraction } from "@/hooks/useMapInteraction";
+import MapTooltip, { type TooltipState } from "./MapTooltip";
+import MapPopup, { type PopupState } from "./MapPopup";
+import MapControls from "./MapControls";
 
 const TOPO_URL = "/topo/Sinaloa_municipios.json";
-
 const ACCENT = "var(--color-accent)";
-
-const PATTERN_ICONS: LucideIcon[] = [
-  Rocket,
-  Code,
-  Users,
-  Cpu,
-  Lightbulb,
-  Globe,
-  Terminal,
-  Building2,
-  Wifi,
-  BrainCircuit,
-  Blocks,
-  Handshake,
-];
-
-const CELL = 64;
-const COLS = 4;
-const ROWS = PATTERN_ICONS.length / COLS;
-
-const BG_COLS = 12;
-const BG_ROWS = 10;
-
-const IconPatternBg = React.memo(function IconPatternBg() {
-  let iconIdx = 0;
-  const cells: React.ReactNode[] = [];
-
-  for (let row = 0; row < BG_ROWS; row++) {
-    for (let col = 0; col < BG_COLS; col++) {
-      // Checkerboard: offset odd rows by one
-      const isIcon = (col + row) % 2 === 0;
-      if (isIcon) {
-        const Icon = PATTERN_ICONS[iconIdx % PATTERN_ICONS.length];
-        iconIdx++;
-        cells.push(
-          <div
-            key={`${row}-${col}`}
-            className="flex items-center justify-center"
-          >
-            <Icon size={20} strokeWidth={1.5} className="text-accent" />
-          </div>,
-        );
-      } else {
-        cells.push(<div key={`${row}-${col}`} />);
-      }
-    }
-  }
-
-  return (
-    <div
-      className="absolute inset-0 pointer-events-none overflow-hidden"
-      style={{ opacity: 0.08 }}
-      aria-hidden="true"
-    >
-      <div
-        className="w-full h-full"
-        style={{
-          display: "grid",
-          gridTemplateColumns: `repeat(${BG_COLS}, 1fr)`,
-          gridTemplateRows: `repeat(${BG_ROWS}, 1fr)`,
-        }}
-      >
-        {cells}
-      </div>
-    </div>
-  );
-});
-
-/** Captures geographies into a ref via useEffect instead of during render. */
-function GeographiesCapture({
-  geographies,
-  geographiesRef,
-}: {
-  geographies: MapGeography[];
-  geographiesRef: React.MutableRefObject<MapGeography[]>;
-}) {
-  useEffect(() => {
-    geographiesRef.current = geographies;
-  }, [geographies, geographiesRef]);
-  return null;
-}
-
-const DRAG_THRESHOLD = 5; // px – ignore clicks if pointer moved more than this
 
 // Pre-projected TopoJSON bounding box (Mexican CRS, meters)
 const BOUNDS = {
@@ -147,19 +46,18 @@ interface SinaloaMapProps {
   selectedCity?: string | null;
 }
 
-interface TooltipState {
-  x: number;
-  y: number;
-  name: string;
-  count: number;
-}
-
-interface PopupState {
-  x: number;
-  y: number;
-  id: string;
-  name: string;
-  count: number;
+/** Captures geographies into a ref via useEffect instead of during render. */
+function GeographiesCapture({
+  geographies,
+  geographiesRef,
+}: {
+  geographies: MapGeography[];
+  geographiesRef: React.MutableRefObject<MapGeography[]>;
+}) {
+  useEffect(() => {
+    geographiesRef.current = geographies;
+  }, [geographies, geographiesRef]);
+  return null;
 }
 
 function createProjection(width: number, height: number, padding: number) {
@@ -189,10 +87,6 @@ function createProjection(width: number, height: number, padding: number) {
     );
 }
 
-function clamp(value: number, min: number, max: number) {
-  return Math.max(min, Math.min(max, value));
-}
-
 export default function SinaloaMap({
   compact = false,
   cityCounts = {},
@@ -203,18 +97,23 @@ export default function SinaloaMap({
   const height = compact ? 450 : 800;
   const padding = compact ? 5 : 40;
 
-  const [scale, setScale] = useState(1);
-  const [translate, setTranslate] = useState({ x: 0, y: 0 });
-  const [isDragging, setIsDragging] = useState(false);
+  const {
+    scale,
+    translate,
+    isDragging,
+    interactionEnabled,
+    hint,
+    didDragRef,
+    containerRef,
+    handlers,
+    zoomIn,
+    zoomOut,
+    resetView,
+    toggleLock,
+  } = useMapInteraction({ width, height, compact });
+
   const [tooltip, setTooltip] = useState<TooltipState | null>(null);
   const [popup, setPopup] = useState<PopupState | null>(null);
-  const [interactionEnabled, setInteractionEnabled] = useState(false);
-  const [hint, setHint] = useState<string | null>(null);
-  const hintTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const dragStart = useRef({ x: 0, y: 0 });
-  const translateStart = useRef({ x: 0, y: 0 });
-  const didDrag = useRef(false);
-  const containerRef = useRef<HTMLDivElement>(null);
   const geographiesRef = useRef<MapGeography[]>([]);
 
   const projection = useMemo(
@@ -225,104 +124,6 @@ export default function SinaloaMap({
     () => geoPath(projection as any),
     [projection],
   );
-
-  // Compute pan boundaries based on current scale
-  const getMaxTranslate = useCallback(
-    (s: number) => {
-      const overflow = (s - 1) / 2;
-      return {
-        maxX: overflow * width,
-        maxY: overflow * height,
-      };
-    },
-    [width, height],
-  );
-
-  const constrainTranslate = useCallback(
-    (x: number, y: number, s: number) => {
-      const { maxX, maxY } = getMaxTranslate(s);
-      return {
-        x: clamp(x, -maxX, maxX),
-        y: clamp(y, -maxY, maxY),
-      };
-    },
-    [getMaxTranslate],
-  );
-
-  // Drag handlers
-  const handlePointerDown = useCallback(
-    (e: React.PointerEvent) => {
-      if (e.button !== 0) return;
-      didDrag.current = false;
-      if (!interactionEnabled) return;
-      setIsDragging(true);
-      dragStart.current = { x: e.clientX, y: e.clientY };
-      translateStart.current = { ...translate };
-      (e.target as HTMLElement).setPointerCapture(e.pointerId);
-    },
-    [translate, interactionEnabled],
-  );
-
-  const handlePointerMove = useCallback(
-    (e: React.PointerEvent) => {
-      if (!isDragging) return;
-      const dx = e.clientX - dragStart.current.x;
-      const dy = e.clientY - dragStart.current.y;
-      if (Math.abs(dx) > DRAG_THRESHOLD || Math.abs(dy) > DRAG_THRESHOLD) {
-        didDrag.current = true;
-      }
-      setTranslate(
-        constrainTranslate(
-          translateStart.current.x + dx,
-          translateStart.current.y + dy,
-          scale,
-        ),
-      );
-    },
-    [isDragging, scale, constrainTranslate],
-  );
-
-  const handlePointerUp = useCallback(() => {
-    setIsDragging(false);
-  }, []);
-
-  const showHint = useCallback((msg: string) => {
-    setHint(msg);
-    if (hintTimer.current) clearTimeout(hintTimer.current);
-    hintTimer.current = setTimeout(() => setHint(null), 2000);
-  }, []);
-
-  // On mobile, show hint when user tries to pinch while locked
-  const handleMapTouchStart = useCallback(
-    (e: React.TouchEvent) => {
-      if (!interactionEnabled && !compact && e.touches.length >= 2) {
-        showHint("Desbloquea el mapa para interactuar");
-      }
-    },
-    [interactionEnabled, compact, showHint],
-  );
-
-  // Wheel zoom
-  const handleWheel = useCallback(
-    (e: WheelEvent) => {
-      if (!interactionEnabled) return;
-      e.preventDefault();
-      const factor = e.deltaY < 0 ? 1.15 : 1 / 1.15;
-      setScale((s) => {
-        const newScale = clamp(s * factor, 0.5, 6);
-        setTranslate((t) => constrainTranslate(t.x, t.y, newScale));
-        return newScale;
-      });
-    },
-    [constrainTranslate, interactionEnabled],
-  );
-
-  useEffect(() => {
-    const el = containerRef.current;
-    if (!el) return;
-    el.addEventListener("wheel", handleWheel, { passive: false });
-    return () => el.removeEventListener("wheel", handleWheel);
-  }, [handleWheel]);
 
   // Close popup on outside click
   useEffect(() => {
@@ -338,27 +139,6 @@ export default function SinaloaMap({
         capture: true,
       });
   }, [popup]);
-
-  const handleZoomIn = useCallback(() => {
-    setScale((s) => {
-      const newScale = Math.min(s * 1.4, 6);
-      setTranslate((t) => constrainTranslate(t.x, t.y, newScale));
-      return newScale;
-    });
-  }, [constrainTranslate]);
-
-  const handleZoomOut = useCallback(() => {
-    setScale((s) => {
-      const newScale = Math.max(s / 1.4, 0.5);
-      setTranslate((t) => constrainTranslate(t.x, t.y, newScale));
-      return newScale;
-    });
-  }, [constrainTranslate]);
-
-  const handleReset = useCallback(() => {
-    setScale(1);
-    setTranslate({ x: 0, y: 0 });
-  }, []);
 
   // Tooltip handlers
   const handleMouseEnter = useCallback(
@@ -377,7 +157,7 @@ export default function SinaloaMap({
         count,
       });
     },
-    [cityCounts, popup],
+    [cityCounts, popup, containerRef],
   );
 
   const handleMouseMove = useCallback(
@@ -391,7 +171,7 @@ export default function SinaloaMap({
           : null,
       );
     },
-    [tooltip, popup],
+    [tooltip, popup, containerRef],
   );
 
   const handleMouseLeave = useCallback(() => {
@@ -429,13 +209,13 @@ export default function SinaloaMap({
       setTooltip(null);
       setPopup({ x: px, y: py, id, name, count });
     },
-    [cityCounts, pathGenerator, scale, translate, width, height],
+    [cityCounts, pathGenerator, scale, translate, width, height, containerRef],
   );
 
   // Click handler
   const handleGeoClick = useCallback(
     (geo: any) => {
-      if (didDrag.current) return;
+      if (didDragRef.current) return;
       if (linkOnClick) {
         const id = geo.properties?.id;
         if (id) window.open(`/directorio/${id}`, "_blank", "noopener");
@@ -444,10 +224,10 @@ export default function SinaloaMap({
       if (compact) return;
       openPopupForGeo(geo);
     },
-    [compact, linkOnClick, openPopupForGeo],
+    [compact, linkOnClick, openPopupForGeo, didDragRef],
   );
 
-  // Sync sidebar selection → map popup
+  // Sync sidebar selection -> map popup
   const openPopupRef = useRef(openPopupForGeo);
   openPopupRef.current = openPopupForGeo;
 
@@ -478,7 +258,7 @@ export default function SinaloaMap({
             : "grab",
         touchAction: interactionEnabled ? "none" : "auto",
       }}
-      onTouchStart={handleMapTouchStart}
+      onTouchStart={handlers.onTouchStart}
     >
       <div
         style={{
@@ -488,10 +268,10 @@ export default function SinaloaMap({
           width: "100%",
           height: "100%",
         }}
-        onPointerDown={handlePointerDown}
-        onPointerMove={handlePointerMove}
-        onPointerUp={handlePointerUp}
-        onPointerCancel={handlePointerUp}
+        onPointerDown={handlers.onPointerDown}
+        onPointerMove={handlers.onPointerMove}
+        onPointerUp={handlers.onPointerUp}
+        onPointerCancel={handlers.onPointerUp}
       >
         <ComposableMap
           width={width}
@@ -501,10 +281,12 @@ export default function SinaloaMap({
           style={{ width: "100%", height: "100%" }}
         >
           <Geographies geography={TOPO_URL}>
-            {({ geographies }) => {
-              return (
-                <>
-                <GeographiesCapture geographies={geographies} geographiesRef={geographiesRef} />
+            {({ geographies }) => (
+              <>
+                <GeographiesCapture
+                  geographies={geographies}
+                  geographiesRef={geographiesRef}
+                />
                 {geographies.map((geo) => {
                   const geoId = geo.properties?.id as string | undefined;
                   const isHighlighted =
@@ -549,105 +331,22 @@ export default function SinaloaMap({
                   );
                 })}
               </>
-              );
-            }}
+            )}
           </Geographies>
         </ComposableMap>
       </div>
 
-      {/* Hover tooltip (hidden when popup is open) */}
-      {tooltip && !popup && (
-        <div
-          style={{
-            position: "absolute",
-            left: tooltip.x + 12,
-            top: tooltip.y - 10,
-            pointerEvents: "none",
-            zIndex: 10,
-          }}
-          className="bg-[var(--color-elevated)] border border-[var(--color-border)] rounded px-2.5 py-1.5 shadow-lg"
-        >
-          <div className="text-xs font-mono font-semibold text-accent">
-            {tooltip.name}
-          </div>
-          {tooltip.count > 0 && (
-            <div className="text-2xs font-mono text-[var(--color-muted)]">
-              {tooltip.count} {tooltip.count === 1 ? "proyecto" : "proyectos"}
-            </div>
-          )}
-        </div>
-      )}
+      {/* Hover tooltip */}
+      {tooltip && !popup && <MapTooltip tooltip={tooltip} />}
 
       {/* Click popup */}
       {popup && (
-        <div
-          data-map-popup
-          style={{
-            position: "absolute",
-            left: clamp(
-              popup.x - 100,
-              8,
-              (containerRef.current?.offsetWidth ?? 800) - 208,
-            ),
-            top: clamp(
-              popup.y - 120,
-              8,
-              (containerRef.current?.offsetHeight ?? 800) - 8,
-            ),
-            zIndex: 20,
-            width: 200,
-          }}
-          className="bg-[var(--color-card)] border border-[var(--color-border)] rounded-lg shadow-xl overflow-hidden"
-        >
-          {/* Header */}
-          <div className="px-3 py-2 border-b border-[var(--color-border)] flex items-center justify-between">
-            <span className="text-sm font-mono font-bold text-accent">
-              {popup.name}
-            </span>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                setPopup(null);
-              }}
-              className="text-[var(--color-muted)] hover:text-[var(--color-primary)] transition-colors text-xs leading-none"
-              aria-label="Cerrar"
-            >
-              ✕
-            </button>
-          </div>
-
-          {/* Body */}
-          {popup.count > 0 ? (
-            <div className="px-3 py-2.5 space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-mono text-[var(--color-muted)]">
-                  Proyectos
-                </span>
-                <span className="text-xs font-mono font-bold text-[var(--color-primary)]">
-                  {popup.count}
-                </span>
-              </div>
-              <a
-                href={`/directorio/${popup.id}`}
-                className="block w-full text-center text-xs font-mono font-semibold px-3 py-1.5 rounded bg-accent text-accent-foreground hover:bg-accent/80 transition-colors"
-              >
-                VER COMUNIDAD →
-              </a>
-            </div>
-          ) : (
-            <div className="px-3 py-2.5 space-y-2 text-center">
-              <p className="text-xs text-[var(--color-muted)] font-mono">
-                Aún no hay registros
-              </p>
-              <a
-                href="/directorio/submit"
-                className="block w-full text-center text-xs font-mono font-semibold px-3 py-1.5 rounded border border-dashed border-accent/40 text-accent hover:bg-accent/10 transition-colors"
-              >
-                REGISTRAR →
-              </a>
-            </div>
-          )}
-        </div>
+        <MapPopup
+          popup={popup}
+          containerWidth={containerRef.current?.offsetWidth ?? 800}
+          containerHeight={containerRef.current?.offsetHeight ?? 800}
+          onClose={() => setPopup(null)}
+        />
       )}
 
       {/* Interaction hint (mobile pinch while locked) */}
@@ -659,62 +358,15 @@ export default function SinaloaMap({
         </div>
       )}
 
-      {/* Locked banner */}
-      {!interactionEnabled && !compact && (
-        <button
-          type="button"
-          onClick={() => setInteractionEnabled(true)}
-          className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 flex items-center gap-2 px-4 py-2 rounded-lg bg-[var(--color-card)]/90 border border-[var(--color-border)] shadow-lg text-xs font-mono text-[var(--color-muted)] hover:text-accent hover:border-accent transition-colors cursor-pointer backdrop-blur-sm"
-        >
-          <Lock size={12} />
-          Toca para interactuar
-        </button>
-      )}
-
-      {/* Zoom controls */}
+      {/* Controls (hidden in compact mode) */}
       {!compact && (
-        <div className="absolute bottom-4 right-4 flex flex-col gap-1.5">
-          <button
-            onClick={() => setInteractionEnabled((v) => !v)}
-            className={`w-9 h-9 rounded-lg border flex items-center justify-center transition-colors ${
-              interactionEnabled
-                ? "bg-accent text-[var(--color-accent-foreground)] border-accent"
-                : "bg-[var(--color-elevated)] border-[var(--color-border)] text-[var(--color-muted)] hover:text-accent hover:border-accent"
-            }`}
-            aria-label={
-              interactionEnabled ? "Bloquear mapa" : "Desbloquear mapa"
-            }
-            title={
-              interactionEnabled ? "Bloquear pan/zoom" : "Desbloquear pan/zoom"
-            }
-          >
-            {interactionEnabled ? <Unlock size={16} /> : <Lock size={16} />}
-          </button>
-          <button
-            onClick={handleZoomIn}
-            disabled={!interactionEnabled}
-            className="w-9 h-9 rounded-lg bg-[var(--color-elevated)] border border-[var(--color-border)] text-[var(--color-primary)] hover:text-accent hover:border-accent disabled:opacity-40 disabled:pointer-events-none transition-colors flex items-center justify-center"
-            aria-label="Acercar"
-          >
-            <ZoomIn size={16} />
-          </button>
-          <button
-            onClick={handleZoomOut}
-            disabled={!interactionEnabled}
-            className="w-9 h-9 rounded-lg bg-[var(--color-elevated)] border border-[var(--color-border)] text-[var(--color-primary)] hover:text-accent hover:border-accent disabled:opacity-40 disabled:pointer-events-none transition-colors flex items-center justify-center"
-            aria-label="Alejar"
-          >
-            <ZoomOut size={16} />
-          </button>
-          <button
-            onClick={handleReset}
-            disabled={!interactionEnabled}
-            className="w-9 h-9 rounded-lg bg-[var(--color-elevated)] border border-[var(--color-border)] text-[var(--color-primary)] hover:text-accent hover:border-accent disabled:opacity-40 disabled:pointer-events-none transition-colors flex items-center justify-center"
-            aria-label="Resetear zoom"
-          >
-            <RotateCcw size={16} />
-          </button>
-        </div>
+        <MapControls
+          interactionEnabled={interactionEnabled}
+          onToggleLock={toggleLock}
+          onZoomIn={zoomIn}
+          onZoomOut={zoomOut}
+          onReset={resetView}
+        />
       )}
     </div>
   );

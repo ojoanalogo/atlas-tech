@@ -3,7 +3,6 @@ import { getPublishedEntries } from '@/lib/payload'
 import { buildCityOptions } from '@/lib/utils'
 import { ENTRY_TYPE_CONFIG, URL_CATEGORY_MAP, type AtlasEntryType } from '@/config'
 import DirectoryFilter from '@/components/entries/DirectoryFilter'
-import { DirectoryGrid } from '@/components/entries/DirectoryGrid'
 import { notFound } from 'next/navigation'
 
 export async function generateStaticParams() {
@@ -38,14 +37,7 @@ export default async function CategoryPage({
   return (
     <section className="py-4 px-4">
       <div className="max-w-7xl mx-auto">
-        <DirectoryFilter
-          cities={cities}
-          totalCount={allEntries.length}
-          initialType={entryType}
-          pageSize={18}
-        >
-          <DirectoryGrid entries={allEntries} />
-        </DirectoryFilter>
+        <DirectoryFilter entries={allEntries} cities={cities} initialType={entryType} pageSize={18} />
       </div>
     </section>
   )

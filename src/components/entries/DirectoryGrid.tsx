@@ -13,14 +13,7 @@ export function DirectoryGrid({ entries }: DirectoryGridProps) {
         const coverImage = typeof entry.coverImage === 'object' && entry.coverImage !== null ? entry.coverImage as Media : null
 
         return (
-          <div
-            key={entry.id}
-            className="entry-item"
-            data-type={entry.entryType}
-            data-city={entry.city}
-            data-name={entry.name.toLowerCase()}
-            data-date={entry.publishDate ? entry.publishDate.slice(0, 10) : ''}
-          >
+          <div key={entry.id} className="entry-item animate-in">
             <EntryCard
               slug={entry.slug}
               name={entry.name}

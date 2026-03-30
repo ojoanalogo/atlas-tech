@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback, type ReactNode } from "react";
+import { useState, useMemo, useEffect } from 'react'
 import {
   SearchX,
   LayoutGrid,
@@ -9,153 +9,120 @@ import {
   ChevronLeft,
   ChevronRight,
   ArrowUpDown,
-} from "lucide-react";
+} from 'lucide-react'
 import {
   CATEGORY_URL_MAP,
   DEFAULT_PAGINATION,
   ENTRY_TYPE_LABELS,
   ENTRY_TYPE_ICONS,
   type AtlasEntryType,
-} from "@/config";
-import { ENTRY_TYPE_ICON_MAP } from "@/lib/icons";
+} from '@/config'
+import { ENTRY_TYPE_ICON_MAP } from '@/lib/icons'
+import type { Entry } from '@/payload-types'
+import { DirectoryGrid } from './DirectoryGrid'
+
+/* ── Types ── */
 
 interface CityInfo {
-  id: string;
-  name: string;
-  count: number;
+  id: string
+  name: string
+  count: number
 }
 
-type SortOption = "name-asc" | "name-desc" | "date-desc" | "date-asc";
+type SortOption = 'name-asc' | 'name-desc' | 'date-desc' | 'date-asc'
 
-const DEFAULT_SORT: SortOption = "date-desc";
+const DEFAULT_SORT: SortOption = 'date-desc'
 
 const SORT_OPTIONS: { value: SortOption; label: string }[] = [
-  { value: "date-desc", label: "Más recientes" },
-  { value: "date-asc", label: "Más antiguos" },
-  { value: "name-asc", label: "Nombre A–Z" },
-  { value: "name-desc", label: "Nombre Z–A" },
-];
+  { value: 'date-desc', label: 'Más recientes' },
+  { value: 'date-asc', label: 'Más antiguos' },
+  { value: 'name-asc', label: 'Nombre A–Z' },
+  { value: 'name-desc', label: 'Nombre Z–A' },
+]
 
 interface Props {
-  cities: CityInfo[];
-  totalCount: number;
-  initialType?: string;
-  initialCity?: string;
-  pageSize?: number;
-  children?: ReactNode;
+  entries: Entry[]
+  cities: CityInfo[]
+  initialType?: string
+  initialCity?: string
+  pageSize?: number
 }
 
+/* ── Helpers ── */
+
 function typeToPath(type: string): string {
-  const slug = CATEGORY_URL_MAP[type as AtlasEntryType];
-  return slug ? `/${slug}` : "/directorio";
+  const slug = CATEGORY_URL_MAP[type as AtlasEntryType]
+  return slug ? `/${slug}` : '/directorio'
 }
 
 function getParamFromURL(key: string): string {
-  if (typeof window === "undefined") return "";
-  return new URLSearchParams(window.location.search).get(key) ?? "";
+  if (typeof window === 'undefined') return ''
+  return new URLSearchParams(window.location.search).get(key) ?? ''
 }
 
 function getPageFromURL(): number {
-  const n = parseInt(getParamFromURL("page"), 10);
-  return n > 0 ? n : 1;
+  const n = parseInt(getParamFromURL('page'), 10)
+  return n > 0 ? n : 1
 }
 
 function getSortFromURL(): SortOption {
-  const s = getParamFromURL("sort");
-  return SORT_OPTIONS.some((o) => o.value === s)
-    ? (s as SortOption)
-    : DEFAULT_SORT;
+  const s = getParamFromURL('sort')
+  return SORT_OPTIONS.some((o) => o.value === s) ? (s as SortOption) : DEFAULT_SORT
 }
 
-/** Build URL with page + sort params. SSR-safe. */
 function buildURL(page: number, sort: SortOption): string {
-  if (typeof window === "undefined") {
-    const params = new URLSearchParams();
-    if (page > 1) params.set("page", String(page));
-    if (sort !== DEFAULT_SORT) params.set("sort", sort);
-    const qs = params.toString();
-    return qs ? `?${qs}` : "";
+  if (typeof window === 'undefined') {
+    const params = new URLSearchParams()
+    if (page > 1) params.set('page', String(page))
+    if (sort !== DEFAULT_SORT) params.set('sort', sort)
+    const qs = params.toString()
+    return qs ? `?${qs}` : ''
   }
-  const url = new URL(window.location.href);
-  if (page <= 1) url.searchParams.delete("page");
-  else url.searchParams.set("page", String(page));
-  if (sort === DEFAULT_SORT) url.searchParams.delete("sort");
-  else url.searchParams.set("sort", sort);
-  return url.pathname + url.search;
-}
-
-/* ── DOM sorting ── */
-function sortDOMEntries(sort: SortOption) {
-  const gridEl = document.getElementById("entries-grid");
-  if (!gridEl) return;
-  const items = Array.from(gridEl.querySelectorAll<HTMLElement>(".entry-item"));
-  items.sort((a, b) => {
-    if (sort === "name-asc" || sort === "name-desc") {
-      const nameA = a.dataset.name ?? "";
-      const nameB = b.dataset.name ?? "";
-      return sort === "name-asc"
-        ? nameA.localeCompare(nameB)
-        : nameB.localeCompare(nameA);
-    }
-    // date sort — entries without dates go to the end
-    const dateA = a.dataset.date ?? "";
-    const dateB = b.dataset.date ?? "";
-    if (!dateA && !dateB) return 0;
-    if (!dateA) return 1;
-    if (!dateB) return -1;
-    return sort === "date-desc"
-      ? dateB.localeCompare(dateA)
-      : dateA.localeCompare(dateB);
-  });
-  // Re-append in new order (moves existing DOM nodes)
-  for (const item of items) gridEl.appendChild(item);
+  const url = new URL(window.location.href)
+  if (page <= 1) url.searchParams.delete('page')
+  else url.searchParams.set('page', String(page))
+  if (sort === DEFAULT_SORT) url.searchParams.delete('sort')
+  else url.searchParams.set('sort', sort)
+  return url.pathname + url.search
 }
 
 /* ── Pagination ── */
+
 function Pagination({
   currentPage,
   totalPages,
   sort,
   onPageChange,
 }: {
-  currentPage: number;
-  totalPages: number;
-  sort: SortOption;
-  onPageChange: (page: number) => void;
+  currentPage: number
+  totalPages: number
+  sort: SortOption
+  onPageChange: (page: number) => void
 }) {
-  if (totalPages <= 1) return null;
+  if (totalPages <= 1) return null
 
-  const pages: (number | "...")[] = [];
+  const pages: (number | '...')[] = []
   for (let i = 1; i <= totalPages; i++) {
-    if (
-      i === 1 ||
-      i === totalPages ||
-      (i >= currentPage - 1 && i <= currentPage + 1)
-    ) {
-      pages.push(i);
-    } else if (pages[pages.length - 1] !== "...") {
-      pages.push("...");
+    if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+      pages.push(i)
+    } else if (pages[pages.length - 1] !== '...') {
+      pages.push('...')
     }
   }
 
   const btn =
-    "inline-flex items-center justify-center min-w-[2.25rem] h-9 px-2 rounded text-sm font-mono transition-colors cursor-pointer";
-  const active = "bg-accent/15 text-accent border border-accent/30";
-  const inactive =
-    "text-secondary hover:text-accent hover:bg-elevated border border-transparent";
-  const disabled =
-    "text-muted/40 pointer-events-none border border-transparent";
+    'inline-flex items-center justify-center min-w-[2.25rem] h-9 px-2 rounded text-sm font-mono transition-colors cursor-pointer'
+  const active = 'bg-accent/15 text-accent border border-accent/30'
+  const inactive = 'text-secondary hover:text-accent hover:bg-elevated border border-transparent'
+  const disabled = 'text-muted/40 pointer-events-none border border-transparent'
 
   return (
-    <nav
-      aria-label="Paginación"
-      className="flex items-center justify-center gap-1 mt-8"
-    >
+    <nav aria-label="Paginación" className="flex items-center justify-center gap-1 mt-8">
       <a
         href={currentPage > 1 ? buildURL(currentPage - 1, sort) : undefined}
         onClick={(e) => {
-          e.preventDefault();
-          if (currentPage > 1) onPageChange(currentPage - 1);
+          e.preventDefault()
+          if (currentPage > 1) onPageChange(currentPage - 1)
         }}
         className={`${btn} ${currentPage <= 1 ? disabled : inactive}`}
         aria-label="Página anterior"
@@ -164,7 +131,7 @@ function Pagination({
       </a>
 
       {pages.map((p, i) =>
-        p === "..." ? (
+        p === '...' ? (
           <span key={`ellipsis-${i}`} className="px-1 text-muted text-sm">
             ...
           </span>
@@ -173,11 +140,11 @@ function Pagination({
             key={p}
             href={buildURL(p, sort)}
             onClick={(e) => {
-              e.preventDefault();
-              onPageChange(p);
+              e.preventDefault()
+              onPageChange(p)
             }}
             className={`${btn} ${p === currentPage ? active : inactive}`}
-            aria-current={p === currentPage ? "page" : undefined}
+            aria-current={p === currentPage ? 'page' : undefined}
           >
             {p}
           </a>
@@ -185,12 +152,10 @@ function Pagination({
       )}
 
       <a
-        href={
-          currentPage < totalPages ? buildURL(currentPage + 1, sort) : undefined
-        }
+        href={currentPage < totalPages ? buildURL(currentPage + 1, sort) : undefined}
         onClick={(e) => {
-          e.preventDefault();
-          if (currentPage < totalPages) onPageChange(currentPage + 1);
+          e.preventDefault()
+          if (currentPage < totalPages) onPageChange(currentPage + 1)
         }}
         className={`${btn} ${currentPage >= totalPages ? disabled : inactive}`}
         aria-label="Página siguiente"
@@ -198,238 +163,191 @@ function Pagination({
         <ChevronRight className="w-4 h-4" />
       </a>
     </nav>
-  );
+  )
 }
 
 /* ── DirectoryFilter ── */
+
 export default function DirectoryFilter({
+  entries,
   cities,
-  totalCount,
-  initialType = "",
-  initialCity = "",
+  initialType = '',
+  initialCity = '',
   pageSize = DEFAULT_PAGINATION,
-  children,
 }: Props) {
-  const typeLabels = ENTRY_TYPE_LABELS;
-  const typeIcons = ENTRY_TYPE_ICONS;
-  const [currentPage, setCurrentPage] = useState(1);
-  const [currentSort, setCurrentSort] = useState<SortOption>(DEFAULT_SORT);
-  const [matchedCount, setMatchedCount] = useState(totalCount);
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const activeType = initialType;
-  const activeCity = initialCity;
-  const isPaginated = pageSize > 0;
+  const [currentPage, setCurrentPage] = useState(1)
+  const [currentSort, setCurrentSort] = useState<SortOption>(DEFAULT_SORT)
+  const [mobileOpen, setMobileOpen] = useState(false)
+
+  const activeType = initialType
+  const activeCity = initialCity
+  const isPaginated = pageSize > 0
 
   // Read page + sort from URL on mount
   useEffect(() => {
-    if (isPaginated) setCurrentPage(getPageFromURL());
-    const sort = getSortFromURL();
-    setCurrentSort(sort);
-    sortDOMEntries(sort);
-  }, [isPaginated]);
+    if (isPaginated) setCurrentPage(getPageFromURL())
+    setCurrentSort(getSortFromURL())
+  }, [isPaginated])
 
-  const applyDOMFilter = useCallback(
-    (
-      type: string,
-      city: string,
-      page: number,
-      size: number,
-      animate: boolean,
-    ) => {
-      const entries = document.querySelectorAll<HTMLElement>(".entry-item");
-      const gridEl = document.getElementById("entries-grid");
-      let matched = 0;
-      let displayed = 0;
+  // Filter and sort entries via useMemo
+  const filtered = useMemo(() => {
+    let result = entries
 
-      const start = size > 0 ? (page - 1) * size + 1 : 1;
-      const end = size > 0 ? page * size : Infinity;
-
-      entries.forEach((el) => {
-        const matchType = !type || el.dataset.type === type;
-        const matchCity = !city || el.dataset.city === city;
-
-        if (matchType && matchCity) {
-          matched++;
-          if (matched >= start && matched <= end) {
-            el.classList.remove("hidden");
-            displayed++;
-          } else {
-            el.classList.add("hidden");
-          }
-        } else {
-          el.classList.add("hidden");
-        }
-      });
-
-      if (animate) {
-        let idx = 0;
-        entries.forEach((el) => {
-          if (!el.classList.contains("hidden")) {
-            el.classList.remove("animate-in");
-            el.style.animationDelay = `${Math.min(idx * 40, 400)}ms`;
-            void el.offsetHeight;
-            el.classList.add("animate-in");
-            idx++;
-          } else {
-            el.classList.remove("animate-in");
-            el.style.animationDelay = "";
-          }
-        });
-      }
-
-      setMatchedCount(matched);
-      if (gridEl) gridEl.classList.toggle("hidden", displayed === 0);
-    },
-    [],
-  );
-
-  useEffect(() => {
-    applyDOMFilter(activeType, activeCity, currentPage, pageSize, false);
-  }, [applyDOMFilter, activeType, activeCity, currentPage, pageSize]);
-
-  useEffect(() => {
-    const munName = cities.find((m) => m.id === activeCity)?.name;
-    if (munName) {
-      document.title = `${munName} | Tech Atlas`;
-    } else if (activeType && typeLabels[activeType]) {
-      document.title = `${typeLabels[activeType]} | Tech Atlas`;
-    } else {
-      document.title = "Directorio | Tech Atlas";
+    if (activeType) {
+      result = result.filter((e) => e.entryType === activeType)
     }
-  }, [activeType, activeCity, cities, typeLabels]);
+    if (activeCity) {
+      result = result.filter((e) => e.city === activeCity)
+    }
 
+    // Sort
+    const sorted = [...result]
+    if (currentSort === 'name-asc') {
+      sorted.sort((a, b) => a.name.localeCompare(b.name))
+    } else if (currentSort === 'name-desc') {
+      sorted.sort((a, b) => b.name.localeCompare(a.name))
+    } else if (currentSort === 'date-asc') {
+      sorted.sort((a, b) => {
+        const da = a.publishDate ?? ''
+        const db = b.publishDate ?? ''
+        if (!da && !db) return 0
+        if (!da) return 1
+        if (!db) return -1
+        return da.localeCompare(db)
+      })
+    } else {
+      // date-desc (default)
+      sorted.sort((a, b) => {
+        const da = a.publishDate ?? ''
+        const db = b.publishDate ?? ''
+        if (!da && !db) return 0
+        if (!da) return 1
+        if (!db) return -1
+        return db.localeCompare(da)
+      })
+    }
+
+    return sorted
+  }, [entries, activeType, activeCity, currentSort])
+
+  // Paginate
+  const matchedCount = filtered.length
+  const totalPages = isPaginated ? Math.max(1, Math.ceil(matchedCount / pageSize)) : 1
+  const paginated = isPaginated
+    ? filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize)
+    : filtered
+
+  // Animation key for re-triggering grid transitions
+  const filterKey = `${activeType}-${activeCity}-${currentSort}-${currentPage}`
+
+  // Navigation (full page navigation for type/city filters)
   function navigate(type: string, city: string) {
     if (type) {
-      window.location.href = typeToPath(type);
+      window.location.href = typeToPath(type)
     } else if (city) {
-      window.location.href = `/directorio/${city}`;
+      window.location.href = `/directorio/${city}`
     } else {
-      window.location.href = "/directorio";
+      window.location.href = '/directorio'
     }
   }
 
   function handleTypeClick(type: string) {
-    const newType = type === activeType ? "" : type;
-    navigate(newType, "");
+    const newType = type === activeType ? '' : type
+    navigate(newType, '')
   }
 
   function handleCityClick(id: string) {
-    const newMun = id === activeCity ? "" : id;
-    navigate("", newMun);
+    const newCity = id === activeCity ? '' : id
+    navigate('', newCity)
   }
 
   function clearFilters() {
-    navigate("", "");
+    navigate('', '')
   }
 
   function pushURL(page: number, sort: SortOption) {
-    window.history.pushState({}, "", buildURL(page, sort));
+    window.history.pushState({}, '', buildURL(page, sort))
   }
 
   function handlePageChange(page: number) {
-    pushURL(page, currentSort);
-    setCurrentPage(page);
-    document
-      .getElementById("directory-top")
-      ?.scrollIntoView({ behavior: "smooth" });
+    pushURL(page, currentSort)
+    setCurrentPage(page)
+    document.getElementById('directory-top')?.scrollIntoView({ behavior: 'smooth' })
   }
 
   function handleSortChange(sort: SortOption) {
-    setCurrentSort(sort);
-    setCurrentPage(1);
-    pushURL(1, sort);
-    sortDOMEntries(sort);
-    // Re-apply filter + pagination after DOM reorder
-    requestAnimationFrame(() => {
-      applyDOMFilter(activeType, activeCity, 1, pageSize, true);
-    });
+    setCurrentSort(sort)
+    setCurrentPage(1)
+    pushURL(1, sort)
   }
 
-  const totalPages = isPaginated
-    ? Math.max(1, Math.ceil(matchedCount / pageSize))
-    : 1;
+  const activeCityName = cities.find((m) => m.id === activeCity)?.name
+  const activeTypeName = activeType ? ENTRY_TYPE_LABELS[activeType] : undefined
+  const heading = activeCityName || activeTypeName || 'Ecosistema Sinaloa'
 
-  const activeCityName = cities.find((m) => m.id === activeCity)?.name;
-  const activeTypeName = activeType ? typeLabels[activeType] : undefined;
-  const heading = activeCityName || activeTypeName || "Ecosistema Sinaloa";
+  const sortedCities = cities.filter((m) => m.count > 0).sort((a, b) => b.count - a.count)
 
-  const sortedCities = cities
-    .filter((m) => m.count > 0)
-    .sort((a, b) => b.count - a.count);
-
-  const rangeStart = isPaginated ? (currentPage - 1) * pageSize + 1 : 1;
-  const rangeEnd = isPaginated
-    ? Math.min(currentPage * pageSize, matchedCount)
-    : matchedCount;
+  const rangeStart = isPaginated ? (currentPage - 1) * pageSize + 1 : 1
+  const rangeEnd = isPaginated ? Math.min(currentPage * pageSize, matchedCount) : matchedCount
 
   /* ── Shared sidebar content ── */
   const sidebarContent = (
     <>
       {/* Category filters */}
       <div>
-        <h3 className="font-mono text-xs text-muted uppercase tracking-wider mb-3">
-          Categorías
-        </h3>
+        <h3 className="font-mono text-xs text-muted uppercase tracking-wider mb-3">Categorías</h3>
         <div className="space-y-1">
           <a
             href="/directorio"
             onClick={(e) => {
-              e.preventDefault();
-              clearFilters();
+              e.preventDefault()
+              clearFilters()
             }}
             className={`w-full flex items-center gap-2.5 py-2 px-3 rounded text-left transition-colors ${
               !activeType && !activeCity
-                ? "bg-accent/10 border-l-2 border-accent"
-                : "hover:bg-elevated"
+                ? 'bg-accent/10 border-l-2 border-accent'
+                : 'hover:bg-elevated'
             }`}
           >
             <LayoutGrid
               className={`w-4 h-4 shrink-0 ${
-                !activeType && !activeCity ? "text-accent" : "text-muted"
+                !activeType && !activeCity ? 'text-accent' : 'text-muted'
               }`}
             />
             <span
               className={`text-sm ${
-                !activeType && !activeCity
-                  ? "text-accent font-medium"
-                  : "text-primary"
+                !activeType && !activeCity ? 'text-accent font-medium' : 'text-primary'
               }`}
             >
               Todos
             </span>
           </a>
 
-          {Object.entries(typeLabels).map(([type, label]) => {
-            const IconComponent = ENTRY_TYPE_ICON_MAP[typeIcons[type]] || LayoutGrid;
-            const isActive = activeType === type;
+          {Object.entries(ENTRY_TYPE_LABELS).map(([type, label]) => {
+            const IconComponent = ENTRY_TYPE_ICON_MAP[ENTRY_TYPE_ICONS[type]] || LayoutGrid
+            const isActive = activeType === type
             return (
               <a
                 key={type}
                 href={typeToPath(type)}
                 onClick={(e) => {
-                  e.preventDefault();
-                  handleTypeClick(type);
+                  e.preventDefault()
+                  handleTypeClick(type)
                 }}
                 className={`w-full flex items-center gap-2.5 py-2 px-3 rounded text-left transition-colors ${
-                  isActive
-                    ? "bg-accent/10 border-l-2 border-accent"
-                    : "hover:bg-elevated"
+                  isActive ? 'bg-accent/10 border-l-2 border-accent' : 'hover:bg-elevated'
                 }`}
               >
                 <IconComponent
-                  className={`w-4 h-4 shrink-0 ${
-                    isActive ? "text-accent" : "text-muted"
-                  }`}
+                  className={`w-4 h-4 shrink-0 ${isActive ? 'text-accent' : 'text-muted'}`}
                 />
                 <span
-                  className={`text-sm ${
-                    isActive ? "text-accent font-medium" : "text-primary"
-                  }`}
+                  className={`text-sm ${isActive ? 'text-accent font-medium' : 'text-primary'}`}
                 >
                   {label}
                 </span>
               </a>
-            );
+            )
           })}
         </div>
       </div>
@@ -438,9 +356,7 @@ export default function DirectoryFilter({
 
       {/* City filters */}
       <div>
-        <h3 className="font-mono text-xs text-muted uppercase tracking-wider mb-3">
-          Municipios
-        </h3>
+        <h3 className="font-mono text-xs text-muted uppercase tracking-wider mb-3">Municipios</h3>
         <div className="space-y-1">
           {sortedCities.map((mun) => (
             <button
@@ -448,15 +364,13 @@ export default function DirectoryFilter({
               onClick={() => handleCityClick(mun.id)}
               className={`w-full flex items-center justify-between py-2 px-3 rounded text-left transition-colors cursor-pointer ${
                 activeCity === mun.id
-                  ? "bg-accent/10 border-l-2 border-accent"
-                  : "hover:bg-elevated"
+                  ? 'bg-accent/10 border-l-2 border-accent'
+                  : 'hover:bg-elevated'
               }`}
             >
               <span
                 className={`text-sm ${
-                  activeCity === mun.id
-                    ? "text-accent font-medium"
-                    : "text-primary"
+                  activeCity === mun.id ? 'text-accent font-medium' : 'text-primary'
                 }`}
               >
                 {mun.name}
@@ -471,41 +385,33 @@ export default function DirectoryFilter({
 
       {/* Sort options */}
       <div>
-        <h3 className="font-mono text-xs text-muted uppercase tracking-wider mb-3">
-          Ordenar
-        </h3>
+        <h3 className="font-mono text-xs text-muted uppercase tracking-wider mb-3">Ordenar</h3>
         <div className="space-y-1">
           {SORT_OPTIONS.map((opt) => {
-            const isActive = currentSort === opt.value;
+            const isActive = currentSort === opt.value
             return (
               <button
                 key={opt.value}
                 onClick={() => handleSortChange(opt.value)}
                 className={`w-full flex items-center gap-2.5 py-2 px-3 rounded text-left transition-colors cursor-pointer ${
-                  isActive
-                    ? "bg-accent/10 border-l-2 border-accent"
-                    : "hover:bg-elevated"
+                  isActive ? 'bg-accent/10 border-l-2 border-accent' : 'hover:bg-elevated'
                 }`}
               >
                 <ArrowUpDown
-                  className={`w-4 h-4 shrink-0 ${
-                    isActive ? "text-accent" : "text-muted"
-                  }`}
+                  className={`w-4 h-4 shrink-0 ${isActive ? 'text-accent' : 'text-muted'}`}
                 />
                 <span
-                  className={`text-sm ${
-                    isActive ? "text-accent font-medium" : "text-primary"
-                  }`}
+                  className={`text-sm ${isActive ? 'text-accent font-medium' : 'text-primary'}`}
                 >
                   {opt.label}
                 </span>
               </button>
-            );
+            )
           })}
         </div>
       </div>
     </>
-  );
+  )
 
   return (
     <div id="directory-top">
@@ -525,7 +431,7 @@ export default function DirectoryFilter({
             </button>
             <span className="mx-2">/</span>
             <span className="text-accent">
-              {(activeCityName || activeTypeName || "").toUpperCase()}
+              {(activeCityName || activeTypeName || '').toUpperCase()}
             </span>
           </>
         ) : (
@@ -534,29 +440,25 @@ export default function DirectoryFilter({
       </nav>
 
       {/* Heading */}
-      <h1 className="text-3xl md:text-4xl font-sans font-bold text-primary">
-        {heading}
-      </h1>
+      <h1 className="text-3xl md:text-4xl font-sans font-bold text-primary">{heading}</h1>
       <p className="mt-2 text-secondary mb-6" aria-live="polite" aria-atomic="true">
         {isPaginated && matchedCount > 0 ? (
           <>
             <span className="font-bold">
-              {rangeStart}–{rangeEnd}
-            </span>{" "}
-            de <span className="font-bold">{matchedCount}</span>{" "}
-            {matchedCount === 1 ? "resultado" : "resultados"}
+              {rangeStart}&ndash;{rangeEnd}
+            </span>{' '}
+            de <span className="font-bold">{matchedCount}</span>{' '}
+            {matchedCount === 1 ? 'resultado' : 'resultados'}
           </>
         ) : (
           <>
-            <span className="font-bold">{matchedCount}</span>{" "}
-            {matchedCount === 1
-              ? "resultado encontrado"
-              : "resultados encontrados"}
+            <span className="font-bold">{matchedCount}</span>{' '}
+            {matchedCount === 1 ? 'resultado encontrado' : 'resultados encontrados'}
           </>
         )}
       </p>
 
-      {/* ── Mobile filter panel ── */}
+      {/* Mobile filter panel */}
       <div className="lg:hidden mb-6">
         <button
           onClick={() => setMobileOpen(!mobileOpen)}
@@ -566,19 +468,17 @@ export default function DirectoryFilter({
             <SlidersHorizontal className="w-4 h-4 text-muted" />
             Filtros
             {(activeType || activeCity) && (
-              <span className="px-1.5 py-0.5 text-[10px] rounded bg-accent/20 text-accent">
-                1
-              </span>
+              <span className="px-1.5 py-0.5 text-[10px] rounded bg-accent/20 text-accent">1</span>
             )}
           </span>
           <ChevronDown
             className={`w-4 h-4 text-muted transition-transform duration-250 ${
-              mobileOpen ? "rotate-180" : ""
+              mobileOpen ? 'rotate-180' : ''
             }`}
           />
         </button>
 
-        <div className={`collapse-grid ${mobileOpen ? "open" : ""}`}>
+        <div className={`collapse-grid ${mobileOpen ? 'open' : ''}`}>
           <div className="collapse-content">
             <div className="mt-2 bg-card/90 backdrop-blur-sm border border-border rounded-lg p-4 space-y-4">
               {sidebarContent}
@@ -587,7 +487,7 @@ export default function DirectoryFilter({
         </div>
       </div>
 
-      {/* ── Desktop: sidebar + content grid ── */}
+      {/* Desktop: sidebar + content grid */}
       <div className="grid lg:grid-cols-[220px_1fr] gap-6">
         {/* Desktop sidebar */}
         <aside className="hidden lg:block bg-card/90 backdrop-blur-sm border border-border rounded-lg p-4 h-fit lg:max-h-[calc(100vh-12rem)] lg:overflow-y-auto space-y-4">
@@ -596,9 +496,19 @@ export default function DirectoryFilter({
 
         {/* Content area */}
         <div>
-          {children}
+          {matchedCount > 0 ? (
+            <DirectoryGrid key={filterKey} entries={paginated} />
+          ) : (
+            <div className="text-center py-20">
+              <SearchX className="w-12 h-12 mx-auto mb-4 text-muted opacity-40" strokeWidth={1.5} />
+              <p className="text-muted font-mono text-sm">No se encontraron resultados.</p>
+              <p className="text-xs mt-2 opacity-60 text-muted">
+                Intenta con otro filtro o categoría.
+              </p>
+            </div>
+          )}
 
-          {isPaginated && (
+          {isPaginated && matchedCount > 0 && (
             <Pagination
               currentPage={currentPage}
               totalPages={totalPages}
@@ -606,23 +516,8 @@ export default function DirectoryFilter({
               onPageChange={handlePageChange}
             />
           )}
-
-          {matchedCount === 0 && (
-            <div className="text-center py-20">
-              <SearchX
-                className="w-12 h-12 mx-auto mb-4 text-muted opacity-40"
-                strokeWidth={1.5}
-              />
-              <p className="text-muted font-mono text-sm">
-                No se encontraron resultados.
-              </p>
-              <p className="text-xs mt-2 opacity-60 text-muted">
-                Intenta con otro filtro o categoría.
-              </p>
-            </div>
-          )}
         </div>
       </div>
     </div>
-  );
+  )
 }
