@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback, type ReactNode } from 'react'
+import { useState, useEffect, useCallback, useMemo, type ReactNode } from 'react'
 import { ChevronLeft, ChevronRight, SearchX } from 'lucide-react'
 import { fetchPaginated, type PaginatedResponse } from '@/lib/api'
 
@@ -39,12 +39,16 @@ export function PaginatedView<T extends { id: string | number }>({
 
   const effectiveSkeletonCount = skeletonCount ?? pageSize
 
+  // Stabilize params reference to avoid infinite re-fetch loops
+  const paramsKey = useMemo(() => JSON.stringify(params ?? {}), [params])
+
   const fetchData = useCallback(
     async (page: number) => {
       setLoading(true)
       try {
+        const stableParams = JSON.parse(paramsKey) as Record<string, string>
         const result = await fetchPaginated<T>(endpoint, {
-          ...params,
+          ...stableParams,
           page: String(page),
           limit: String(pageSize),
         })
@@ -56,8 +60,13 @@ export function PaginatedView<T extends { id: string | number }>({
         setLoading(false)
       }
     },
-    [endpoint, params, pageSize],
+    [endpoint, paramsKey, pageSize],
   )
+
+  // Reset to page 1 when params change
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [paramsKey])
 
   useEffect(() => {
     fetchData(currentPage)
