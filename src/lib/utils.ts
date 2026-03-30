@@ -91,3 +91,29 @@ export function buildCityOptions(entries: Array<{ city: string }>): CityOption[]
     })),
   ]
 }
+
+/** Convert an ISO date string to a Spanish relative time string */
+export function timeAgo(dateStr: string): string {
+  const now = Date.now()
+  const then = new Date(dateStr).getTime()
+  const diffMs = now - then
+  const diffMins = Math.floor(diffMs / 60000)
+  const diffHours = Math.floor(diffMs / 3600000)
+  const diffDays = Math.floor(diffMs / 86400000)
+
+  if (diffMins < 60) return 'hace unos minutos'
+  if (diffHours < 24) return `hace ${diffHours} hora${diffHours === 1 ? '' : 's'}`
+  if (diffDays < 30) return `hace ${diffDays} día${diffDays === 1 ? '' : 's'}`
+  return new Date(dateStr).toLocaleDateString('es-MX', { day: 'numeric', month: 'short', year: 'numeric' })
+}
+
+/** Convert an ISO expiration date to a Spanish countdown/elapsed string */
+export function expirationLabel(dateStr: string): string {
+  const now = Date.now()
+  const then = new Date(dateStr).getTime()
+  const diffMs = then - now
+  const diffDays = Math.floor(Math.abs(diffMs) / 86400000)
+
+  if (diffMs > 0) return `Expira en ${diffDays} día${diffDays === 1 ? '' : 's'}`
+  return `Expiró hace ${diffDays} día${diffDays === 1 ? '' : 's'}`
+}
