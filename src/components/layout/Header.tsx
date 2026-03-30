@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Briefcase, Menu, X, Map, CalendarDays, Plus, FolderOpen, Newspaper } from 'lucide-react'
+import { motion, useScroll, useMotionValueEvent } from 'motion/react'
 import ThemeToggle from '@/components/ui/ThemeToggle'
 import { UserMenu } from '@/components/auth/UserMenu'
 import { ENTRY_TYPE_CONFIG, ENTRY_TYPES } from '@/config'
@@ -14,6 +15,21 @@ export function Header() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const dropdown = useDisclosure()
   const pathname = usePathname()
+  const { scrollY } = useScroll()
+  const [scrolled, setScrolled] = useState(false)
+  const [isLg, setIsLg] = useState(false)
+
+  useMotionValueEvent(scrollY, "change", (latest) => {
+    setScrolled(latest > 50)
+  })
+
+  useEffect(() => {
+    const mql = window.matchMedia('(min-width: 1024px)')
+    setIsLg(mql.matches)
+    const handler = (e: MediaQueryListEvent) => setIsLg(e.matches)
+    mql.addEventListener('change', handler)
+    return () => mql.removeEventListener('change', handler)
+  }, [])
 
   useEffect(() => {
     setMobileOpen(false)
@@ -26,14 +42,36 @@ export function Header() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
+      <motion.header
+        animate={scrolled ? "sticky" : "floating"}
+        variants={{
+          floating: {
+            marginLeft: isLg ? 24 : 16,
+            marginRight: isLg ? 24 : 16,
+            marginTop: 12,
+            borderRadius: 16,
+            boxShadow: "0 8px 32px rgba(0,0,0,0.4), 0 0 0 1px rgba(26,122,79,0.1)",
+            backdropFilter: "blur(16px)",
+          },
+          sticky: {
+            marginLeft: 0,
+            marginRight: 0,
+            marginTop: 0,
+            borderRadius: 0,
+            boxShadow: "none",
+            backdropFilter: "blur(20px)",
+          },
+        }}
+        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+        className="sticky top-0 z-50 bg-background/80 border-b border-border"
+      >
         <a
           href="#main"
           className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[100] focus:px-4 focus:py-2 focus:bg-accent focus:text-accent-foreground focus:rounded-md focus:text-sm focus:font-mono"
         >
           Ir al contenido
         </a>
-        <div className="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between">
+        <div className={`max-w-7xl mx-auto px-4 flex items-center justify-between transition-[height] duration-300 ${scrolled ? 'h-12' : 'h-14'}`}>
           <Link href="/" className="flex items-center gap-2 font-mono text-sm font-bold text-primary shrink-0">
             <span className="text-accent">{'>'}</span> tech_atlas
           </Link>
@@ -106,7 +144,7 @@ export function Header() {
             </button>
           </div>
         </div>
-      </header>
+      </motion.header>
 
       <div
         role="dialog"
