@@ -48,22 +48,24 @@ export function Header() {
           floating: {
             marginLeft: isLg ? 24 : 16,
             marginRight: isLg ? 24 : 16,
-            marginTop: 12,
+            top: 12,
             borderRadius: 16,
-            boxShadow: "0 8px 32px rgba(0,0,0,0.4), 0 0 0 1px rgba(26,122,79,0.1)",
+            boxShadow: "0 8px 32px rgba(0,0,0,0.15), 0 0 0 1px rgba(26,122,79,0.1)",
             backdropFilter: "blur(16px)",
+            borderBottom: "1px solid transparent",
           },
           sticky: {
             marginLeft: 0,
             marginRight: 0,
-            marginTop: 0,
+            top: 0,
             borderRadius: 0,
             boxShadow: "none",
             backdropFilter: "blur(20px)",
+            borderBottom: "1px solid var(--color-border)",
           },
         }}
         transition={{ type: "spring", stiffness: 300, damping: 30 }}
-        className="sticky top-0 z-50 bg-background/80 border-b border-border"
+        className="sticky z-50 bg-background/80"
       >
         <a
           href="#main"
