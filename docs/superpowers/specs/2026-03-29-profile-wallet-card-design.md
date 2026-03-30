@@ -131,7 +131,7 @@ Apple certificates and Google service account JSON stored in a `certs/` director
 | `drizzle-orm`        | Query builder for profiles table     |
 | `drizzle-kit`        | Schema migrations                    |
 | `passkit-generator`  | Apple `.pkpass` file generation       |
-| `@googleapis/walletobjects` | Official Google Wallet API SDK  |
+| `googleapis`                | Official Google API SDK (includes walletobjects) |
 
 ## 7. File Structure (New/Modified)
 
