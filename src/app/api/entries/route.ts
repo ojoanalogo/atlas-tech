@@ -25,6 +25,26 @@ export async function GET(request: NextRequest) {
     if (city) where.city = { equals: city }
 
     const payload = await getPayloadClient()
+
+    // Random sort: fetch all matching, shuffle, return `limit` entries
+    if (sortKey === 'random') {
+      const all = await payload.find({
+        collection: 'entries',
+        where,
+        limit: 0,
+        pagination: false,
+      })
+      const shuffled = all.docs.sort(() => Math.random() - 0.5).slice(0, limit)
+      return NextResponse.json({
+        docs: shuffled,
+        totalDocs: shuffled.length,
+        totalPages: 1,
+        page: 1,
+        hasNextPage: false,
+        hasPrevPage: false,
+      })
+    }
+
     const result = await payload.find({
       collection: 'entries',
       where,
