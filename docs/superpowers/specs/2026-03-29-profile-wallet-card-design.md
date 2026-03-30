@@ -52,7 +52,7 @@ New Drizzle schema — not a Payload collection. Lives in the same PostgreSQL da
 - Request body: `{ platform: 'apple' | 'google' }`
 - Reads the user's profile from Drizzle.
 - **Apple:** generates a `.pkpass` file using `passkit-generator`, returns binary download (`Content-Type: application/vnd.apple.pkpass`).
-- **Google:** creates a pass object via Google Wallet REST API, returns JSON with the "Add to Google Wallet" save link URL.
+- **Google:** creates a pass object via the official `@googleapis/walletobjects` SDK, returns JSON with the "Add to Google Wallet" save link URL.
 - 401 if not signed in.
 - 400 if profile doesn't exist or required fields are missing (name at minimum).
 
@@ -131,7 +131,7 @@ Apple certificates and Google service account JSON stored in a `certs/` director
 | `drizzle-orm`        | Query builder for profiles table     |
 | `drizzle-kit`        | Schema migrations                    |
 | `passkit-generator`  | Apple `.pkpass` file generation       |
-| `googleapis`         | Google Wallet REST API client         |
+| `@googleapis/walletobjects` | Official Google Wallet API SDK  |
 
 ## 7. File Structure (New/Modified)
 
