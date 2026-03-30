@@ -1,7 +1,5 @@
 import type { Metadata } from 'next'
-import { getPublishedEntries } from '@/lib/payload'
-import { buildCityOptions } from '@/lib/utils'
-import { ALL_CITY_IDS, getCityName } from '@/config'
+import { ALL_CITY_IDS, getCityName, SINALOA_CITIES } from '@/config'
 import DirectoryFilter from '@/components/entries/DirectoryFilter'
 
 export async function generateStaticParams() {
@@ -17,16 +15,15 @@ export async function generateMetadata({ params }: { params: Promise<{ city: str
   }
 }
 
+const staticCities = SINALOA_CITIES.map((m) => ({ id: m.id, name: m.name, count: 0 }))
+
 export default async function CityDirectoryPage({ params }: { params: Promise<{ city: string }> }) {
   const { city } = await params
-  const result = await getPublishedEntries()
-  const entries = result.docs
-  const cities = buildCityOptions(entries)
 
   return (
     <section className="py-4 px-4">
       <div className="max-w-7xl mx-auto">
-        <DirectoryFilter entries={entries} cities={cities} initialCity={city} pageSize={18} />
+        <DirectoryFilter cities={staticCities} initialCity={city} pageSize={18} />
       </div>
     </section>
   )

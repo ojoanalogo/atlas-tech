@@ -1,27 +1,31 @@
 'use client'
 
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import {
-  SearchX,
   LayoutGrid,
   SlidersHorizontal,
   ChevronDown,
-  ChevronLeft,
-  ChevronRight,
   ArrowUpDown,
 } from 'lucide-react'
 import {
   CATEGORY_URL_MAP,
-  DEFAULT_PAGINATION,
   ENTRY_TYPE_LABELS,
   ENTRY_TYPE_ICONS,
   type AtlasEntryType,
 } from '@/config'
 import { ENTRY_TYPE_ICON_MAP } from '@/lib/icons'
-import type { Entry } from '@/payload-types'
-import { DirectoryGrid } from './DirectoryGrid'
+import { PaginatedView } from '@/components/ui/PaginatedView'
+import { EntryCardSkeleton } from './EntryCardSkeleton'
+import type { Entry, Media } from '@/payload-types'
+import { EntryCard } from './EntryCard'
 
 /* ── Types ── */
+
+interface CountsData {
+  byCity: Record<string, number>
+  byType: Record<string, number>
+  total: number
+}
 
 interface CityInfo {
   id: string
@@ -41,7 +45,6 @@ const SORT_OPTIONS: { value: SortOption; label: string }[] = [
 ]
 
 interface Props {
-  entries: Entry[]
   cities: CityInfo[]
   initialType?: string
   initialCity?: string
@@ -55,192 +58,58 @@ function typeToPath(type: string): string {
   return slug ? `/${slug}` : '/directorio'
 }
 
-function getParamFromURL(key: string): string {
-  if (typeof window === 'undefined') return ''
-  return new URLSearchParams(window.location.search).get(key) ?? ''
-}
-
-function getPageFromURL(): number {
-  const n = parseInt(getParamFromURL('page'), 10)
-  return n > 0 ? n : 1
-}
-
 function getSortFromURL(): SortOption {
-  const s = getParamFromURL('sort')
+  if (typeof window === 'undefined') return DEFAULT_SORT
+  const s = new URLSearchParams(window.location.search).get('sort')
   return SORT_OPTIONS.some((o) => o.value === s) ? (s as SortOption) : DEFAULT_SORT
 }
 
-function buildURL(page: number, sort: SortOption): string {
-  if (typeof window === 'undefined') {
-    const params = new URLSearchParams()
-    if (page > 1) params.set('page', String(page))
-    if (sort !== DEFAULT_SORT) params.set('sort', sort)
-    const qs = params.toString()
-    return qs ? `?${qs}` : ''
-  }
-  const url = new URL(window.location.href)
-  if (page <= 1) url.searchParams.delete('page')
-  else url.searchParams.set('page', String(page))
-  if (sort === DEFAULT_SORT) url.searchParams.delete('sort')
-  else url.searchParams.set('sort', sort)
-  return url.pathname + url.search
-}
-
-/* ── Pagination ── */
-
-function Pagination({
-  currentPage,
-  totalPages,
-  sort,
-  onPageChange,
-}: {
-  currentPage: number
-  totalPages: number
-  sort: SortOption
-  onPageChange: (page: number) => void
-}) {
-  if (totalPages <= 1) return null
-
-  const pages: (number | '...')[] = []
-  for (let i = 1; i <= totalPages; i++) {
-    if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
-      pages.push(i)
-    } else if (pages[pages.length - 1] !== '...') {
-      pages.push('...')
-    }
-  }
-
-  const btn =
-    'inline-flex items-center justify-center min-w-[2.25rem] h-9 px-2 rounded text-sm font-mono transition-colors cursor-pointer'
-  const active = 'bg-accent/15 text-accent border border-accent/30'
-  const inactive = 'text-secondary hover:text-accent hover:bg-elevated border border-transparent'
-  const disabled = 'text-muted/40 pointer-events-none border border-transparent'
+function renderEntryItem(entry: Entry) {
+  const logo = typeof entry.logo === 'object' && entry.logo !== null ? entry.logo as Media : null
+  const coverImage = typeof entry.coverImage === 'object' && entry.coverImage !== null ? entry.coverImage as Media : null
 
   return (
-    <nav aria-label="Paginación" className="flex items-center justify-center gap-1 mt-8">
-      <a
-        href={currentPage > 1 ? buildURL(currentPage - 1, sort) : undefined}
-        onClick={(e) => {
-          e.preventDefault()
-          if (currentPage > 1) onPageChange(currentPage - 1)
-        }}
-        className={`${btn} ${currentPage <= 1 ? disabled : inactive}`}
-        aria-label="Página anterior"
-      >
-        <ChevronLeft className="w-4 h-4" />
-      </a>
-
-      {pages.map((p, i) =>
-        p === '...' ? (
-          <span key={`ellipsis-${i}`} className="px-1 text-muted text-sm">
-            ...
-          </span>
-        ) : (
-          <a
-            key={p}
-            href={buildURL(p, sort)}
-            onClick={(e) => {
-              e.preventDefault()
-              onPageChange(p)
-            }}
-            className={`${btn} ${p === currentPage ? active : inactive}`}
-            aria-current={p === currentPage ? 'page' : undefined}
-          >
-            {p}
-          </a>
-        ),
-      )}
-
-      <a
-        href={currentPage < totalPages ? buildURL(currentPage + 1, sort) : undefined}
-        onClick={(e) => {
-          e.preventDefault()
-          if (currentPage < totalPages) onPageChange(currentPage + 1)
-        }}
-        className={`${btn} ${currentPage >= totalPages ? disabled : inactive}`}
-        aria-label="Página siguiente"
-      >
-        <ChevronRight className="w-4 h-4" />
-      </a>
-    </nav>
+    <div className="entry-item animate-in">
+      <EntryCard
+        slug={entry.slug}
+        name={entry.name}
+        tagline={entry.tagline ?? undefined}
+        entryType={entry.entryType}
+        logo={logo && logo.url ? { url: logo.url, alt: logo.alt } : null}
+        coverImage={coverImage && coverImage.url ? { url: coverImage.url, alt: coverImage.alt } : null}
+        city={entry.city}
+        tags={entry.tags ?? undefined}
+      />
+    </div>
   )
 }
 
 /* ── DirectoryFilter ── */
 
 export default function DirectoryFilter({
-  entries,
   cities,
   initialType = '',
   initialCity = '',
-  pageSize = DEFAULT_PAGINATION,
+  pageSize = 18,
 }: Props) {
-  const [currentPage, setCurrentPage] = useState(1)
   const [currentSort, setCurrentSort] = useState<SortOption>(DEFAULT_SORT)
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [cityCounts, setCityCounts] = useState<Record<string, number>>({})
 
   const activeType = initialType
   const activeCity = initialCity
-  const isPaginated = pageSize > 0
 
-  // Read page + sort from URL on mount
   useEffect(() => {
-    if (isPaginated) setCurrentPage(getPageFromURL())
     setCurrentSort(getSortFromURL())
-  }, [isPaginated])
+  }, [])
 
-  // Filter and sort entries via useMemo
-  const filtered = useMemo(() => {
-    let result = entries
+  useEffect(() => {
+    fetch('/api/entries/counts')
+      .then((res) => res.json())
+      .then((data: CountsData) => setCityCounts(data.byCity))
+      .catch(console.error)
+  }, [])
 
-    if (activeType) {
-      result = result.filter((e) => e.entryType === activeType)
-    }
-    if (activeCity) {
-      result = result.filter((e) => e.city === activeCity)
-    }
-
-    // Sort
-    const sorted = [...result]
-    if (currentSort === 'name-asc') {
-      sorted.sort((a, b) => a.name.localeCompare(b.name))
-    } else if (currentSort === 'name-desc') {
-      sorted.sort((a, b) => b.name.localeCompare(a.name))
-    } else if (currentSort === 'date-asc') {
-      sorted.sort((a, b) => {
-        const da = a.publishDate ?? ''
-        const db = b.publishDate ?? ''
-        if (!da && !db) return 0
-        if (!da) return 1
-        if (!db) return -1
-        return da.localeCompare(db)
-      })
-    } else {
-      // date-desc (default)
-      sorted.sort((a, b) => {
-        const da = a.publishDate ?? ''
-        const db = b.publishDate ?? ''
-        if (!da && !db) return 0
-        if (!da) return 1
-        if (!db) return -1
-        return db.localeCompare(da)
-      })
-    }
-
-    return sorted
-  }, [entries, activeType, activeCity, currentSort])
-
-  // Paginate
-  const matchedCount = filtered.length
-  const totalPages = isPaginated ? Math.max(1, Math.ceil(matchedCount / pageSize)) : 1
-  const paginated = isPaginated
-    ? filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize)
-    : filtered
-
-  // Animation key for re-triggering grid transitions
-  const filterKey = `${activeType}-${activeCity}-${currentSort}-${currentPage}`
-
-  // Navigation (full page navigation for type/city filters)
   function navigate(type: string, city: string) {
     if (type) {
       window.location.href = typeToPath(type)
@@ -252,43 +121,39 @@ export default function DirectoryFilter({
   }
 
   function handleTypeClick(type: string) {
-    const newType = type === activeType ? '' : type
-    navigate(newType, '')
+    navigate(type === activeType ? '' : type, '')
   }
 
   function handleCityClick(id: string) {
-    const newCity = id === activeCity ? '' : id
-    navigate('', newCity)
+    navigate('', id === activeCity ? '' : id)
   }
 
   function clearFilters() {
     navigate('', '')
   }
 
-  function pushURL(page: number, sort: SortOption) {
-    window.history.pushState({}, '', buildURL(page, sort))
-  }
-
-  function handlePageChange(page: number) {
-    pushURL(page, currentSort)
-    setCurrentPage(page)
-    document.getElementById('directory-top')?.scrollIntoView({ behavior: 'smooth' })
-  }
-
   function handleSortChange(sort: SortOption) {
     setCurrentSort(sort)
-    setCurrentPage(1)
-    pushURL(1, sort)
+    const url = new URL(window.location.href)
+    url.searchParams.delete('page')
+    if (sort === DEFAULT_SORT) url.searchParams.delete('sort')
+    else url.searchParams.set('sort', sort)
+    window.history.pushState({}, '', url.pathname + url.search)
   }
 
   const activeCityName = cities.find((m) => m.id === activeCity)?.name
   const activeTypeName = activeType ? ENTRY_TYPE_LABELS[activeType] : undefined
   const heading = activeCityName || activeTypeName || 'Ecosistema Sinaloa'
 
-  const sortedCities = cities.filter((m) => m.count > 0).sort((a, b) => b.count - a.count)
+  const sortedCities = cities
+    .map((c) => ({ ...c, count: cityCounts[c.id] ?? c.count }))
+    .filter((m) => m.count > 0)
+    .sort((a, b) => b.count - a.count)
 
-  const rangeStart = isPaginated ? (currentPage - 1) * pageSize + 1 : 1
-  const rangeEnd = isPaginated ? Math.min(currentPage * pageSize, matchedCount) : matchedCount
+  // Build API params
+  const apiParams: Record<string, string> = { sort: currentSort }
+  if (activeType) apiParams.entryType = activeType
+  if (activeCity) apiParams.city = activeCity
 
   /* ── Shared sidebar content ── */
   const sidebarContent = (
@@ -441,21 +306,8 @@ export default function DirectoryFilter({
 
       {/* Heading */}
       <h1 className="text-3xl md:text-4xl font-sans font-bold text-primary">{heading}</h1>
-      <p className="mt-2 text-secondary mb-6" aria-live="polite" aria-atomic="true">
-        {isPaginated && matchedCount > 0 ? (
-          <>
-            <span className="font-bold">
-              {rangeStart}&ndash;{rangeEnd}
-            </span>{' '}
-            de <span className="font-bold">{matchedCount}</span>{' '}
-            {matchedCount === 1 ? 'resultado' : 'resultados'}
-          </>
-        ) : (
-          <>
-            <span className="font-bold">{matchedCount}</span>{' '}
-            {matchedCount === 1 ? 'resultado encontrado' : 'resultados encontrados'}
-          </>
-        )}
+      <p className="mt-2 text-secondary mb-6">
+        Explora el directorio del ecosistema tech.
       </p>
 
       {/* Mobile filter panel */}
@@ -495,28 +347,16 @@ export default function DirectoryFilter({
         </aside>
 
         {/* Content area */}
-        <div>
-          {matchedCount > 0 ? (
-            <DirectoryGrid key={filterKey} entries={paginated} />
-          ) : (
-            <div className="text-center py-20">
-              <SearchX className="w-12 h-12 mx-auto mb-4 text-muted opacity-40" strokeWidth={1.5} />
-              <p className="text-muted font-mono text-sm">No se encontraron resultados.</p>
-              <p className="text-xs mt-2 opacity-60 text-muted">
-                Intenta con otro filtro o categoría.
-              </p>
-            </div>
-          )}
-
-          {isPaginated && matchedCount > 0 && (
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              sort={currentSort}
-              onPageChange={handlePageChange}
-            />
-          )}
-        </div>
+        <PaginatedView<Entry>
+          endpoint="/api/entries"
+          params={apiParams}
+          renderItem={renderEntryItem}
+          renderSkeleton={() => <EntryCardSkeleton />}
+          layout="grid"
+          gridCols="grid-cols-1 sm:grid-cols-2 xl:grid-cols-3"
+          pageSize={pageSize}
+          scrollTargetId="directory-top"
+        />
       </div>
     </div>
   )

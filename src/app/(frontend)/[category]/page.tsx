@@ -1,7 +1,5 @@
 import type { Metadata } from 'next'
-import { getPublishedEntries } from '@/lib/payload'
-import { buildCityOptions } from '@/lib/utils'
-import { ENTRY_TYPE_CONFIG, URL_CATEGORY_MAP, type AtlasEntryType } from '@/config'
+import { ENTRY_TYPE_CONFIG, URL_CATEGORY_MAP, SINALOA_CITIES, type AtlasEntryType } from '@/config'
 import DirectoryFilter from '@/components/entries/DirectoryFilter'
 import { notFound } from 'next/navigation'
 
@@ -20,6 +18,8 @@ export async function generateMetadata({
   return { title: ENTRY_TYPE_CONFIG[entryType].labelPlural }
 }
 
+const staticCities = SINALOA_CITIES.map((m) => ({ id: m.id, name: m.name, count: 0 }))
+
 export default async function CategoryPage({
   params,
 }: {
@@ -29,15 +29,10 @@ export default async function CategoryPage({
   const entryType = URL_CATEGORY_MAP[category] as AtlasEntryType | undefined
   if (!entryType) notFound()
 
-  const result = await getPublishedEntries()
-  const allEntries = result.docs
-  const categoryEntries = allEntries.filter((e) => e.entryType === entryType)
-  const cities = buildCityOptions(categoryEntries)
-
   return (
     <section className="py-4 px-4">
       <div className="max-w-7xl mx-auto">
-        <DirectoryFilter entries={allEntries} cities={cities} initialType={entryType} pageSize={18} />
+        <DirectoryFilter cities={staticCities} initialType={entryType} pageSize={18} />
       </div>
     </section>
   )
