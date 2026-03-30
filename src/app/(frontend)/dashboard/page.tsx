@@ -1,56 +1,113 @@
-import type { Metadata } from 'next'
+'use client'
+
 import Link from 'next/link'
+import { useState } from 'react'
+import { useSession } from '@/lib/auth-client'
 import { AuthGuard } from '@/components/auth/AuthGuard'
+import { ProfileForm } from './profile/ProfileForm'
 import { MyEntries } from '@/components/dashboard/MyEntries'
 import { MyJobs } from '@/components/dashboard/MyJobs'
-import { Plus, Briefcase, User } from 'lucide-react'
+import { Plus, Briefcase } from 'lucide-react'
 
-export const metadata: Metadata = {
-  title: 'Dashboard',
-  robots: { index: false },
+type Tab = 'profile' | 'projects' | 'jobs'
+
+const TABS: { id: Tab; label: string }[] = [
+  { id: 'profile', label: 'Mi Perfil' },
+  { id: 'projects', label: 'Mis Proyectos' },
+  { id: 'jobs', label: 'Mis Empleos' },
+]
+
+function getInitials(name: string): string {
+  return name
+    .split(' ')
+    .slice(0, 2)
+    .map((w) => w[0])
+    .join('')
+    .toUpperCase()
+}
+
+function getMemberSince(createdAt?: Date | string): string {
+  if (!createdAt) return ''
+  const date = new Date(createdAt)
+  return date.toLocaleDateString('es-MX', { month: 'long', year: 'numeric' })
+}
+
+function DashboardContent() {
+  const { data: session } = useSession()
+  const [activeTab, setActiveTab] = useState<Tab>('profile')
+
+  const user = session?.user
+  const firstName = user?.name?.split(' ')[0] || 'Usuario'
+
+  return (
+    <section className="py-8 px-4">
+      <div className="max-w-4xl mx-auto">
+        {/* Welcome header */}
+        <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-8">
+          <div className="flex items-center gap-3 flex-1">
+            <div className="w-12 h-12 rounded-full bg-accent/15 border border-accent/20 flex items-center justify-center text-accent font-bold text-sm shrink-0">
+              {user?.name ? getInitials(user.name) : '?'}
+            </div>
+            <div>
+              <h1 className="text-xl font-bold text-primary">Hola, {firstName}</h1>
+              <p className="text-xs font-mono text-muted">
+                {user?.email}
+                {user?.createdAt && ` · Miembro desde ${getMemberSince(user.createdAt)}`}
+              </p>
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <Link
+              href="/directorio/submit"
+              className="flex items-center gap-1 px-3 py-1.5 text-xs font-mono font-medium bg-accent text-accent-foreground rounded-md hover:bg-accent/90 transition-colors"
+            >
+              <Plus className="w-3.5 h-3.5" /> Agregar proyecto
+            </Link>
+            <Link
+              href="/dashboard/jobs/new"
+              className="flex items-center gap-1 px-3 py-1.5 text-xs font-mono font-medium border border-border text-primary rounded-md hover:bg-elevated transition-colors"
+            >
+              <Briefcase className="w-3.5 h-3.5" /> Publicar empleo
+            </Link>
+          </div>
+        </div>
+
+        {/* Tab bar */}
+        <div className="flex gap-1 mb-6 p-1 bg-elevated rounded-lg border border-border w-fit">
+          {TABS.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`px-4 py-1.5 text-xs font-mono font-medium rounded-md transition-colors ${
+                activeTab === tab.id
+                  ? 'bg-card text-primary shadow-sm border border-border'
+                  : 'text-muted hover:text-secondary border border-transparent'
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Tab content */}
+        {activeTab === 'profile' && (
+          <div className="flex flex-col md:flex-row gap-6">
+            <div className="flex-1">
+              <ProfileForm />
+            </div>
+          </div>
+        )}
+        {activeTab === 'projects' && <MyEntries />}
+        {activeTab === 'jobs' && <MyJobs />}
+      </div>
+    </section>
+  )
 }
 
 export default function DashboardPage() {
   return (
     <AuthGuard>
-      <section className="py-8 px-4">
-        <div className="max-w-4xl mx-auto">
-          <div className="flex items-center justify-between mb-8">
-            <h1 className="text-2xl font-bold text-primary">Dashboard</h1>
-            <div className="flex gap-2">
-              <Link
-                href="/dashboard/profile"
-                className="flex items-center gap-1 px-3 py-1.5 text-xs font-mono font-medium border border-border text-primary rounded-md hover:bg-elevated transition-colors"
-              >
-                <User className="w-3.5 h-3.5" /> Mi Perfil
-              </Link>
-              <Link
-                href="/directorio/submit"
-                className="flex items-center gap-1 px-3 py-1.5 text-xs font-mono font-medium bg-accent text-accent-foreground rounded-md hover:bg-accent/90 transition-colors"
-              >
-                <Plus className="w-3.5 h-3.5" /> Agregar proyecto
-              </Link>
-              <Link
-                href="/dashboard/jobs/new"
-                className="flex items-center gap-1 px-3 py-1.5 text-xs font-mono font-medium border border-border text-primary rounded-md hover:bg-elevated transition-colors"
-              >
-                <Briefcase className="w-3.5 h-3.5" /> Publicar empleo
-              </Link>
-            </div>
-          </div>
-
-          <div className="space-y-8">
-            <div>
-              <h2 className="text-lg font-semibold text-primary mb-4">Mis proyectos</h2>
-              <MyEntries />
-            </div>
-            <div>
-              <h2 className="text-lg font-semibold text-primary mb-4">Mis empleos</h2>
-              <MyJobs />
-            </div>
-          </div>
-        </div>
-      </section>
+      <DashboardContent />
     </AuthGuard>
   )
 }
