@@ -1,0 +1,16 @@
+{
+  "formatVersion": 1,
+  "passTypeIdentifier": "PLACEHOLDER",
+  "teamIdentifier": "PLACEHOLDER",
+  "organizationName": "Tech Atlas",
+  "description": "Digital Business Card",
+  "foregroundColor": "rgb(255, 255, 255)",
+  "backgroundColor": "rgb(15, 15, 15)",
+  "labelColor": "rgb(160, 160, 160)",
+  "generic": {
+    "primaryFields": [],
+    "secondaryFields": [],
+    "auxiliaryFields": [],
+    "backFields": []
+  }
+}
