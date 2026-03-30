@@ -178,6 +178,7 @@ export const Entries: CollectionConfig = {
     {
       name: 'owner',
       type: 'text',
+      index: true,
       admin: {
         position: 'sidebar',
         description: 'better-auth user ID of the entry owner',

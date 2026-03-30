@@ -113,6 +113,7 @@ export const Jobs: CollectionConfig = {
     {
       name: 'postedBy',
       type: 'text',
+      index: true,
       admin: {
         position: 'sidebar',
         description: 'better-auth user ID of the poster',
@@ -140,6 +141,7 @@ export const Jobs: CollectionConfig = {
       name: 'expiresAt',
       type: 'date',
       required: true,
+      index: true,
       admin: {
         position: 'sidebar',
         description: 'Job listing expiration date (default: 30 days from creation)',
