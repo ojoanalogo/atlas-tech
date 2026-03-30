@@ -92,7 +92,7 @@ function DashboardContent() {
         {/* Tab content */}
         {activeTab === 'profile' && (
           <div className="flex flex-col md:flex-row gap-6">
-            <div className="flex-1">
+            <div className="flex-1 bg-card border border-border rounded-lg p-6">
               <ProfileForm />
             </div>
           </div>
