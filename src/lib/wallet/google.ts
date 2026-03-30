@@ -30,7 +30,6 @@ async function ensureClass() {
     await client.genericclass.insert({
       requestBody: {
         id: classId,
-        issuerName: 'Tech Atlas',
       },
     })
   }

@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
 
   if (platform === 'apple') {
     const buffer = await generateApplePass(profile, qrValue)
-    return new NextResponse(buffer, {
+    return new NextResponse(new Uint8Array(buffer), {
       headers: {
         'Content-Type': 'application/vnd.apple.pkpass',
         'Content-Disposition': `attachment; filename="${profile.name.replace(/[^a-zA-Z0-9]/g, '-')}.pkpass"`,
