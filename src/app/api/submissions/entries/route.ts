@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server'
+import { NextResponse, type NextRequest } from 'next/server'
 import { getServerSession } from '@/lib/auth-helpers'
 import { getPayloadClient } from '@/lib/payload'
 
@@ -21,6 +21,32 @@ function pickAllowedFields(body: Record<string, unknown>): Record<string, unknow
     }
   }
   return result
+}
+
+export async function GET(request: NextRequest) {
+  const session = await getServerSession()
+  if (!session) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
+  const id = request.nextUrl.searchParams.get('id')
+  if (!id) {
+    return NextResponse.json({ error: 'Missing id parameter' }, { status: 400 })
+  }
+
+  try {
+    const payload = await getPayloadClient()
+    const entry = await payload.findByID({ collection: 'entries', id, draft: true })
+
+    if (!entry || entry.owner !== session.user.id) {
+      return NextResponse.json({ error: 'Not found' }, { status: 404 })
+    }
+
+    return NextResponse.json(entry)
+  } catch (error) {
+    console.error('Entry fetch failed:', error)
+    return NextResponse.json({ error: 'Failed to fetch entry' }, { status: 500 })
+  }
 }
 
 export async function POST(request: Request) {
