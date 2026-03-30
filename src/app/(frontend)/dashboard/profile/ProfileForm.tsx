@@ -139,8 +139,29 @@ export function ProfileForm() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-20">
-        <div className="w-6 h-6 border-2 border-accent border-t-transparent rounded-full animate-spin" />
+      <div className="space-y-8">
+        <div className="space-y-4">
+          <div className="h-4 w-16 bg-elevated rounded animate-pulse" />
+          <div className="h-10 bg-elevated rounded-lg animate-pulse" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="h-10 bg-elevated rounded-lg animate-pulse" />
+            <div className="h-10 bg-elevated rounded-lg animate-pulse" />
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="h-10 bg-elevated rounded-lg animate-pulse" />
+            <div className="h-10 bg-elevated rounded-lg animate-pulse" />
+          </div>
+          <div className="h-10 bg-elevated rounded-lg animate-pulse" />
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="h-10 bg-elevated rounded-lg animate-pulse" />
+            <div className="h-10 bg-elevated rounded-lg animate-pulse" />
+            <div className="h-10 bg-elevated rounded-lg animate-pulse" />
+          </div>
+        </div>
+        <div className="border-t border-border pt-8">
+          <div className="h-5 w-40 bg-elevated rounded animate-pulse mb-4" />
+          <div className="h-64 bg-elevated rounded-xl animate-pulse" />
+        </div>
       </div>
     )
   }

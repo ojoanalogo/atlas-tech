@@ -16,6 +16,17 @@ export async function GET() {
       limit: 50,
       sort: '-updatedAt',
       draft: true,
+      select: {
+        title: true,
+        type: true,
+        modality: true,
+        city: true,
+        slug: true,
+        _status: true,
+        moderationNote: true,
+        expiresAt: true,
+        updatedAt: true,
+      },
     })
 
     return NextResponse.json(result)
