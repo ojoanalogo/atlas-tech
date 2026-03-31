@@ -90,7 +90,7 @@ export async function PATCH(request: Request) {
 
     const payload = await getPayloadClient()
 
-    const existing = await payload.findByID({ collection: 'entries', id })
+    const existing = await payload.findByID({ collection: 'entries', id, draft: true })
     if (!existing || existing.owner !== session.user.id) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }

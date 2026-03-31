@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import { getEntryBySlug, getPublishedEntries } from '@/lib/payload'
-import { buildTrackedUrl, flattenArray } from '@/lib/utils'
+import { buildTrackedUrl, flattenArray, safeJsonLd } from '@/lib/utils'
 import {
   ENTRY_TYPE_CONFIG,
   ENTRY_TYPE_LABELS,
@@ -210,7 +210,7 @@ export default async function EntryDetailPage({
   return (
     <article className="max-w-7xl mx-auto px-4 py-4">
       <script type="application/ld+json" dangerouslySetInnerHTML={{
-        __html: JSON.stringify({
+        __html: safeJsonLd({
           '@context': 'https://schema.org',
           '@type': 'BreadcrumbList',
           itemListElement: [

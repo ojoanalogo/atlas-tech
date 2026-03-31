@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation'
 import { RichText } from '@payloadcms/richtext-lexical/react'
 import { getJobBySlug } from '@/lib/payload'
 import { getCityName, JOB_TYPE_LABELS, MODALITY_LABELS, SITE_URL } from '@/config'
-import { flattenArray } from '@/lib/utils'
+import { flattenArray, safeJsonLd } from '@/lib/utils'
 import { formatDateEs } from '@/lib/format'
 import { Tag } from '@/components/ui/Tag'
 import { Breadcrumb } from '@/components/ui/Breadcrumb'
@@ -66,7 +66,7 @@ export default async function JobDetailPage({ params }: { params: Promise<{ slug
   return (
     <article className="py-8 px-4">
       <script type="application/ld+json" dangerouslySetInnerHTML={{
-        __html: JSON.stringify({
+        __html: safeJsonLd({
           '@context': 'https://schema.org',
           '@type': 'JobPosting',
           title: job.title,

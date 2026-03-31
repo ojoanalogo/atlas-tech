@@ -3,6 +3,19 @@ import { getServerSession } from '@/lib/auth-helpers'
 import { db } from '@/db'
 import { profiles } from '@/db/schema/profiles'
 import { eq } from 'drizzle-orm'
+import { z } from 'zod'
+
+const profileSchema = z.object({
+  name: z.string().min(1).max(100),
+  title: z.string().max(100).optional().default(''),
+  company: z.string().max(100).optional().default(''),
+  phone: z.string().max(20).optional().default(''),
+  website: z.string().url().max(200).or(z.literal('')).optional().default(''),
+  linkedin: z.string().max(200).optional().default(''),
+  x: z.string().max(200).optional().default(''),
+  github: z.string().max(200).optional().default(''),
+  photo: z.string().url().max(500).or(z.literal('')).optional().default(''),
+})
 
 export async function GET() {
   const session = await getServerSession()
@@ -30,23 +43,26 @@ export async function PUT(request: NextRequest) {
 
   const body = await request.json()
 
-  const data = {
-    userId: session.user.id,
-    name: body.name,
-    title: body.title || null,
-    company: body.company || null,
-    email: body.email || null,
-    phone: body.phone || null,
-    website: body.website || null,
-    photo: body.photo || null,
-    linkedin: body.linkedin || null,
-    x: body.x || null,
-    github: body.github || null,
-    updatedAt: new Date(),
+  const parsed = profileSchema.safeParse(body)
+  if (!parsed.success) {
+    return NextResponse.json({ error: 'Validation failed', details: parsed.error.issues }, { status: 400 })
   }
 
-  if (!data.name || typeof data.name !== 'string' || data.name.trim().length === 0) {
-    return NextResponse.json({ error: 'Name is required' }, { status: 400 })
+  const validated = parsed.data
+
+  const data = {
+    userId: session.user.id,
+    name: validated.name,
+    title: validated.title || null,
+    company: validated.company || null,
+    email: body.email || null,
+    phone: validated.phone || null,
+    website: validated.website || null,
+    photo: validated.photo || null,
+    linkedin: validated.linkedin || null,
+    x: validated.x || null,
+    github: validated.github || null,
+    updatedAt: new Date(),
   }
 
   const [profile] = await db

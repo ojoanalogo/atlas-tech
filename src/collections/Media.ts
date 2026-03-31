@@ -1,13 +1,13 @@
 import type { CollectionConfig } from 'payload'
-import { isAuthenticated } from '../access/roles'
+import { isAuthenticated, isAdminOrModerator } from '../access/roles'
 
 export const Media: CollectionConfig = {
   slug: 'media',
   access: {
     read: () => true,
     create: isAuthenticated,
-    update: isAuthenticated,
-    delete: isAuthenticated,
+    update: isAdminOrModerator,
+    delete: isAdminOrModerator,
   },
   upload: {
     mimeTypes: ['image/png', 'image/jpeg', 'image/webp', 'image/svg+xml', 'image/gif'],
