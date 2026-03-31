@@ -151,7 +151,12 @@ export default function SubmitWizard({ cities }: Props) {
             disabled={state.submitting}
             className="inline-flex items-center gap-2 px-6 py-2.5 bg-accent text-accent-foreground font-mono font-semibold text-xs rounded-lg hover:bg-accent/90 transition-colors disabled:opacity-70"
           >
-            {state.submitting ? (
+            {state.uploadingImages ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                SUBIENDO IMÁGENES...
+              </>
+            ) : state.submitting ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
                 ENVIANDO...
