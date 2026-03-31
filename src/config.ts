@@ -274,7 +274,7 @@ export interface AtlasCategory {
   slug: string
 }
 
-const DISPLAY_CATEGORIES: AtlasEntryType[] = ['startup', 'consultory', 'research-center', 'community', 'person']
+const DISPLAY_CATEGORIES: AtlasEntryType[] = ['startup', 'consultory', 'community', 'person', 'research-center']
 
 export const ATLAS_CATEGORIES: AtlasCategory[] = DISPLAY_CATEGORIES.map((type) => ({
   type,
@@ -284,8 +284,8 @@ export const ATLAS_CATEGORIES: AtlasCategory[] = DISPLAY_CATEGORIES.map((type) =
   slug: ENTRY_TYPE_CONFIG[type].slug,
 }))
 
-// Old hardcoded URL: https://n8n.operations.molecula.digital/webhook/55010ced-85fd-4778-b212-d07d238066e0
-export const N8N_WEBHOOK_URL = process.env.NEXT_PUBLIC_N8N_WEBHOOK_URL || ''
+export const WHATSAPP_URL = 'https://chat.whatsapp.com/G9ddxpZ7NUtEOT0M6UzUkY?mode=gi_t'
+
 
 export const SOCIAL_LINKS = [
   {
@@ -302,3 +302,8 @@ export const ENTRY_TYPE_LABELS: Record<string, string> = Object.fromEntries(
 export const ENTRY_TYPE_ICONS: Record<string, string> = Object.fromEntries(
   Object.entries(ENTRY_TYPE_CONFIG).map(([k, v]) => [k, v.icon]),
 )
+
+/** Check whether an entry type is a startup-like organization (startup, business, consultory, research-center) */
+export function isStartupLike(type: string): boolean {
+  return ['startup', 'business', 'consultory', 'research-center'].includes(type)
+}

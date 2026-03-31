@@ -16,6 +16,7 @@ import {
   FOCUS_AREA_OPTIONS,
   BUSINESS_MODEL_OPTIONS,
   ENTRY_TYPE_CONFIG,
+  isStartupLike,
   type AtlasEntryType,
 } from '@/config'
 
@@ -30,10 +31,6 @@ const selectClass =
   'mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm focus:outline-hidden focus:border-accent transition-colors'
 const labelClass = 'text-xs font-mono text-muted uppercase tracking-wider'
 const checkboxClass = 'w-4 h-4 rounded border-border text-accent focus:ring-accent'
-
-function isStartupLike(type: string) {
-  return ['startup', 'business', 'consultory', 'research-center'].includes(type)
-}
 
 interface EntryData {
   id: string

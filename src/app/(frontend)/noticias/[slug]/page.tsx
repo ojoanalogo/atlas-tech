@@ -7,6 +7,7 @@ import { SectionHeading } from '@/components/ui/SectionHeading'
 import { Breadcrumb } from '@/components/ui/Breadcrumb'
 import { SITE_URL } from '@/config'
 import { formatDateEs, extractImageUrl } from '@/lib/format'
+import { WhatsAppCta } from '@/components/sections/WhatsAppCta'
 
 export async function generateStaticParams() {
   const result = await getPublishedNews()
@@ -17,9 +18,19 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const { slug } = await params
   const article = await getNewsBySlug(slug)
   if (!article) return { title: 'Not Found' }
+  const canonical = `${SITE_URL}/noticias/${article.slug}`
+  const coverUrl = extractImageUrl(article.coverImage)
   return {
     title: article.title as string,
     description: (article.excerpt as string) || undefined,
+    alternates: { canonical },
+    openGraph: {
+      title: article.title as string,
+      description: (article.excerpt as string) || undefined,
+      url: canonical,
+      ...(coverUrl ? { images: [{ url: coverUrl }] } : {}),
+    },
+    twitter: { card: 'summary_large_image' },
   }
 }
 
@@ -43,6 +54,11 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ slu
           author: authorName ? { '@type': 'Person', name: authorName } : undefined,
           image: coverUrl || undefined,
           url: `${SITE_URL}/noticias/${article.slug}`,
+          publisher: {
+            '@type': 'Organization',
+            name: 'Tech Atlas',
+            logo: { '@type': 'ImageObject', url: `${SITE_URL}/android-chrome-512x512.png` },
+          },
         }),
       }} />
       <div className="max-w-3xl mx-auto">
@@ -68,6 +84,8 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ slu
         <div className="prose prose-sm dark:prose-invert max-w-none">
           <RichText data={article.body as any} />
         </div>
+
+        <WhatsAppCta />
       </div>
     </article>
   )

@@ -11,12 +11,13 @@ import {
   PLATFORM_OPTIONS,
   FOCUS_AREA_OPTIONS,
   BUSINESS_MODEL_OPTIONS,
+  isStartupLike as isStartupLikeType,
 } from '../config'
 
 const entryTypeOptions = ENTRY_TYPES.map((t) => ({ label: t.charAt(0).toUpperCase() + t.slice(1), value: t }))
 
 const isStartupLike = (siblingData: Record<string, unknown>) =>
-  ['startup', 'business', 'consultory', 'research-center'].includes(siblingData.entryType as string)
+  isStartupLikeType(siblingData.entryType as string)
 
 const isCommunity = (siblingData: Record<string, unknown>) =>
   siblingData.entryType === 'community'

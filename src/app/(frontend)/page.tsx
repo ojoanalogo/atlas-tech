@@ -1,6 +1,7 @@
+import type { Metadata } from 'next'
 import { getPublishedEntries, getFeaturedEntries } from '@/lib/payload'
 import { countByType, groupByCity, countByTypeAndCity } from '@/lib/utils'
-import { FAQS, SITE_URL } from '@/config'
+import { FAQS, SITE_URL, SITE_DESCRIPTION } from '@/config'
 
 import { HeroSection } from '@/components/sections/HeroSection'
 import { CategorySection } from '@/components/sections/CategorySection'
@@ -10,6 +11,19 @@ import { CalendarSection } from '@/components/sections/CalendarSection'
 import { FaqSection } from '@/components/sections/FaqSection'
 import { CombinedCtaSection } from '@/components/sections/CombinedCtaSection'
 import UpcomingEventsStrip from '@/components/calendar/UpcomingEventsStrip'
+
+export const metadata: Metadata = {
+  title: 'Tech Atlas — Ecosistema Tech de Sinaloa',
+  description: SITE_DESCRIPTION,
+  alternates: { canonical: SITE_URL },
+  openGraph: {
+    title: 'Tech Atlas — Ecosistema Tech de Sinaloa',
+    description: SITE_DESCRIPTION,
+    url: SITE_URL,
+    images: [{ url: `${SITE_URL}/og.jpg` }],
+  },
+  twitter: { card: 'summary_large_image' },
+}
 
 export default async function HomePage() {
   const [entriesResult, featuredResult] = await Promise.all([

@@ -1,8 +1,6 @@
 import type { MetadataRoute } from 'next'
 import { getPayloadClient } from '@/lib/payload'
-import { ENTRY_TYPE_CONFIG, type AtlasEntryType } from '@/config'
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://atlas-sinaloa.tech'
+import { ENTRY_TYPE_CONFIG, SITE_URL, SINALOA_CITIES, type AtlasEntryType } from '@/config'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const payload = await getPayloadClient()
@@ -21,6 +19,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     url: `${SITE_URL}/${c.slug}`,
     changeFrequency: 'weekly' as const,
     priority: 0.8,
+  }))
+
+  // City directory pages
+  const cityPages: MetadataRoute.Sitemap = SINALOA_CITIES.map((city) => ({
+    url: `${SITE_URL}/directorio/${city.id}`,
+    changeFrequency: 'weekly' as const,
+    priority: 0.6,
   }))
 
   // Entry detail pages
@@ -56,5 +61,23 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.5,
   }))
 
-  return [...staticPages, ...categoryPages, ...entryPages, ...newsPages]
+  // Job detail pages
+  const jobs = await payload.find({
+    collection: 'jobs',
+    where: {
+      _status: { equals: 'published' },
+      expiresAt: { greater_than: new Date().toISOString() },
+    },
+    limit: 500,
+    select: { slug: true, updatedAt: true },
+  })
+
+  const jobPages: MetadataRoute.Sitemap = jobs.docs.map((job) => ({
+    url: `${SITE_URL}/empleos/${job.slug}`,
+    lastModified: job.updatedAt ? new Date(job.updatedAt) : undefined,
+    changeFrequency: 'weekly' as const,
+    priority: 0.5,
+  }))
+
+  return [...staticPages, ...categoryPages, ...cityPages, ...entryPages, ...newsPages, ...jobPages]
 }

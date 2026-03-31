@@ -16,7 +16,22 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const { slug } = await params
   const job = await getJobBySlug(slug)
   if (!job) return { title: 'Not Found' }
-  return { title: `${job.title} — Empleos` }
+  const entryName = (job.entry as { name: string } | null)?.name
+  const description = entryName
+    ? `${job.title} en ${entryName}${job.city ? ` — ${getCityName(job.city as string)}, Sinaloa` : ''}`
+    : `${job.title}${job.city ? ` — ${getCityName(job.city as string)}, Sinaloa` : ''}`
+  const canonical = `${SITE_URL}/empleos/${job.slug}`
+  return {
+    title: `${job.title} — Empleos`,
+    description,
+    alternates: { canonical },
+    openGraph: {
+      title: `${job.title} — Empleos`,
+      description,
+      url: canonical,
+    },
+    twitter: { card: 'summary_large_image' },
+  }
 }
 
 export default async function JobDetailPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -27,6 +42,27 @@ export default async function JobDetailPage({ params }: { params: Promise<{ slug
   const tags = flattenArray(job.tags as Array<{ tag: string }>, 'tag')
   const entryName = (job.entry as { name: string } | null)?.name
 
+  // Extract plain text from Lexical rich text for structured data
+  function extractPlainText(richText: unknown): string {
+    if (!richText || typeof richText !== 'object') return ''
+    const root = (richText as { root?: { children?: unknown[] } }).root
+    if (!root?.children) return ''
+    const parts: string[] = []
+    function walk(nodes: unknown[]) {
+      for (const node of nodes) {
+        if (typeof node !== 'object' || node === null) continue
+        const n = node as { text?: string; children?: unknown[] }
+        if (typeof n.text === 'string') parts.push(n.text)
+        if (Array.isArray(n.children)) walk(n.children)
+      }
+    }
+    walk(root.children)
+    return parts.join(' ').replace(/\s+/g, ' ').trim()
+  }
+
+  const jobDescriptionText = extractPlainText(job.description) ||
+    `${job.title}${entryName ? ` en ${entryName}` : ''}${job.city ? ` — ${getCityName(job.city as string)}, Sinaloa` : ''}`
+
   return (
     <article className="py-8 px-4">
       <script type="application/ld+json" dangerouslySetInnerHTML={{
@@ -34,7 +70,7 @@ export default async function JobDetailPage({ params }: { params: Promise<{ slug
           '@context': 'https://schema.org',
           '@type': 'JobPosting',
           title: job.title,
-          description: 'See full description on page',
+          description: jobDescriptionText,
           datePosted: job.createdAt,
           validThrough: job.expiresAt,
           employmentType: job.type === 'full-time' ? 'FULL_TIME' : job.type === 'part-time' ? 'PART_TIME' : 'OTHER',

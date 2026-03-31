@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { getServerSession } from '@/lib/auth-helpers'
 import { getPayloadClient } from '@/lib/payload'
+import { pickAllowedFields } from '@/lib/pick-allowed-fields'
 
 /** Allowlisted fields that callers may set on entry submissions */
 const ENTRY_ALLOWED_FIELDS = [
@@ -12,16 +13,6 @@ const ENTRY_ALLOWED_FIELDS = [
   'platform', 'focusAreas', 'role', 'company', 'skills', 'availableForHire',
   'availableForMentoring', 'email', 'portfolio',
 ] as const
-
-function pickAllowedFields(body: Record<string, unknown>): Record<string, unknown> {
-  const result: Record<string, unknown> = {}
-  for (const key of ENTRY_ALLOWED_FIELDS) {
-    if (key in body) {
-      result[key] = body[key]
-    }
-  }
-  return result
-}
 
 export async function GET(request: NextRequest) {
   const session = await getServerSession()
@@ -66,7 +57,7 @@ export async function POST(request: Request) {
     }
 
     const payload = await getPayloadClient()
-    const data = pickAllowedFields(body)
+    const data = pickAllowedFields(body, ENTRY_ALLOWED_FIELDS)
 
     const entry = await payload.create({
       collection: 'entries',
@@ -104,7 +95,7 @@ export async function PATCH(request: Request) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
-    const data = pickAllowedFields(body)
+    const data = pickAllowedFields(body, ENTRY_ALLOWED_FIELDS)
 
     await payload.update({
       collection: 'entries',

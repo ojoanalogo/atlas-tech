@@ -1,22 +1,13 @@
 import { NextResponse } from 'next/server'
 import { getServerSession } from '@/lib/auth-helpers'
 import { getPayloadClient } from '@/lib/payload'
+import { pickAllowedFields } from '@/lib/pick-allowed-fields'
 
 /** Allowlisted fields that callers may set on job submissions */
 const JOB_ALLOWED_FIELDS = [
   'title', 'slug', 'description', 'type', 'modality', 'city',
   'compensation', 'tags', 'contactUrl', 'entry', 'expiresAt',
 ] as const
-
-function pickAllowedFields(body: Record<string, unknown>): Record<string, unknown> {
-  const result: Record<string, unknown> = {}
-  for (const key of JOB_ALLOWED_FIELDS) {
-    if (key in body) {
-      result[key] = body[key]
-    }
-  }
-  return result
-}
 
 export async function POST(request: Request) {
   const session = await getServerSession()
@@ -35,7 +26,7 @@ export async function POST(request: Request) {
     }
 
     const payload = await getPayloadClient()
-    const data = pickAllowedFields(body)
+    const data = pickAllowedFields(body, JOB_ALLOWED_FIELDS)
 
     const job = await payload.create({
       collection: 'jobs',

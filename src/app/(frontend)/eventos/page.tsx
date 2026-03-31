@@ -6,6 +6,13 @@ import { SITE_URL } from '@/config'
 export const metadata: Metadata = {
   title: 'Eventos Tech en Sinaloa',
   description: 'Meetups, talleres, hackatones y conferencias tech en Sinaloa, México.',
+  alternates: { canonical: `${SITE_URL}/eventos` },
+  openGraph: {
+    title: 'Eventos Tech en Sinaloa',
+    description: 'Meetups, talleres, hackatones y conferencias tech en Sinaloa, México.',
+    url: `${SITE_URL}/eventos`,
+  },
+  twitter: { card: 'summary_large_image' },
 }
 
 export default function EventosPage() {

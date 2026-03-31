@@ -1,18 +1,5 @@
 import type { Metadata } from 'next'
-import { JetBrains_Mono, Space_Grotesk } from 'next/font/google'
 import { SITE_TITLE, SITE_DESCRIPTION, SITE_URL } from '@/config'
-
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ['latin'],
-  variable: '--font-mono',
-  display: 'swap',
-})
-
-const spaceGrotesk = Space_Grotesk({
-  subsets: ['latin'],
-  variable: '--font-sans',
-  display: 'swap',
-})
 
 export const metadata: Metadata = {
   title: {
@@ -40,9 +27,5 @@ export const metadata: Metadata = {
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <html lang="es-MX" className={`${jetbrainsMono.variable} ${spaceGrotesk.variable}`} suppressHydrationWarning>
-      <body>{children}</body>
-    </html>
-  )
+  return children
 }

@@ -6,6 +6,7 @@ import { Breadcrumb } from '@/components/ui/Breadcrumb'
 
 export const metadata: Metadata = {
   title: 'Agregar Proyecto',
+  robots: { index: false },
 }
 
 export default function SubmitPage() {

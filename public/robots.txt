@@ -1,7 +1,0 @@
-User-agent: *
-Allow: /
-Disallow: /admin
-Disallow: /dashboard
-Disallow: /api/
-
-Sitemap: https://atlas-sinaloa.tech/sitemap.xml
