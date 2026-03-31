@@ -94,7 +94,7 @@ export default async function HomePage() {
       </section>
 
       <CategorySection counts={counts.byType as Record<AtlasEntryType, number>} />
-      <FeaturedSection entries={featured} />
+      <FeaturedSection entries={featured as any} />
       <MapSection cityCounts={counts.byCity} cityTypeCounts={counts.byCityAndType} />
       <CalendarSection />
       <FaqSection />

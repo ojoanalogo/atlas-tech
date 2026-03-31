@@ -3,6 +3,7 @@ import { db } from '@/db'
 import { sql } from 'drizzle-orm'
 import { NextResponse, type NextRequest } from 'next/server'
 import { withRateLimit } from '@/lib/rate-limit'
+import type { Where } from 'payload'
 
 const SORT_MAP: Record<string, string> = {
   'name-asc': 'name',
@@ -24,7 +25,7 @@ export async function GET(request: NextRequest) {
     const entryType = searchParams.get('entryType')
     const city = searchParams.get('city')
 
-    const where: Record<string, unknown> = {
+    const where: Where = {
       _status: { equals: 'published' },
     }
     if (entryType) where.entryType = { equals: entryType }

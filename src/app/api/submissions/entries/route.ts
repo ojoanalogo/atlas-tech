@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
         ...data,
         owner: session.user.id,
         _status: 'draft',
-      } as Parameters<typeof payload.create<'entries'>>[0]['data'],
+      } as any,
     })
     return NextResponse.json({ success: true, id: entry.id })
   } catch (error) {
@@ -110,7 +110,7 @@ export async function PATCH(request: NextRequest) {
       data: {
         ...data,
         _status: 'draft',
-      } as Parameters<typeof payload.update<'entries'>>[0]['data'],
+      } as any,
     })
     return NextResponse.json({ success: true })
   } catch (error) {

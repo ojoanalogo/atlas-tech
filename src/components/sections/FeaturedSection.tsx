@@ -6,7 +6,7 @@ import { getCityName, type AtlasEntryType } from '@/config'
 interface FeaturedEntry {
   slug: string
   name: string
-  tagline?: string
+  tagline?: string | null
   entryType: AtlasEntryType
   logo?: { url: string; alt?: string } | null
   coverImage?: { url: string; alt?: string } | null
@@ -26,7 +26,7 @@ export function FeaturedSection({ entries }: FeaturedSectionProps) {
   const carouselEntries = displayEntries.map((entry) => ({
     slug: entry.slug,
     name: entry.name,
-    tagline: entry.tagline,
+    tagline: entry.tagline ?? undefined,
     entryType: entry.entryType,
     logoSrc: typeof entry.logo === 'object' && entry.logo?.url ? entry.logo.url : undefined,
     coverSrc: typeof entry.coverImage === 'object' && entry.coverImage?.url ? entry.coverImage.url : undefined,
@@ -80,7 +80,7 @@ export function FeaturedSection({ entries }: FeaturedSectionProps) {
               key={entry.slug}
               slug={entry.slug}
               name={entry.name}
-              tagline={entry.tagline}
+              tagline={entry.tagline ?? undefined}
               entryType={entry.entryType}
               logo={entry.logo}
               coverImage={entry.coverImage}

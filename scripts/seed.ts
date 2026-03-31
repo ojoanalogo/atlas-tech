@@ -214,7 +214,7 @@ async function seed() {
       await payload.create({
         collection: 'entries',
         data: {
-          entryType: data.entryType as string,
+          entryType: data.entryType as 'startup' | 'community' | 'business' | 'consultory' | 'research-center' | 'person',
           name: data.name as string,
           slug: dir,
           tagline: data.tagline as string | undefined,

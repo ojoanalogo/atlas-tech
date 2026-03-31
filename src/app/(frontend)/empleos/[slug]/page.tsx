@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { RichText } from '@payloadcms/richtext-lexical/react'
-import { getJobBySlug, getPublishedJobs } from '@/lib/payload'
+import { getJobBySlug, getActiveJobs } from '@/lib/payload'
 import { getCityName, JOB_TYPE_LABELS, MODALITY_LABELS, SITE_URL } from '@/config'
 import { flattenArray, safeJsonLd } from '@/lib/utils'
 import { formatDateEs } from '@/lib/format'
@@ -13,7 +13,7 @@ import { MapPin, Clock, Briefcase, ExternalLink as LinkIcon, AlertTriangle } fro
 export const revalidate = 3600
 
 export async function generateStaticParams() {
-  const result = await getPublishedJobs()
+  const result = await getActiveJobs()
   return result.docs.map((job) => ({ slug: job.slug as string }))
 }
 

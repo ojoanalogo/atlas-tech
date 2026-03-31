@@ -4,6 +4,7 @@ import { sql } from 'drizzle-orm'
 import { CITY_IDS, emptyTypeCounts, type AtlasEntryType } from '@/config'
 
 interface EntryCountRow {
+  [key: string]: unknown
   entry_type: string
   city: string
   count: number
