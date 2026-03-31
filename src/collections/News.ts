@@ -1,5 +1,5 @@
 import type { CollectionConfig } from 'payload'
-import { isAdminOrEditor, publicRead } from '../access/roles'
+import { isAdminOrEditor, publishedOrAuthenticated } from '../access/roles'
 import { revalidateEntry } from './hooks/revalidateOnPublish'
 
 export const News: CollectionConfig = {
@@ -11,7 +11,7 @@ export const News: CollectionConfig = {
   },
   access: {
     create: isAdminOrEditor,
-    read: publicRead,
+    read: publishedOrAuthenticated,
     update: isAdminOrEditor,
     delete: isAdminOrEditor,
   },

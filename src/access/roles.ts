@@ -28,3 +28,9 @@ export const isAuthenticated: Access = ({ req: { user } }) => Boolean(user)
 
 /** Anyone can read */
 export const publicRead: Access = () => true
+
+/** Unauthenticated users can only see published documents; authenticated users see all */
+export const publishedOrAuthenticated: Access = ({ req }) => {
+  if (req.user) return true
+  return { _status: { equals: 'published' } }
+}

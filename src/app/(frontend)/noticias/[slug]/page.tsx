@@ -7,6 +7,7 @@ import { SectionHeading } from '@/components/ui/SectionHeading'
 import { Breadcrumb } from '@/components/ui/Breadcrumb'
 import { SITE_URL } from '@/config'
 import { formatDateEs, extractImageUrl } from '@/lib/format'
+import { safeJsonLd } from '@/lib/utils'
 
 export async function generateStaticParams() {
   const result = await getPublishedNews()
@@ -34,7 +35,7 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ slu
   return (
     <article className="py-8 px-4">
       <script type="application/ld+json" dangerouslySetInnerHTML={{
-        __html: JSON.stringify({
+        __html: safeJsonLd({
           '@context': 'https://schema.org',
           '@type': 'NewsArticle',
           headline: article.title,

@@ -107,6 +107,11 @@ export function timeAgo(dateStr: string): string {
   return new Date(dateStr).toLocaleDateString('es-MX', { day: 'numeric', month: 'short', year: 'numeric' })
 }
 
+/** Safely serialize data for JSON-LD script blocks, preventing XSS via </script> injection */
+export function safeJsonLd(data: Record<string, unknown>): string {
+  return JSON.stringify(data).replace(/</g, '\\u003c')
+}
+
 /** Convert an ISO expiration date to a Spanish countdown/elapsed string */
 export function expirationLabel(dateStr: string): string {
   const now = Date.now()

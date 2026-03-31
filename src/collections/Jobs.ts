@@ -1,5 +1,5 @@
 import type { CollectionConfig } from 'payload'
-import { isAdminOrModerator, publicRead } from '../access/roles'
+import { isAdminOrModerator, publishedOrAuthenticated } from '../access/roles'
 import { revalidateEntry } from './hooks/revalidateOnPublish'
 import { CITY_SELECT_OPTIONS } from '../config'
 
@@ -12,7 +12,7 @@ export const Jobs: CollectionConfig = {
   },
   access: {
     create: isAdminOrModerator,
-    read: publicRead,
+    read: publishedOrAuthenticated,
     update: isAdminOrModerator,
     delete: isAdminOrModerator,
   },
