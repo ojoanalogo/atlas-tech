@@ -35,7 +35,7 @@ export function CategorySection({ counts }: CategorySectionProps) {
         </div>
 
         {/* Grid for sm+ */}
-        <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
           {ATLAS_CATEGORIES.map((category) => {
             const Icon = ENTRY_TYPE_ICON_MAP[category.icon]
             return (

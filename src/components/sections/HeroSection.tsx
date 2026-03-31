@@ -1,6 +1,6 @@
 import Link from 'next/link'
-import { MapPin, Search, Plus } from 'lucide-react'
-import { SINALOA_CITIES } from '@/config'
+import { MapPin, Search, Plus, MessageCircle, ArrowUpRight } from 'lucide-react'
+import { SINALOA_CITIES, WHATSAPP_URL } from '@/config'
 import SinaloaMap from '@/components/maps/SinaloaMapLazy'
 
 interface HeroSectionProps {
@@ -13,12 +13,18 @@ export function HeroSection({ cityCounts = {} }: HeroSectionProps) {
       <div className="max-w-7xl lg:mx-auto flex flex-col lg:flex-row gap-16 items-center">
         {/* Left: Text content */}
         <div className="space-y-6 flex-1 flex flex-col items-center text-center lg:items-start lg:text-left">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-accent/10 border border-accent/20">
-            <MapPin className="w-3.5 h-3.5 text-accent" />
+          <a
+            href={WHATSAPP_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-accent/10 border border-accent/20 hover:bg-accent/20 transition-colors"
+          >
+            <MessageCircle className="w-3.5 h-3.5 text-accent" />
             <span className="text-xs font-mono font-semibold text-accent tracking-wide">
-              // SINALOA, MÉXICO
+              // ÚNETE A NUESTRA COMUNIDAD
             </span>
-          </div>
+            <ArrowUpRight className="w-3.5 h-3.5 text-accent" />
+          </a>
 
           <h1 className="text-4xl md:text-5xl lg:text-hero font-sans font-bold text-primary leading-[1.1] tracking-tight uppercase">
             Descubre el ecosistema<br />

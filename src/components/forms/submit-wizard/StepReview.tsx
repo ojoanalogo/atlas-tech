@@ -150,8 +150,6 @@ export default function StepReview({ state, setField, cities, logoRef, coverRef 
         {state.tags.length > 0 && (
           <SummaryRow label="Etiquetas" value={state.tags.join(", ")} />
         )}
-        <SummaryRow label="Contacto" value={state.submitterName} />
-        <SummaryRow label="Email" value={state.submitterEmail} />
       </div>
     </div>
   );

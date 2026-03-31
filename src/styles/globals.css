@@ -56,6 +56,18 @@ html {
   --color-accent-foreground: #f5f8f7;
 }
 
+/* Header logo wink animation */
+@keyframes wink {
+  0%   { transform: rotate(0deg) scale(1) translateY(0); }
+  30%  { transform: rotate(-20deg) scale(1.2) translateY(-2px); }
+  70%  { transform: rotate(8deg) scale(0.95) translateY(1px); }
+  100% { transform: rotate(0deg) scale(1) translateY(0); }
+}
+
+.animate-wink {
+  animation: wink 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
 /* Directory filter animations */
 @keyframes entry-fade-in {
   from {

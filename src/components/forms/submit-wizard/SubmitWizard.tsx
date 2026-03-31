@@ -14,7 +14,6 @@ import StepTypeSelect from "./StepTypeSelect";
 import StepBasicInfo from "./StepBasicInfo";
 import StepDetails from "./StepDetails";
 import StepLinks from "./StepLinks";
-import StepContact from "./StepContact";
 import StepReview from "./StepReview";
 
 interface Props {
@@ -116,8 +115,7 @@ export default function SubmitWizard({ cities }: Props) {
       {state.step === 1 && <StepBasicInfo state={state} setField={setField} cities={cities} />}
       {state.step === 2 && <StepDetails state={state} setField={setField} />}
       {state.step === 3 && <StepLinks state={state} setField={setField} />}
-      {state.step === 4 && <StepContact state={state} setField={setField} />}
-      {state.step === 5 && <StepReview state={state} setField={setField} cities={cities} logoRef={logoRef} coverRef={coverRef} />}
+      {state.step === 4 && <StepReview state={state} setField={setField} cities={cities} logoRef={logoRef} coverRef={coverRef} />}
 
       {/* Navigation */}
       <div className="flex items-center justify-between pt-4 border-t border-border">
