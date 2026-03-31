@@ -223,14 +223,14 @@ export default async function EntryDetailPage({
       }} />
       {/* Entity structured data */}
       <script type="application/ld+json" dangerouslySetInnerHTML={{
-        __html: JSON.stringify(
+        __html: safeJsonLd(
           entry.entryType === 'person'
             ? {
                 '@context': 'https://schema.org',
                 '@type': 'Person',
                 name: entry.name,
                 url: entry.website || undefined,
-                jobTitle: (entry.title as string) || undefined,
+                jobTitle: (entry.role as string) || undefined,
                 sameAs: [
                   entry.x ? `https://x.com/${entry.x}` : null,
                   entry.linkedin
