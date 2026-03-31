@@ -1,7 +1,11 @@
 import { getPayloadClient } from '@/lib/payload'
 import { NextResponse, type NextRequest } from 'next/server'
+import { withRateLimit } from '@/lib/rate-limit'
 
 export async function GET(request: NextRequest) {
+  const limited = withRateLimit(request, { limit: 60, windowMs: 60 * 1000, keyPrefix: 'api-news' })
+  if (limited) return limited
+
   try {
     const { searchParams } = request.nextUrl
     const page = Math.max(1, parseInt(searchParams.get('page') || '1', 10))

@@ -1,16 +1,26 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { RichText } from '@payloadcms/richtext-lexical/react'
-import { getJobBySlug } from '@/lib/payload'
+import { getJobBySlug, getPublishedJobs } from '@/lib/payload'
 import { getCityName, JOB_TYPE_LABELS, MODALITY_LABELS, SITE_URL } from '@/config'
 import { flattenArray, safeJsonLd } from '@/lib/utils'
 import { formatDateEs } from '@/lib/format'
 import { Tag } from '@/components/ui/Tag'
 import { Breadcrumb } from '@/components/ui/Breadcrumb'
 import { ExternalLink } from '@/components/ui/ExternalLink'
-import { MapPin, Clock, Briefcase, ExternalLink as LinkIcon } from 'lucide-react'
+import { MapPin, Clock, Briefcase, ExternalLink as LinkIcon, AlertTriangle } from 'lucide-react'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 3600
+
+export async function generateStaticParams() {
+  const result = await getPublishedJobs()
+  return result.docs.map((job) => ({ slug: job.slug as string }))
+}
+
+function isExpired(expiresAt: string | undefined | null): boolean {
+  if (!expiresAt) return false
+  return new Date(expiresAt) < new Date()
+}
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params
@@ -21,6 +31,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     ? `${job.title} en ${entryName}${job.city ? ` — ${getCityName(job.city as string)}, Sinaloa` : ''}`
     : `${job.title}${job.city ? ` — ${getCityName(job.city as string)}, Sinaloa` : ''}`
   const canonical = `${SITE_URL}/empleos/${job.slug}`
+  const expired = isExpired(job.expiresAt as string)
   return {
     title: `${job.title} — Empleos`,
     description,
@@ -31,6 +42,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       url: canonical,
     },
     twitter: { card: 'summary_large_image' },
+    ...(expired ? { robots: { index: false } } : {}),
   }
 }
 
@@ -41,6 +53,7 @@ export default async function JobDetailPage({ params }: { params: Promise<{ slug
 
   const tags = flattenArray(job.tags as Array<{ tag: string }>, 'tag')
   const entryName = (job.entry as { name: string } | null)?.name
+  const expired = isExpired(job.expiresAt as string)
 
   // Extract plain text from Lexical rich text for structured data
   function extractPlainText(richText: unknown): string {
@@ -86,6 +99,13 @@ export default async function JobDetailPage({ params }: { params: Promise<{ slug
           { label: job.title as string },
         ]} />
 
+        {expired && (
+          <div className="flex items-center gap-2 bg-amber-500/10 border border-amber-500/30 text-amber-400 rounded-lg px-4 py-3 mb-6">
+            <AlertTriangle className="w-5 h-5 shrink-0" />
+            <p className="text-sm font-medium">Esta vacante ha expirado</p>
+          </div>
+        )}
+
         <h1 className="text-3xl font-bold text-primary mb-2">{job.title as string}</h1>
         {entryName && <p className="text-sm text-muted font-mono mb-4">Publicado por {entryName}</p>}
 
@@ -122,18 +142,20 @@ export default async function JobDetailPage({ params }: { params: Promise<{ slug
           <RichText data={job.description as any} />
         </div>
 
-        <div className="bg-accent/10 border border-accent/20 rounded-lg p-6 text-center">
-          <p className="text-sm text-primary font-medium mb-3">Interesado en esta oportunidad?</p>
-          <ExternalLink
-            href={job.contactUrl as string}
-            className="inline-flex items-center gap-2 px-6 py-2.5 bg-accent text-accent-foreground rounded-md text-sm font-mono font-medium hover:bg-accent/90 transition-colors"
-          >
-            <LinkIcon className="w-4 h-4" /> Aplicar
-          </ExternalLink>
-        </div>
+        {!expired && (
+          <div className="bg-accent/10 border border-accent/20 rounded-lg p-6 text-center">
+            <p className="text-sm text-primary font-medium mb-3">Interesado en esta oportunidad?</p>
+            <ExternalLink
+              href={job.contactUrl as string}
+              className="inline-flex items-center gap-2 px-6 py-2.5 bg-accent text-accent-foreground rounded-md text-sm font-mono font-medium hover:bg-accent/90 transition-colors"
+            >
+              <LinkIcon className="w-4 h-4" /> Aplicar
+            </ExternalLink>
+          </div>
+        )}
 
         <p className="text-2xs text-muted font-mono mt-4 text-center">
-          Esta oferta expira el {formatDateEs(job.expiresAt as string)}
+          {expired ? 'Esta oferta expiró' : 'Esta oferta expira'} el {formatDateEs(job.expiresAt as string)}
         </p>
       </div>
     </article>

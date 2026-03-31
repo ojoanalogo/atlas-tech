@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from 'next/server'
 import { getServerSession } from '@/lib/auth-helpers'
 import { getPayloadClient } from '@/lib/payload'
 import { pickAllowedFields } from '@/lib/pick-allowed-fields'
+import { withRateLimit } from '@/lib/rate-limit'
 
 /** Allowlisted fields that callers may set on entry submissions */
 const ENTRY_ALLOWED_FIELDS = [
@@ -40,11 +41,14 @@ export async function GET(request: NextRequest) {
   }
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   const session = await getServerSession()
   if (!session) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
+
+  const limited = withRateLimit(request, { limit: 10, windowMs: 15 * 60 * 1000, keyPrefix: 'submit-entry' }, session.user.id)
+  if (limited) return limited
 
   try {
     const body = await request.json()
@@ -74,11 +78,14 @@ export async function POST(request: Request) {
   }
 }
 
-export async function PATCH(request: Request) {
+export async function PATCH(request: NextRequest) {
   const session = await getServerSession()
   if (!session) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
+
+  const limited = withRateLimit(request, { limit: 10, windowMs: 15 * 60 * 1000, keyPrefix: 'submit-entry' }, session.user.id)
+  if (limited) return limited
 
   try {
     const body = await request.json()

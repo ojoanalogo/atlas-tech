@@ -4,6 +4,7 @@ import { db } from '@/db'
 import { profiles } from '@/db/schema/profiles'
 import { eq } from 'drizzle-orm'
 import { z } from 'zod'
+import { withRateLimit } from '@/lib/rate-limit'
 
 const profileSchema = z.object({
   name: z.string().min(1).max(100),
@@ -40,6 +41,9 @@ export async function PUT(request: NextRequest) {
   if (!session) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
+
+  const limited = withRateLimit(request, { limit: 20, windowMs: 15 * 60 * 1000, keyPrefix: 'user-profile' }, session.user.id)
+  if (limited) return limited
 
   const body = await request.json()
 

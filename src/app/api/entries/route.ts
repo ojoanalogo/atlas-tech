@@ -1,5 +1,6 @@
 import { getPayloadClient } from '@/lib/payload'
 import { NextResponse, type NextRequest } from 'next/server'
+import { withRateLimit } from '@/lib/rate-limit'
 
 const SORT_MAP: Record<string, string> = {
   'name-asc': 'name',
@@ -9,6 +10,9 @@ const SORT_MAP: Record<string, string> = {
 }
 
 export async function GET(request: NextRequest) {
+  const limited = withRateLimit(request, { limit: 60, windowMs: 60 * 1000, keyPrefix: 'api-entries' })
+  if (limited) return limited
+
   try {
     const { searchParams } = request.nextUrl
     const page = Math.max(1, parseInt(searchParams.get('page') || '1', 10))

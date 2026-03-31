@@ -6,6 +6,7 @@ import { eq } from 'drizzle-orm'
 import { generateApplePass } from '@/lib/wallet/apple'
 import { generateGoogleWalletLink } from '@/lib/wallet/google'
 import { SITE_URL } from '@/config'
+import { withRateLimit } from '@/lib/rate-limit'
 
 function getQrValue(userId: string): string {
   // Default to a vCard-encoded QR if no directory entry exists.
@@ -18,6 +19,9 @@ export async function POST(request: NextRequest) {
   if (!session) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
+
+  const limited = withRateLimit(request, { limit: 20, windowMs: 15 * 60 * 1000, keyPrefix: 'user-wallet' }, session.user.id)
+  if (limited) return limited
 
   const body = await request.json()
   const platform = body.platform as string

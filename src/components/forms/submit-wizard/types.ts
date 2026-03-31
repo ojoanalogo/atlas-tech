@@ -7,7 +7,6 @@ import {
   FileText,
   SlidersHorizontal,
   Globe,
-  UserCircle,
   Send,
 } from "lucide-react";
 import { ENTRY_TYPE_ICON_MAP } from "@/lib/icons";
@@ -42,7 +41,6 @@ export const STEPS = [
   { label: "Información", icon: FileText },
   { label: "Detalles", icon: SlidersHorizontal },
   { label: "Enlaces", icon: Globe },
-  { label: "Contacto", icon: UserCircle },
   { label: "Envío", icon: Send },
 ];
 
@@ -83,6 +81,16 @@ export const TYPE_COPY: Record<
     successTitle: "Consultoría enviada",
     successMessage:
       "Tu consultoría ha sido recibida. La revisaremos y la agregaremos al directorio pronto.",
+  },
+  "research-center": {
+    entityName: "centro de investigación",
+    namePlaceholder: "Nombre del centro de investigación",
+    taglinePlaceholder: "Una frase corta que describe el centro",
+    descriptionPlaceholder:
+      "Describe el centro de investigación, sus líneas de investigación y actividades",
+    successTitle: "¡Centro de investigación enviado!",
+    successMessage:
+      "Tu centro de investigación ha sido recibido. Lo revisaremos y lo agregaremos al directorio pronto.",
   },
   community: {
     entityName: "comunidad",

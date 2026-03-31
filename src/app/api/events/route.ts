@@ -1,7 +1,11 @@
 import { getPayloadClient } from '@/lib/payload'
-import { NextResponse } from 'next/server'
+import { NextResponse, type NextRequest } from 'next/server'
+import { withRateLimit } from '@/lib/rate-limit'
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
+  const limited = withRateLimit(request, { limit: 60, windowMs: 60 * 1000, keyPrefix: 'api-events' })
+  if (limited) return limited
+
   try {
     const { searchParams } = new URL(request.url)
     const payload = await getPayloadClient()

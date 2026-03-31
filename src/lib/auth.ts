@@ -1,15 +1,6 @@
 import { betterAuth } from 'better-auth'
 import { nextCookies } from 'better-auth/next-js'
-import { Pool } from 'pg'
-
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URI,
-})
-
-// Set search_path to auth schema on each new connection
-pool.on('connect', (client) => {
-  client.query('SET search_path TO auth, public')
-})
+import { pool } from '@/db/pool'
 
 export const auth = betterAuth({
   database: pool,
