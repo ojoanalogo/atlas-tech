@@ -1,7 +1,8 @@
 import type { Metadata } from 'next'
-import { getPublishedEntries, getFeaturedEntries } from '@/lib/payload'
-import { countByType, groupByCity, countByTypeAndCity } from '@/lib/utils'
+import { getFeaturedEntries } from '@/lib/payload'
+import { getEntryCounts } from '@/lib/entry-counts'
 import { FAQS, SITE_URL, SITE_DESCRIPTION } from '@/config'
+import type { AtlasEntryType } from '@/config'
 
 import { HeroSection } from '@/components/sections/HeroSection'
 import { CategorySection } from '@/components/sections/CategorySection'
@@ -26,18 +27,13 @@ export const metadata: Metadata = {
 }
 
 export default async function HomePage() {
-  const [entriesResult, featuredResult] = await Promise.all([
-    getPublishedEntries(),
+  const [counts, featuredResult] = await Promise.all([
+    getEntryCounts(),
     getFeaturedEntries(),
   ])
 
-  const allEntries = entriesResult.docs
-  const counts = countByType(allEntries)
-  const cityCounts = groupByCity(allEntries)
-  const cityTypeCounts = countByTypeAndCity(allEntries)
   const featured = featuredResult.docs
-
-  const totalEntries = Math.floor(allEntries.length / 5) * 5
+  const totalEntries = Math.floor(counts.total / 5) * 5
   const homeDescription = `Explora ${totalEntries}+ startups, consultorías, comunidades y talento tech en Sinaloa.`
 
   return (
@@ -89,7 +85,7 @@ export default async function HomePage() {
         }}
       />
 
-      <HeroSection cityCounts={cityCounts} />
+      <HeroSection cityCounts={counts.byCity} />
 
       <section className="py-4 px-4">
         <div className="max-w-7xl mx-auto">
@@ -97,9 +93,9 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <CategorySection counts={counts} />
+      <CategorySection counts={counts.byType as Record<AtlasEntryType, number>} />
       <FeaturedSection entries={featured} />
-      <MapSection cityCounts={cityCounts} cityTypeCounts={cityTypeCounts} />
+      <MapSection cityCounts={counts.byCity} cityTypeCounts={counts.byCityAndType} />
       <CalendarSection />
       <FaqSection />
       <CombinedCtaSection />

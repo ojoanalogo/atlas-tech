@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
-import { getEntryBySlug, getPublishedEntries } from '@/lib/payload'
+import { getEntryBySlug, getPublishedEntries, getSuggestedEntries } from '@/lib/payload'
 import { buildTrackedUrl, flattenArray, safeJsonLd } from '@/lib/utils'
 import {
   ENTRY_TYPE_CONFIG,
@@ -101,21 +101,12 @@ export default async function EntryDetailPage({
   const entry = await getEntryBySlug(slug)
   if (!entry || entry.entryType !== entryType) notFound()
 
-  // Suggestion algorithm: same type > same city > random, max 3
-  const allResult = await getPublishedEntries()
-  const others = allResult.docs.filter((e) => e.id !== entry.id)
-  const sameType = others.filter((e) => e.entryType === entry.entryType)
-  const sameCity = others.filter((e) => e.city === entry.city)
-  const suggestions: typeof others = []
-  for (const e of sameType) {
-    if (suggestions.length < 3 && !suggestions.includes(e)) suggestions.push(e)
-  }
-  for (const e of sameCity) {
-    if (suggestions.length < 3 && !suggestions.includes(e)) suggestions.push(e)
-  }
-  for (const e of others) {
-    if (suggestions.length < 3 && !suggestions.includes(e)) suggestions.push(e)
-  }
+  // Suggestion algorithm: same type > same city > any, max 3
+  const suggestions = await getSuggestedEntries(
+    String(entry.id),
+    entry.entryType as string,
+    entry.city as string,
+  )
 
   const config = ENTRY_TYPE_CONFIG[entry.entryType as AtlasEntryType]
   const tags = flattenArray(entry.tags as Array<{ tag: string }>, 'tag')
