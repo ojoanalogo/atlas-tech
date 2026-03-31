@@ -1,5 +1,5 @@
 import type { RefObject } from "react";
-import { X } from "lucide-react";
+import { X, Loader2, AlertCircle } from "lucide-react";
 import { ENTRY_TYPES, type StepProps, type CityOption } from "./types";
 
 interface Props extends StepProps {
@@ -106,6 +106,30 @@ export default function StepReview({ state, setField, cities, logoRef, coverRef 
           )}
         </div>
       </div>
+
+      {/* Upload status */}
+      {state.uploadingImages && (
+        <div className="flex items-center gap-3 p-3 rounded-lg border border-accent/30 bg-accent/5">
+          <Loader2 className="w-4 h-4 text-accent animate-spin shrink-0" />
+          <span className="text-sm font-mono text-accent">
+            Subiendo imágenes...
+          </span>
+        </div>
+      )}
+
+      {state.uploadError && (
+        <div className="flex items-start gap-3 p-3 rounded-lg border border-red-500/30 bg-red-500/5">
+          <AlertCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
+          <div className="space-y-1">
+            <span className="text-sm font-mono text-red-500 block">
+              Error al subir imágenes
+            </span>
+            <span className="text-xs text-red-400 block">
+              {state.uploadError}
+            </span>
+          </div>
+        </div>
+      )}
 
       {/* Review summary */}
       <div className="bg-card border border-border rounded-lg p-4 space-y-2">

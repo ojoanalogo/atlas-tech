@@ -1,5 +1,5 @@
 import { useReducer, useRef, useCallback } from "react";
-import { N8N_WEBHOOK_URL, type AtlasEntryType } from "@/config";
+import type { AtlasEntryType } from "@/config";
 
 export interface WizardState {
   step: number;
@@ -48,6 +48,8 @@ export interface WizardState {
   submitterPhone: string;
   // Step 5: Submission
   submitting: boolean;
+  uploadingImages: boolean;
+  uploadError: string | null;
   result: "success" | "error" | null;
   // Image previews
   logoPreview: string | null;
@@ -59,6 +61,8 @@ export type WizardAction =
   | { type: "NEXT_STEP" }
   | { type: "PREV_STEP" }
   | { type: "SET_STEP"; step: number }
+  | { type: "UPLOAD_IMAGES_START" }
+  | { type: "UPLOAD_IMAGES_ERROR"; message: string }
   | { type: "SUBMIT_START" }
   | { type: "SUBMIT_SUCCESS" }
   | { type: "SUBMIT_ERROR" }
@@ -109,6 +113,8 @@ const initialState: WizardState = {
   submitterEmail: "",
   submitterPhone: "",
   submitting: false,
+  uploadingImages: false,
+  uploadError: null,
   result: null,
   logoPreview: null,
   coverPreview: null,
@@ -126,14 +132,18 @@ function wizardReducer(state: WizardState, action: WizardAction): WizardState {
       return state.step > 0 ? { ...state, step: state.step - 1 } : state;
     case "SET_STEP":
       return { ...state, step: action.step };
+    case "UPLOAD_IMAGES_START":
+      return { ...state, uploadingImages: true, uploadError: null, submitting: true, result: null };
+    case "UPLOAD_IMAGES_ERROR":
+      return { ...state, uploadingImages: false, uploadError: action.message, submitting: false };
     case "SUBMIT_START":
-      return { ...state, submitting: true, result: null };
+      return { ...state, uploadingImages: false, submitting: true, result: null };
     case "SUBMIT_SUCCESS":
       return { ...state, submitting: false, result: "success" };
     case "SUBMIT_ERROR":
       return { ...state, submitting: false, result: "error" };
     case "CLEAR_RESULT":
-      return { ...state, result: null };
+      return { ...state, result: null, uploadError: null };
     case "RESET":
       return initialState;
     default:
@@ -213,6 +223,21 @@ function canAdvance(state: WizardState): boolean {
   }
 }
 
+async function uploadImage(file: File): Promise<string> {
+  const formData = new FormData();
+  formData.append("file", file);
+  const res = await fetch("/api/media/upload", {
+    method: "POST",
+    body: formData,
+  });
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    throw new Error(data.error || "Error al subir imagen");
+  }
+  const data = await res.json();
+  return data.id;
+}
+
 export function useWizardState() {
   const [state, dispatch] = useReducer(wizardReducer, initialState);
   const logoRef = useRef<HTMLInputElement>(null);
@@ -240,21 +265,47 @@ export function useWizardState() {
   }, []);
 
   const submit = useCallback(async () => {
+    const logoFile = logoRef.current?.files?.[0];
+    const coverFile = coverRef.current?.files?.[0];
+    const hasImages = Boolean(logoFile || coverFile);
+
+    // Phase 1: Upload images (if any)
+    let logoId: string | undefined;
+    let coverImageId: string | undefined;
+
+    if (hasImages) {
+      dispatch({ type: "UPLOAD_IMAGES_START" });
+      try {
+        if (logoFile) {
+          logoId = await uploadImage(logoFile);
+        }
+        if (coverFile) {
+          coverImageId = await uploadImage(coverFile);
+        }
+      } catch (err) {
+        const message =
+          err instanceof Error ? err.message : "Error al subir imágenes";
+        dispatch({ type: "UPLOAD_IMAGES_ERROR", message });
+        return;
+      }
+    }
+
+    // Phase 2: Submit entry JSON
     dispatch({ type: "SUBMIT_START" });
-
     try {
-      const fd = new FormData();
-      fd.append("payload", JSON.stringify(buildPayload(state)));
+      const entryPayload = {
+        ...buildPayload(state),
+        ...(logoId ? { logo: logoId } : {}),
+        ...(coverImageId ? { coverImage: coverImageId } : {}),
+      };
 
-      const logoFile = logoRef.current?.files?.[0];
-      const coverFile = coverRef.current?.files?.[0];
-      if (logoFile) fd.append("logo", logoFile);
-      if (coverFile) fd.append("coverImage", coverFile);
-
-      const res = await fetch(N8N_WEBHOOK_URL, {
+      const res = await fetch("/api/submissions/entries", {
         method: "POST",
-        body: fd,
-        headers: { Accept: "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify(entryPayload),
       });
 
       if (res.ok) {
