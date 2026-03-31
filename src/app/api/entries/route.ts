@@ -1,4 +1,6 @@
 import { getPayloadClient } from '@/lib/payload'
+import { db } from '@/db'
+import { sql } from 'drizzle-orm'
 import { NextResponse, type NextRequest } from 'next/server'
 
 const SORT_MAP: Record<string, string> = {
@@ -26,18 +28,42 @@ export async function GET(request: NextRequest) {
 
     const payload = await getPayloadClient()
 
-    // Random sort: fetch all matching, shuffle, return `limit` entries
+    // Random sort: use SQL ORDER BY RANDOM() for efficiency
     if (sortKey === 'random') {
-      const all = await payload.find({
+      const conditions = [sql`_status = 'published'`]
+      if (entryType) conditions.push(sql`entry_type = ${entryType}`)
+      if (city) conditions.push(sql`city = ${city}`)
+
+      const whereClause = sql.join(conditions, sql` AND `)
+
+      const result = await db.execute<{ id: number }>(
+        sql`SELECT id FROM payload.entries WHERE ${whereClause} ORDER BY RANDOM() LIMIT ${limit}`
+      )
+
+      const ids = result.rows.map((r) => r.id)
+
+      if (ids.length === 0) {
+        return NextResponse.json({
+          docs: [],
+          totalDocs: 0,
+          totalPages: 1,
+          page: 1,
+          hasNextPage: false,
+          hasPrevPage: false,
+        })
+      }
+
+      // Fetch full documents by IDs via Payload
+      const fullResult = await payload.find({
         collection: 'entries',
-        where,
-        limit: 0,
+        where: { id: { in: ids } },
+        limit: ids.length,
         pagination: false,
       })
-      const shuffled = all.docs.sort(() => Math.random() - 0.5).slice(0, limit)
+
       return NextResponse.json({
-        docs: shuffled,
-        totalDocs: shuffled.length,
+        docs: fullResult.docs,
+        totalDocs: fullResult.docs.length,
         totalPages: 1,
         page: 1,
         hasNextPage: false,
