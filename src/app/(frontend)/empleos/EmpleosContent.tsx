@@ -44,7 +44,7 @@ function JobCard({ job }: { job: Job }) {
 export default function EmpleosContent() {
   return (
     <PaginatedView<Job>
-      endpoint="/api/jobs"
+      endpoint="/api/directory/jobs"
       renderItem={(job) => <JobCard job={job} />}
       renderSkeleton={() => <JobCardSkeleton />}
       layout="list"

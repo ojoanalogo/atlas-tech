@@ -37,7 +37,7 @@ function NewsCard({ article }: { article: News }) {
 export default function NoticiasContent() {
   return (
     <PaginatedView<News>
-      endpoint="/api/news"
+      endpoint="/api/directory/news"
       renderItem={(article) => <NewsCard article={article} />}
       renderSkeleton={() => <NewsCardSkeleton />}
       layout="list"

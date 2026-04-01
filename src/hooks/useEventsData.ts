@@ -76,7 +76,7 @@ export function useEventsData(): UseEventsDataResult {
   const fetchEvents = useCallback(async () => {
     setStatus('loading')
     try {
-      const res = await fetch('/api/events?limit=200')
+      const res = await fetch('/api/directory/events?limit=200')
       if (!res.ok) throw new Error(`HTTP ${res.status}`)
       const data: { docs: Event[] } = await res.json()
       const docs: TechEvent[] = (data.docs || []).map(eventDocToTechEvent)
