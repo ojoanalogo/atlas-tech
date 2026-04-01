@@ -42,6 +42,11 @@ export default buildConfig({
       collections: {
         media: {
           prefix: 'media',
+          generateFileURL: ({ filename, prefix = '' }) => {
+            const base = process.env.MEDIA_URL || ''
+            const filePath = prefix ? `${prefix}/${filename}` : filename
+            return `${base}/${filePath}`
+          },
         },
       },
       bucket: process.env.S3_BUCKET || '',

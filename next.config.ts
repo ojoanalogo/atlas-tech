@@ -11,7 +11,7 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'media.atlas-sinaloa.tech',
+        hostname: 'cdn.atlas-sinaloa.tech',
       },
       {
         protocol: 'http',
