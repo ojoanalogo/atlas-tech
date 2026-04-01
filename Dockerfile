@@ -19,6 +19,7 @@ ENV NODE_OPTIONS="--max-old-space-size=4096"
 
 RUN pnpm generate:importmap
 RUN npx payload migrate --force-accept-warning
+RUN node scripts/migrate.mjs
 RUN pnpm build
 
 # --- Production ---
@@ -35,11 +36,6 @@ COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
-# Drizzle migration assets (runtime)
-COPY --from=builder --chown=nextjs:nodejs /app/drizzle ./drizzle
-COPY --from=builder --chown=nextjs:nodejs /app/scripts/migrate.mjs ./scripts/migrate.mjs
-COPY --from=builder --chown=nextjs:nodejs /app/docker-entrypoint.sh ./docker-entrypoint.sh
-
 USER nextjs
 
 EXPOSE 3000
@@ -49,5 +45,4 @@ ENV HOSTNAME="0.0.0.0"
 HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
   CMD node -e "fetch('http://localhost:3000/api/health').then(r => { if (!r.ok) throw r.status }).catch(() => process.exit(1))"
 
-ENTRYPOINT ["./docker-entrypoint.sh"]
 CMD ["node", "server.js"]
