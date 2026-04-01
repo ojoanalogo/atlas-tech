@@ -24,9 +24,9 @@ interface JobData {
 }
 
 const inputClass =
-  'w-full px-3 py-2 bg-background border border-border rounded-md text-sm text-primary'
+  'w-full px-3 py-2 bg-background border border-border rounded-md text-base sm:text-sm text-primary'
 const selectClass =
-  'w-full px-3 py-2 bg-background border border-border rounded-md text-sm text-primary'
+  'w-full px-3 py-2 bg-background border border-border rounded-md text-base sm:text-sm text-primary'
 const labelClass = 'block text-xs font-mono text-muted mb-1'
 
 /** Extract plain text from Lexical rich-text JSON */

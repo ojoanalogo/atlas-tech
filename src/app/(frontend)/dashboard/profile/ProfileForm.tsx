@@ -32,10 +32,10 @@ const emptyProfile: ProfileData = {
 }
 
 const readOnlyInputClass =
-  'mt-1 w-full px-3 py-2 rounded-lg border border-border bg-elevated text-muted font-mono text-sm cursor-not-allowed'
+  'mt-1 w-full px-3 py-2 rounded-lg border border-border bg-elevated text-muted font-mono text-base sm:text-sm cursor-not-allowed'
 
 const inputClass =
-  'mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-hidden focus:border-accent transition-colors'
+  'mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-base sm:text-sm placeholder:text-muted/50 focus:outline-hidden focus:border-accent transition-colors'
 const labelClass = 'text-xs font-mono text-muted uppercase tracking-wider'
 
 export function ProfileForm() {

@@ -75,19 +75,19 @@ export default function NewJobPage() {
           <form onSubmit={handleSubmit} className="bg-card border border-border rounded-lg p-6 space-y-4">
             <div>
               <label htmlFor="title" className="block text-xs font-mono text-muted mb-1">Título *</label>
-              <input id="title" name="title" required className="w-full px-3 py-2 bg-background border border-border rounded-md text-sm text-primary" placeholder="Ej: Frontend Developer" />
+              <input id="title" name="title" required className="w-full px-3 py-2 bg-background border border-border rounded-md text-base sm:text-sm text-primary" placeholder="Ej: Frontend Developer" />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label htmlFor="type" className="block text-xs font-mono text-muted mb-1">Tipo *</label>
-                <select id="type" name="type" required className="w-full px-3 py-2 bg-background border border-border rounded-md text-sm text-primary">
+                <select id="type" name="type" required className="w-full px-3 py-2 bg-background border border-border rounded-md text-base sm:text-sm text-primary">
                   {JOB_TYPE_OPTIONS.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
                 </select>
               </div>
               <div>
                 <label htmlFor="modality" className="block text-xs font-mono text-muted mb-1">Modalidad *</label>
-                <select id="modality" name="modality" required className="w-full px-3 py-2 bg-background border border-border rounded-md text-sm text-primary">
+                <select id="modality" name="modality" required className="w-full px-3 py-2 bg-background border border-border rounded-md text-base sm:text-sm text-primary">
                   {MODALITY_OPTIONS.map((m) => <option key={m.value} value={m.value}>{m.label}</option>)}
                 </select>
               </div>
@@ -96,25 +96,25 @@ export default function NewJobPage() {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label htmlFor="city" className="block text-xs font-mono text-muted mb-1">Ciudad (si aplica)</label>
-                <select id="city" name="city" className="w-full px-3 py-2 bg-background border border-border rounded-md text-sm text-primary">
+                <select id="city" name="city" className="w-full px-3 py-2 bg-background border border-border rounded-md text-base sm:text-sm text-primary">
                   <option value="">No aplica</option>
                   {CITY_SELECT_OPTIONS.map((c) => <option key={c.value} value={c.value}>{c.label}</option>)}
                 </select>
               </div>
               <div>
                 <label htmlFor="compensation" className="block text-xs font-mono text-muted mb-1">Compensación</label>
-                <input id="compensation" name="compensation" className="w-full px-3 py-2 bg-background border border-border rounded-md text-sm text-primary" placeholder="Ej: $15k/mo, Equity, Voluntario" />
+                <input id="compensation" name="compensation" className="w-full px-3 py-2 bg-background border border-border rounded-md text-base sm:text-sm text-primary" placeholder="Ej: $15k/mo, Equity, Voluntario" />
               </div>
             </div>
 
             <div>
               <label htmlFor="contactUrl" className="block text-xs font-mono text-muted mb-1">URL o email de contacto *</label>
-              <input id="contactUrl" name="contactUrl" required className="w-full px-3 py-2 bg-background border border-border rounded-md text-sm text-primary" placeholder="https://... o email@..." />
+              <input id="contactUrl" name="contactUrl" required className="w-full px-3 py-2 bg-background border border-border rounded-md text-base sm:text-sm text-primary" placeholder="https://... o email@..." />
             </div>
 
             <div>
               <label htmlFor="description" className="block text-xs font-mono text-muted mb-1">Descripción *</label>
-              <textarea id="description" name="description" required rows={6} className="w-full px-3 py-2 bg-background border border-border rounded-md text-sm text-primary" placeholder="Describe el puesto, requisitos, beneficios..." />
+              <textarea id="description" name="description" required rows={6} className="w-full px-3 py-2 bg-background border border-border rounded-md text-base sm:text-sm text-primary" placeholder="Describe el puesto, requisitos, beneficios..." />
             </div>
 
             {error && <p className="text-sm text-red-600">{error}</p>}

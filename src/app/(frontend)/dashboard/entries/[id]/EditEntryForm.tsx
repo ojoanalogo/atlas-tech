@@ -26,9 +26,9 @@ const cities = [
 ]
 
 const inputClass =
-  'mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-hidden focus:border-accent transition-colors'
+  'mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-base sm:text-sm placeholder:text-muted/50 focus:outline-hidden focus:border-accent transition-colors'
 const selectClass =
-  'mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm focus:outline-hidden focus:border-accent transition-colors'
+  'mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-base sm:text-sm focus:outline-hidden focus:border-accent transition-colors'
 const labelClass = 'text-xs font-mono text-muted uppercase tracking-wider'
 const checkboxClass = 'w-4 h-4 rounded border-border text-accent focus:ring-accent'
 
@@ -594,7 +594,7 @@ export function EditEntryForm() {
                                 }
                               }}
                               placeholder="Otra area personalizada"
-                              className={`flex-1 px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-hidden focus:border-accent transition-colors`}
+                              className={`flex-1 px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-base sm:text-sm placeholder:text-muted/50 focus:outline-hidden focus:border-accent transition-colors`}
                             />
                             <button
                               type="button"
@@ -809,7 +809,7 @@ export function EditEntryForm() {
                           }
                         }}
                         placeholder="Escribe y presiona Enter"
-                        className={`flex-1 px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-hidden focus:border-accent transition-colors`}
+                        className={`flex-1 px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-base sm:text-sm placeholder:text-muted/50 focus:outline-hidden focus:border-accent transition-colors`}
                       />
                       <button
                         type="button"

@@ -3,7 +3,7 @@ import fs from 'fs'
 import path from 'path'
 import type { WalletProfile } from './types'
 
-const PASS_MODEL_DIR = path.resolve(process.cwd(), 'src/lib/wallet/pass-model')
+const PASS_MODEL_DIR = path.resolve(process.cwd(), 'src/lib/wallet/pass-model.pass')
 
 function loadCert(envBase64: string | undefined, envPath: string | undefined): Buffer {
   if (envBase64) return Buffer.from(envBase64.trim(), 'base64')
@@ -36,30 +36,30 @@ export async function generateApplePass(profile: WalletProfile, qrValue: string)
 
   pass.type = 'generic'
 
-  // Primary: Name
+  // Primary: Full name
   pass.primaryFields.push({
     key: 'name',
-    label: 'NAME',
+    label: 'NOMBRE',
     value: profile.name,
   })
 
-  // Secondary: Title + Company
+  // Secondary: Title + Company (visible on front)
   if (profile.title) {
     pass.secondaryFields.push({
       key: 'title',
-      label: 'TITLE',
+      label: 'CARGO',
       value: profile.title,
     })
   }
   if (profile.company) {
     pass.secondaryFields.push({
       key: 'company',
-      label: 'COMPANY',
+      label: 'EMPRESA',
       value: profile.company,
     })
   }
 
-  // Auxiliary: Email + Phone
+  // Auxiliary: Contact info (visible on front, smaller)
   if (profile.email) {
     pass.auxiliaryFields.push({
       key: 'email',
@@ -70,16 +70,16 @@ export async function generateApplePass(profile: WalletProfile, qrValue: string)
   if (profile.phone) {
     pass.auxiliaryFields.push({
       key: 'phone',
-      label: 'PHONE',
+      label: 'TELÉFONO',
       value: profile.phone,
     })
   }
 
-  // Back fields: website + socials
+  // Back fields: full contact details + socials
   if (profile.website) {
     pass.backFields.push({
       key: 'website',
-      label: 'WEBSITE',
+      label: 'SITIO WEB',
       value: profile.website,
     })
   }
@@ -104,6 +104,11 @@ export async function generateApplePass(profile: WalletProfile, qrValue: string)
       value: profile.github,
     })
   }
+  pass.backFields.push({
+    key: 'powered',
+    label: 'TECH ATLAS',
+    value: 'Tarjeta de presentación digital',
+  })
 
   // QR code
   pass.setBarcodes({
