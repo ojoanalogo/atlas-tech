@@ -1,19 +1,25 @@
 import { PKPass } from 'passkit-generator'
 import fs from 'fs'
 import path from 'path'
-import type { Profile } from '@/db/schema/profiles'
+import type { WalletProfile } from './types'
 
 const PASS_MODEL_DIR = path.resolve(process.cwd(), 'src/lib/wallet/pass-model')
 
+function loadCert(envBase64: string | undefined, envPath: string | undefined): Buffer {
+  if (envBase64) return Buffer.from(envBase64.trim(), 'base64')
+  if (envPath) return fs.readFileSync(envPath)
+  throw new Error('Missing certificate: provide either base64 env var or file path')
+}
+
 function getCertificates() {
   return {
-    wwdr: fs.readFileSync(process.env.APPLE_WWDR_CERT_PATH!),
-    signerCert: fs.readFileSync(process.env.APPLE_PASS_CERT_PATH!),
-    signerKey: fs.readFileSync(process.env.APPLE_PASS_KEY_PATH!),
+    wwdr: loadCert(process.env.APPLE_WWDR_CERT_B64, process.env.APPLE_WWDR_CERT_PATH),
+    signerCert: loadCert(process.env.APPLE_PASS_CERT_B64, process.env.APPLE_PASS_CERT_PATH),
+    signerKey: loadCert(process.env.APPLE_PASS_KEY_B64, process.env.APPLE_PASS_KEY_PATH),
   }
 }
 
-export async function generateApplePass(profile: Profile, qrValue: string): Promise<Buffer> {
+export async function generateApplePass(profile: WalletProfile, qrValue: string): Promise<Buffer> {
   const pass = await PKPass.from(
     {
       model: PASS_MODEL_DIR,

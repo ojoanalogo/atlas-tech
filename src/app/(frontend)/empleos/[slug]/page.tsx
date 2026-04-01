@@ -1,8 +1,10 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { RichText } from '@payloadcms/richtext-lexical/react'
+import Link from 'next/link'
 import { getJobBySlug, getActiveJobs } from '@/lib/payload'
-import { getCityName, JOB_TYPE_LABELS, MODALITY_LABELS, SITE_URL } from '@/config'
+import { getCityName, JOB_TYPE_LABELS, MODALITY_LABELS, SITE_URL, ENTRY_TYPE_CONFIG } from '@/config'
+import type { AtlasEntryType } from '@/config'
 import { flattenArray, safeJsonLd } from '@/lib/utils'
 import { formatDateEs } from '@/lib/format'
 import { Tag } from '@/components/ui/Tag'
@@ -52,7 +54,9 @@ export default async function JobDetailPage({ params }: { params: Promise<{ slug
   if (!job) notFound()
 
   const tags = flattenArray(job.tags as Array<{ tag: string }>, 'tag')
-  const entryName = (job.entry as { name: string } | null)?.name
+  const entry = job.entry as { name: string; slug: string; entryType: AtlasEntryType } | null
+  const entryName = entry?.name
+  const entryHref = entry ? `/${ENTRY_TYPE_CONFIG[entry.entryType]?.slug}/${entry.slug}` : null
   const expired = isExpired(job.expiresAt as string)
 
   // Extract plain text from Lexical rich text for structured data
@@ -107,7 +111,16 @@ export default async function JobDetailPage({ params }: { params: Promise<{ slug
         )}
 
         <h1 className="text-3xl font-bold text-primary mb-2">{job.title as string}</h1>
-        {entryName && <p className="text-sm text-muted font-mono mb-4">Publicado por {entryName}</p>}
+        {entryName && (
+          <p className="text-sm text-muted font-mono mb-4">
+            Publicado por{' '}
+            {entryHref ? (
+              <Link href={entryHref} className="text-accent hover:underline">{entryName}</Link>
+            ) : (
+              entryName
+            )}
+          </p>
+        )}
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
           <div className="bg-card border border-border rounded-lg p-3">

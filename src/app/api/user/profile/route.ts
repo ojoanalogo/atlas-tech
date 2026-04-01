@@ -7,7 +7,6 @@ import { z } from 'zod'
 import { withRateLimit } from '@/lib/rate-limit'
 
 const profileSchema = z.object({
-  name: z.string().min(1).max(100),
   title: z.string().max(100).optional().default(''),
   company: z.string().max(100).optional().default(''),
   phone: z.string().max(20).optional().default(''),
@@ -15,7 +14,6 @@ const profileSchema = z.object({
   linkedin: z.string().max(200).optional().default(''),
   x: z.string().max(200).optional().default(''),
   github: z.string().max(200).optional().default(''),
-  photo: z.string().url().max(500).or(z.literal('')).optional().default(''),
 })
 
 export async function GET() {
@@ -29,11 +27,12 @@ export async function GET() {
     .from(profiles)
     .where(eq(profiles.userId, session.user.id))
 
-  if (!profile) {
-    return NextResponse.json({ error: 'Profile not found' }, { status: 404 })
-  }
-
-  return NextResponse.json(profile)
+  return NextResponse.json({
+    ...(profile ?? {}),
+    name: session.user.name,
+    email: session.user.email,
+    photo: session.user.image,
+  })
 }
 
 export async function PUT(request: NextRequest) {
@@ -56,13 +55,10 @@ export async function PUT(request: NextRequest) {
 
   const data = {
     userId: session.user.id,
-    name: validated.name,
     title: validated.title || null,
     company: validated.company || null,
-    email: body.email || null,
     phone: validated.phone || null,
     website: validated.website || null,
-    photo: validated.photo || null,
     linkedin: validated.linkedin || null,
     x: validated.x || null,
     github: validated.github || null,

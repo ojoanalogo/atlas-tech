@@ -1,9 +1,9 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
-import { useSession } from '@/lib/auth-client'
+import { useSession, authClient } from '@/lib/auth-client'
 import Image from 'next/image'
-import { Save, Loader2, CheckCircle, AlertCircle, Mail, Phone, Globe, QrCode } from 'lucide-react'
+import { Save, Loader2, CheckCircle, AlertCircle, Mail, Phone, Globe, QrCode, Smartphone } from 'lucide-react'
 
 interface ProfileData {
   name: string
@@ -30,6 +30,9 @@ const emptyProfile: ProfileData = {
   x: '',
   github: '',
 }
+
+const readOnlyInputClass =
+  'mt-1 w-full px-3 py-2 rounded-lg border border-border bg-elevated text-muted font-mono text-sm cursor-not-allowed'
 
 const inputClass =
   'mt-1 w-full px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-sm placeholder:text-muted/50 focus:outline-hidden focus:border-accent transition-colors'
@@ -85,6 +88,11 @@ export function ProfileForm() {
     setError(null)
     setSaving(true)
     try {
+      // Update name in auth if it changed
+      if (profile.name && profile.name !== session?.user?.name) {
+        await authClient.updateUser({ name: profile.name })
+      }
+
       const res = await fetch('/api/user/profile', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -170,51 +178,51 @@ export function ProfileForm() {
     <div className="space-y-8">
       {/* Profile Form */}
       <div className="space-y-4">
-        <div>
-          <label className={labelClass}>Name *</label>
-          <input
-            className={inputClass}
-            value={profile.name}
-            onChange={(e) => handleChange('name', e.target.value)}
-            placeholder="Your full name"
-            required
-          />
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label className={labelClass}>Nombre</label>
+            <input
+              className={inputClass}
+              value={profile.name}
+              onChange={(e) => handleChange('name', e.target.value)}
+              placeholder="Tu nombre completo"
+            />
+          </div>
+          <div>
+            <label className={labelClass}>Correo</label>
+            <input
+              className={readOnlyInputClass}
+              value={profile.email}
+              readOnly
+              title="Administrado por tu cuenta de Google"
+            />
+          </div>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className={labelClass}>Title</label>
+            <label className={labelClass}>Cargo</label>
             <input
               className={inputClass}
               value={profile.title}
               onChange={(e) => handleChange('title', e.target.value)}
-              placeholder="e.g. Software Engineer"
+              placeholder="ej. Ingeniero de Software"
             />
           </div>
           <div>
-            <label className={labelClass}>Company</label>
+            <label className={labelClass}>Empresa</label>
             <input
               className={inputClass}
               value={profile.company}
               onChange={(e) => handleChange('company', e.target.value)}
-              placeholder="e.g. Atlas Tech"
+              placeholder="ej. Atlas Tech"
             />
           </div>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className={labelClass}>Email</label>
-            <input
-              className={inputClass}
-              type="email"
-              value={profile.email}
-              onChange={(e) => handleChange('email', e.target.value)}
-              placeholder="you@example.com"
-            />
-          </div>
-          <div>
-            <label className={labelClass}>Phone</label>
+            <label className={labelClass}>Telefono</label>
             <input
               className={inputClass}
               type="tel"
@@ -223,16 +231,15 @@ export function ProfileForm() {
               placeholder="+52 667 123 4567"
             />
           </div>
-        </div>
-
-        <div>
-          <label className={labelClass}>Website</label>
-          <input
-            className={inputClass}
-            value={profile.website}
-            onChange={(e) => handleChange('website', e.target.value)}
-            placeholder="https://yoursite.com"
-          />
+          <div>
+            <label className={labelClass}>Sitio web</label>
+            <input
+              className={inputClass}
+              value={profile.website}
+              onChange={(e) => handleChange('website', e.target.value)}
+              placeholder="https://yoursite.com"
+            />
+          </div>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -266,10 +273,15 @@ export function ProfileForm() {
         </div>
 
         {/* Save Button */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center justify-end gap-3">
+          {error && (
+            <span className="flex items-center gap-1 text-xs text-red-400 font-mono">
+              <AlertCircle className="w-3.5 h-3.5" /> {error}
+            </span>
+          )}
           <button
             onClick={handleSave}
-            disabled={saving || !profile.name.trim()}
+            disabled={saving}
             className="flex items-center gap-2 px-4 py-2 text-sm font-mono font-medium bg-accent text-accent-foreground rounded-md hover:bg-accent/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {saving ? (
@@ -281,41 +293,38 @@ export function ProfileForm() {
             )}
             {saving ? 'Guardando...' : saved ? 'Guardado' : 'Guardar perfil'}
           </button>
-          {error && (
-            <span className="flex items-center gap-1 text-xs text-red-400 font-mono">
-              <AlertCircle className="w-3.5 h-3.5" /> {error}
-            </span>
-          )}
         </div>
       </div>
 
       {/* Wallet Card Section */}
       <div className="border-t border-border pt-8">
-        <h2 className="text-lg font-semibold text-primary mb-2">Digital Wallet Card</h2>
+        <h2 className="text-lg font-semibold text-primary mb-2">Tarjeta Digital</h2>
         <p className="text-sm text-muted mb-6">
-          Preview your digital business card and add it to your wallet.
+          Vista previa de tu tarjeta de presentacion digital.
         </p>
 
         {/* Platform Tabs */}
         <div className="flex gap-1 mb-6 p-1 bg-elevated rounded-lg w-fit">
           <button
             onClick={() => setWalletTab('apple')}
-            className={`px-4 py-1.5 text-xs font-mono font-medium rounded-md transition-colors ${
+            className={`flex items-center gap-1.5 px-4 py-1.5 text-xs font-mono font-medium rounded-md transition-colors ${
               walletTab === 'apple'
                 ? 'bg-card text-primary shadow-sm'
                 : 'text-muted hover:text-secondary'
             }`}
           >
+            <Smartphone className="w-3.5 h-3.5" />
             Apple Wallet
           </button>
           <button
             onClick={() => setWalletTab('google')}
-            className={`px-4 py-1.5 text-xs font-mono font-medium rounded-md transition-colors ${
+            className={`flex items-center gap-1.5 px-4 py-1.5 text-xs font-mono font-medium rounded-md transition-colors ${
               walletTab === 'google'
                 ? 'bg-card text-primary shadow-sm'
                 : 'text-muted hover:text-secondary'
             }`}
           >
+            <Globe className="w-3.5 h-3.5" />
             Google Wallet
           </button>
         </div>
@@ -491,7 +500,7 @@ export function ProfileForm() {
           </button>
 
           {!hasSavedProfile && (
-            <p className="text-xs text-muted font-mono">Save your profile first to enable wallet cards.</p>
+            <p className="text-xs text-muted font-mono">Guarda tu perfil primero para habilitar las tarjetas.</p>
           )}
 
           {error && (

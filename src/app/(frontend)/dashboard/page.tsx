@@ -7,14 +7,15 @@ import { AuthGuard } from '@/components/auth/AuthGuard'
 import { ProfileForm } from './profile/ProfileForm'
 import { MyEntries } from '@/components/dashboard/MyEntries'
 import { MyJobs } from '@/components/dashboard/MyJobs'
-import { Plus, Briefcase } from 'lucide-react'
+import { Plus, Briefcase, User, FolderKanban } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
 
 type Tab = 'profile' | 'projects' | 'jobs'
 
-const TABS: { id: Tab; label: string }[] = [
-  { id: 'profile', label: 'Mi Perfil' },
-  { id: 'projects', label: 'Mis Proyectos' },
-  { id: 'jobs', label: 'Mis Empleos' },
+const TABS: { id: Tab; label: string; icon: LucideIcon }[] = [
+  { id: 'profile', label: 'Mi Perfil', icon: User },
+  { id: 'projects', label: 'Mis Registros', icon: FolderKanban },
+  { id: 'jobs', label: 'Mis Empleos', icon: Briefcase },
 ]
 
 function getInitials(name: string): string {
@@ -58,10 +59,10 @@ function DashboardContent() {
           </div>
           <div className="flex gap-2">
             <Link
-              href="/directorio/submit"
+              href="/dashboard/entries/new"
               className="flex items-center gap-1 px-3 py-1.5 text-xs font-mono font-medium bg-accent text-accent-foreground rounded-md hover:bg-accent/90 transition-colors"
             >
-              <Plus className="w-3.5 h-3.5" /> Agregar proyecto
+              <Plus className="w-3.5 h-3.5" /> Agregar registro
             </Link>
             <Link
               href="/dashboard/jobs/new"
@@ -74,19 +75,23 @@ function DashboardContent() {
 
         {/* Tab bar */}
         <div className="flex gap-1 mb-6 p-1 bg-elevated rounded-lg border border-border w-fit">
-          {TABS.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`px-4 py-1.5 text-xs font-mono font-medium rounded-md transition-colors ${
-                activeTab === tab.id
-                  ? 'bg-card text-primary shadow-sm border border-border'
-                  : 'text-muted hover:text-secondary border border-transparent'
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
+          {TABS.map((tab) => {
+            const Icon = tab.icon
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex items-center gap-1.5 px-4 py-1.5 text-xs font-mono font-medium rounded-md transition-colors ${
+                  activeTab === tab.id
+                    ? 'bg-card text-primary shadow-sm border border-border'
+                    : 'text-muted hover:text-secondary border border-transparent'
+                }`}
+              >
+                <Icon className="w-3.5 h-3.5" />
+                {tab.label}
+              </button>
+            )
+          })}
         </div>
 
         {/* Tab content */}

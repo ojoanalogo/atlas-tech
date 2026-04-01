@@ -1,14 +1,16 @@
-import { pgTable, text, timestamp } from 'drizzle-orm/pg-core'
+import { pgSchema, text, timestamp } from 'drizzle-orm/pg-core'
+import { user } from './auth'
 
-export const profiles = pgTable('profiles', {
-  userId: text('user_id').primaryKey(),
-  name: text('name').notNull(),
+export const appSchema = pgSchema('app')
+
+export const profiles = appSchema.table('profiles', {
+  userId: text('user_id')
+    .primaryKey()
+    .references(() => user.id, { onDelete: 'cascade' }),
   title: text('title'),
   company: text('company'),
-  email: text('email'),
   phone: text('phone'),
   website: text('website'),
-  photo: text('photo'),
   linkedin: text('linkedin'),
   x: text('x'),
   github: text('github'),

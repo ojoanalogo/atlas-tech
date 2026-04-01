@@ -36,7 +36,7 @@ export default function StepDetails({ state, setField }: StepProps) {
           ? "Información sobre tu perfil profesional. Todos opcionales."
           : entryType === "community"
             ? "Información sobre tu comunidad. Todos opcionales."
-            : "Campos específicos según el tipo de proyecto. Todos opcionales."}
+            : "Campos específicos según el tipo de registro. Todos opcionales."}
       </p>
       <div className="space-y-3">
         <label className="block">

@@ -5,8 +5,9 @@ import { EntryBadge } from '@/components/entries/EntryBadge'
 import { getCityName, ENTRY_TYPE_CONFIG, type AtlasEntryType } from '@/config'
 import { ENTRY_TYPE_ICON_MAP } from '@/lib/icons'
 import { timeAgo } from '@/lib/utils'
-import { CheckCircle, Clock, XCircle, Pencil, ExternalLink, Plus } from 'lucide-react'
+import { CheckCircle, Clock, XCircle, Pencil, ExternalLink, Plus, FolderKanban } from 'lucide-react'
 import { useUserResource } from '@/hooks/useUserResource'
+import { EmptyState } from '@/components/ui/EmptyState'
 
 interface Entry {
   id: string
@@ -22,20 +23,52 @@ interface Entry {
 export function MyEntries() {
   const { data: entries, loading } = useUserResource<Entry>('/api/user/entries')
 
-  if (loading) return <div className="animate-pulse h-20 bg-elevated rounded-lg" />
+  if (loading) {
+    return (
+      <div className="space-y-4 animate-pulse">
+        <div className="flex gap-3">
+          <div className="flex-1 bg-card border border-border rounded-lg px-4 py-3">
+            <div className="h-6 w-8 bg-elevated rounded mx-auto mb-1" />
+            <div className="h-3 w-16 bg-elevated rounded mx-auto" />
+          </div>
+          <div className="flex-1 bg-card border border-border rounded-lg px-4 py-3">
+            <div className="h-6 w-8 bg-elevated rounded mx-auto mb-1" />
+            <div className="h-3 w-16 bg-elevated rounded mx-auto" />
+          </div>
+        </div>
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="bg-card border border-border rounded-lg p-4 flex items-start gap-3">
+            <div className="w-9 h-9 rounded-lg bg-elevated" />
+            <div className="flex-1 space-y-2">
+              <div className="flex gap-2">
+                <div className="h-4 w-16 bg-elevated rounded-full" />
+                <div className="h-4 w-20 bg-elevated rounded-full" />
+              </div>
+              <div className="h-4 w-48 bg-elevated rounded" />
+              <div className="h-3 w-32 bg-elevated rounded" />
+            </div>
+          </div>
+        ))}
+      </div>
+    )
+  }
 
   if (entries.length === 0) {
     return (
-      <div className="text-center py-12">
-        <p className="text-sm text-muted mb-4">No tienes proyectos registrados.</p>
-        <Link
-          href="/directorio/submit"
-          className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-mono font-medium bg-accent text-accent-foreground rounded-md hover:bg-accent/90 transition-colors"
-        >
-          <Plus className="w-3.5 h-3.5" />
-          Agregar proyecto
-        </Link>
-      </div>
+      <EmptyState
+        icon={FolderKanban}
+        title="No tienes registros"
+        subtitle="Agrega tu primer registro al directorio"
+        action={
+          <Link
+            href="/dashboard/entries/new"
+            className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-mono font-medium bg-accent text-accent-foreground rounded-md hover:bg-accent/90 transition-colors"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            Agregar registro
+          </Link>
+        }
+      />
     )
   }
 
@@ -123,11 +156,11 @@ export function MyEntries() {
       {/* Bottom action */}
       <div className="text-center pt-2">
         <Link
-          href="/directorio/submit"
+          href="/dashboard/entries/new"
           className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-mono font-medium bg-accent text-accent-foreground rounded-md hover:bg-accent/90 transition-colors"
         >
           <Plus className="w-3.5 h-3.5" />
-          Agregar proyecto
+          Agregar registro
         </Link>
       </div>
     </div>

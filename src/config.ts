@@ -250,17 +250,17 @@ export const FAQS = [
       'Tech Atlas es un directorio abierto del ecosistema tecnológico de Sinaloa. Reúne startups, consultorías, comunidades, empresas y profesionales tech que están construyendo desde nuestro estado.',
   },
   {
-    question: '¿Cómo puedo registrar mi proyecto o empresa?',
+    question: '¿Cómo puedo registrarme?',
     answer:
-      'Puedes registrarte de forma gratuita desde la sección "Agregar proyecto". Solo necesitas llenar un formulario con la información básica de tu startup, consultoría, comunidad o perfil profesional.',
+      'Puedes registrarte de forma gratuita desde la sección "Agregar registro". Solo necesitas llenar un formulario con la información básica de tu startup, consultoría, comunidad o perfil profesional.',
   },
   {
     question: '¿Es gratuito aparecer en el directorio?',
     answer:
-      'Sí, Tech Atlas es completamente gratuito y de código abierto. Cualquier proyecto o profesional tech de Sinaloa puede registrarse sin costo.',
+      'Sí, Tech Atlas es completamente gratuito y de código abierto. Cualquier startup, empresa o profesional tech de Sinaloa puede registrarse sin costo.',
   },
   {
-    question: '¿Qué tipo de proyectos pueden registrarse?',
+    question: '¿Quién puede registrarse?',
     answer:
       'Startups, consultorías de tecnología, comunidades tech, empresas establecidas y profesionales independientes del sector tecnológico en Sinaloa. Si estás construyendo algo relacionado con tecnología desde nuestro estado, tienes un lugar aquí.',
   },

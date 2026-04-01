@@ -30,13 +30,20 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid platform. Use "apple" or "google".' }, { status: 400 })
   }
 
-  const [profile] = await db
+  const [dbProfile] = await db
     .select()
     .from(profiles)
     .where(eq(profiles.userId, session.user.id))
 
-  if (!profile) {
+  if (!dbProfile) {
     return NextResponse.json({ error: 'Profile not found. Save your profile first.' }, { status: 400 })
+  }
+
+  const profile = {
+    ...dbProfile,
+    name: session.user.name,
+    email: session.user.email,
+    photo: session.user.image,
   }
 
   const qrValue = getQrValue(session.user.id)

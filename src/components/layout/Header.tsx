@@ -3,9 +3,10 @@
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Briefcase, Menu, X, Map, CalendarDays, Plus, FolderOpen, Newspaper } from 'lucide-react'
+import { Briefcase, Menu, X, Map, CalendarDays, Plus, FolderOpen, Newspaper, LayoutDashboard } from 'lucide-react'
 import ThemeToggle from '@/components/ui/ThemeToggle'
 import { UserMenu } from '@/components/auth/UserMenu'
+import { useSession } from '@/lib/auth-client'
 import { ENTRY_TYPE_CONFIG, ENTRY_TYPES } from '@/config'
 import { ENTRY_TYPE_ICON_MAP } from '@/lib/icons'
 import { useDisclosure } from '@/hooks/useDisclosure'
@@ -17,6 +18,7 @@ export function Header() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const dropdown = useDisclosure()
   const pathname = usePathname()
+  const { data: session } = useSession()
   const [wink, setWink] = useState(false)
   const wasScrolled = useRef(false)
 
@@ -96,9 +98,12 @@ export function Header() {
               <Link href="/#map" className={NAV_LINK}><Map className="w-3.5 h-3.5" />Mapa</Link>
               <ThemeToggle />
               <UserMenu />
-              <Link href="/directorio/submit" className="ml-2 flex items-center gap-1 px-3 py-1.5 text-xs font-mono font-medium bg-accent text-accent-foreground rounded-md hover:bg-accent/90 transition-colors">
-                <Plus className="w-3.5 h-3.5" />
-                Agregar
+              <Link href="/dashboard" className="ml-2 flex items-center gap-1 px-3 py-1.5 text-xs font-mono font-medium bg-accent text-accent-foreground rounded-md hover:bg-accent/90 transition-colors">
+                {session ? (
+                  <><LayoutDashboard className="w-3.5 h-3.5" /> Dashboard</>
+                ) : (
+                  <><Plus className="w-3.5 h-3.5" /> Crear perfil</>
+                )}
               </Link>
             </nav>
 
@@ -151,9 +156,12 @@ export function Header() {
           <Link href="/#map" className={MOBILE_LINK}><Map className="w-5 h-5" />Mapa</Link>
 
           <div className="pt-4">
-            <Link href="/directorio/submit" className="inline-flex items-center gap-2 px-5 py-3 bg-accent text-accent-foreground font-mono font-bold text-sm rounded hover:bg-accent/90 transition-colors">
-              <Plus className="w-4 h-4" />
-              Agregar proyecto
+            <Link href="/dashboard" className="inline-flex items-center gap-2 px-5 py-3 bg-accent text-accent-foreground font-mono font-bold text-sm rounded hover:bg-accent/90 transition-colors">
+              {session ? (
+                <><LayoutDashboard className="w-4 h-4" /> Dashboard</>
+              ) : (
+                <><Plus className="w-4 h-4" /> Crear perfil</>
+              )}
             </Link>
           </div>
         </div>

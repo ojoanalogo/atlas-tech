@@ -22,7 +22,7 @@ export default function FrontendLayout({ children }: { children: React.ReactNode
     <html lang="es-MX" className={`${jetbrainsMono.variable} ${spaceGrotesk.variable}`} suppressHydrationWarning>
       <body className="bg-background">
         <ThemeProvider>
-          <div className="font-sans w-full min-h-screen flex flex-col text-secondary selection:bg-accent selection:text-accent-foreground">
+          <div className="font-sans w-full min-h-screen flex flex-col text-secondary selection:bg-accent selection:text-accent-foreground relative overflow-hidden">
             <MatrixBackground movementDirection="up-left" movementSpeed={0.04} highlight={false} />
             <div className="relative z-10 flex flex-col flex-1">
               <Header />

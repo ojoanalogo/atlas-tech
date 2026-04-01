@@ -45,11 +45,11 @@ export function HeroSection({ cityCounts = {} }: HeroSectionProps) {
               Explorar directorio
             </Link>
             <Link
-              href="/directorio/submit"
+              href="/dashboard"
               className="inline-flex items-center gap-2.5 px-6 py-3.5 bg-card uppercase border border-border text-primary font-mono font-semibold text-xs rounded hover:border-accent/50 hover:text-accent transition-colors"
             >
               <Plus className="w-4 h-4" />
-              Agregar proyecto
+              Crear perfil
             </Link>
           </div>
         </div>

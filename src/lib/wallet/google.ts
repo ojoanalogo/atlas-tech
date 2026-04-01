@@ -1,22 +1,36 @@
 import { google } from 'googleapis'
 import jwt from 'jsonwebtoken'
 import fs from 'fs'
-import type { Profile } from '@/db/schema/profiles'
+import type { WalletProfile } from './types'
 
 const ISSUER_ID = process.env.GOOGLE_WALLET_ISSUER_ID!
 const CLASS_ID = process.env.GOOGLE_WALLET_CLASS_ID!
 
-function getCredentials() {
-  const raw = fs.readFileSync(process.env.GOOGLE_WALLET_SERVICE_ACCOUNT_JSON!)
-  return JSON.parse(raw.toString())
+function getCredentials(): { client_email: string; private_key: string } {
+  if (process.env.GOOGLE_WALLET_SA_B64) {
+    return JSON.parse(Buffer.from(process.env.GOOGLE_WALLET_SA_B64.trim(), 'base64').toString())
+  }
+  if (process.env.GOOGLE_WALLET_SERVICE_ACCOUNT_JSON) {
+    const raw = fs.readFileSync(process.env.GOOGLE_WALLET_SERVICE_ACCOUNT_JSON)
+    return JSON.parse(raw.toString())
+  }
+  throw new Error('Missing Google Wallet credentials: provide GOOGLE_WALLET_SA_B64 or GOOGLE_WALLET_SERVICE_ACCOUNT_JSON')
 }
 
 function getClient() {
+  if (process.env.GOOGLE_WALLET_SA_B64) {
+    const credentials = getCredentials()
+    const auth = new google.auth.GoogleAuth({
+      credentials,
+      scopes: ['https://www.googleapis.com/auth/wallet_object.issuer'],
+    })
+    return google.walletobjects({ version: 'v1', auth })
+  }
+
   const auth = new google.auth.GoogleAuth({
     keyFile: process.env.GOOGLE_WALLET_SERVICE_ACCOUNT_JSON!,
     scopes: ['https://www.googleapis.com/auth/wallet_object.issuer'],
   })
-
   return google.walletobjects({ version: 'v1', auth })
 }
 
@@ -35,7 +49,7 @@ async function ensureClass() {
   }
 }
 
-export async function generateGoogleWalletLink(profile: Profile, qrValue: string): Promise<string> {
+export async function generateGoogleWalletLink(profile: WalletProfile, qrValue: string): Promise<string> {
   await ensureClass()
 
   const credentials = getCredentials()

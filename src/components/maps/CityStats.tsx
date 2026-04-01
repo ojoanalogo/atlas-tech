@@ -169,7 +169,7 @@ function StatsEmpty({ name, onClose }: { name: string; onClose: () => void }) {
           </p>
         </div>
         <a
-          href="/directorio/submit"
+          href="/dashboard"
           className="flex items-center justify-center gap-2 w-full text-center text-xs font-mono font-semibold px-3 py-3 min-h-11 rounded-lg border border-dashed border-accent/40 text-accent hover:bg-accent/10 transition-colors"
         >
           <Plus className="w-3.5 h-3.5" />

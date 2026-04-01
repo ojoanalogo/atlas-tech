@@ -3,7 +3,7 @@ import { SignInButton } from '@/components/auth/SignInButton'
 
 export const metadata: Metadata = {
   title: 'Iniciar sesion',
-  description: 'Inicia sesion en Tech Atlas para administrar tus proyectos y publicar empleos.',
+  description: 'Inicia sesion en Tech Atlas para administrar tus registros y publicar empleos.',
   robots: { index: false },
 }
 
@@ -13,7 +13,7 @@ export default function SignInPage() {
       <div className="max-w-sm mx-auto text-center">
         <h1 className="text-2xl font-bold text-primary mb-2">Iniciar sesion</h1>
         <p className="text-sm text-muted mb-8">
-          Inicia sesion para administrar tus proyectos y publicar empleos.
+          Inicia sesion para administrar tus registros y publicar empleos.
         </p>
         <SignInButton />
         <p className="text-2xs text-muted mt-6">

@@ -11,7 +11,7 @@ const pool = new Pool({
 // Set search_path so better-auth finds its tables in the `auth` schema,
 // and Drizzle finds `profiles` in the `public` schema.
 pool.on('connect', (client) => {
-  client.query('SET search_path TO auth, public')
+  client.query('SET search_path TO auth, app, public')
 })
 
 export { pool }

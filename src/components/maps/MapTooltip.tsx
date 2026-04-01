@@ -28,7 +28,7 @@ export default function MapTooltip({ tooltip }: MapTooltipProps) {
       </div>
       {tooltip.count > 0 && (
         <div className="text-2xs font-mono text-[var(--color-muted)]">
-          {tooltip.count} {tooltip.count === 1 ? "proyecto" : "proyectos"}
+          {tooltip.count} {tooltip.count === 1 ? "registro" : "registros"}
         </div>
       )}
     </div>

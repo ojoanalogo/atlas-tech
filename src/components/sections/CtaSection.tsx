@@ -15,8 +15,8 @@ export function CtaSection() {
           </p>
           <div className="flex flex-wrap justify-center gap-3">
             <Link
-              href="/directorio/submit"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-accent text-accent-foreground font-mono font-semibold text-sm rounded-lg hover:bg-accent/90 transition-colors"
+              href="/dashboard"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-background font-mono font-semibold text-sm rounded-lg hover:bg-primary/90 transition-colors"
             >
               Registrarme
               <svg

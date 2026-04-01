@@ -298,7 +298,7 @@ export function EditEntryForm() {
           <Breadcrumb
             items={[
               { label: 'Dashboard', href: '/dashboard' },
-              { label: 'Mis Proyectos', href: '/dashboard' },
+              { label: 'Mis Registros', href: '/dashboard' },
               { label: 'Editar' },
             ]}
           />

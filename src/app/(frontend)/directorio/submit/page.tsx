@@ -5,7 +5,7 @@ import { SINALOA_CITIES } from '@/config'
 import { Breadcrumb } from '@/components/ui/Breadcrumb'
 
 export const metadata: Metadata = {
-  title: 'Agregar Proyecto',
+  title: 'Agregar Registro',
   robots: { index: false },
 }
 
@@ -22,10 +22,10 @@ export default function SubmitPage() {
           <Breadcrumb items={[
             { label: 'Inicio', href: '/' },
             { label: 'Directorio', href: '/directorio' },
-            { label: 'Agregar proyecto' },
+            { label: 'Agregar registro' },
           ]} />
 
-          <h1 className="text-3xl md:text-4xl font-sans font-bold text-primary mb-2">Agregar proyecto</h1>
+          <h1 className="text-3xl md:text-4xl font-sans font-bold text-primary mb-2">Agregar registro</h1>
           <p className="text-secondary mb-8">
             Registra tu startup, consultora, comunidad o perfil en el directorio tech de Sinaloa.
           </p>

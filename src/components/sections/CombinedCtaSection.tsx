@@ -12,7 +12,7 @@ export function CombinedCtaSection() {
             Pon a Sinaloa en el mapa
           </h2>
           <p className="text-sm text-secondary mt-3 max-w-xl mx-auto">
-            Únete al ecosistema tech de Sinaloa. Registra tu proyecto, crea tu tarjeta digital, y conecta con la comunidad.
+            Únete al ecosistema tech de Sinaloa. Agrega tu registro, crea tu tarjeta digital, y conecta con la comunidad.
           </p>
         </div>
 
@@ -23,16 +23,16 @@ export function CombinedCtaSection() {
             <div className="w-10 h-10 rounded-lg bg-accent/10 border border-accent/20 flex items-center justify-center mb-4">
               <Plus className="w-5 h-5 text-accent" />
             </div>
-            <h3 className="text-sm font-bold text-primary mb-2">Registra tu proyecto</h3>
+            <h3 className="text-sm font-bold text-primary mb-2">Agrega tu registro</h3>
             <p className="text-xs text-muted leading-relaxed flex-1">
               Ya seas startup, consultoría, comunidad o profesional tech — si estás
               construyendo desde Sinaloa, mereces ser visible.
             </p>
             <Link
-              href="/directorio/submit"
+              href="/dashboard"
               className="mt-4 inline-flex items-center gap-2 px-4 py-2.5 bg-accent text-accent-foreground font-mono font-semibold text-xs rounded-md hover:bg-accent/90 transition-colors w-fit"
             >
-              Agregar proyecto
+              Agregar registro
               <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
@@ -76,8 +76,8 @@ export function CombinedCtaSection() {
 
           {/* Card 3: WhatsApp */}
           <div className="bg-card border border-border rounded-xl p-6 flex flex-col">
-            <div className="w-10 h-10 rounded-lg bg-green-500/10 border border-green-500/20 flex items-center justify-center mb-4">
-              <MessageCircle className="w-5 h-5 text-green-600 dark:text-green-500" />
+            <div className="w-10 h-10 rounded-lg bg-accent/10 border border-accent/20 flex items-center justify-center mb-4">
+              <MessageCircle className="w-5 h-5 text-accent" />
             </div>
             <h3 className="text-sm font-bold text-primary mb-2">Únete a la comunidad</h3>
             <p className="text-xs text-muted leading-relaxed flex-1">
@@ -87,7 +87,7 @@ export function CombinedCtaSection() {
               href={WHATSAPP_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-4 inline-flex items-center gap-2 px-4 py-2.5 border border-green-500/20 text-green-600 dark:text-green-500 font-mono font-semibold text-xs rounded-md hover:bg-green-500/10 transition-colors w-fit"
+              className="mt-4 inline-flex items-center gap-2 px-4 py-2.5 bg-accent text-accent-foreground font-mono font-semibold text-xs rounded-md hover:bg-accent/90 transition-colors w-fit"
             >
               Unirme al grupo
               <ArrowRight className="w-3.5 h-3.5" />

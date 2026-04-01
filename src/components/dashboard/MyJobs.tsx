@@ -5,6 +5,7 @@ import { getCityName, JOB_TYPE_LABELS, MODALITY_LABELS } from '@/config'
 import { timeAgo, expirationLabel } from '@/lib/utils'
 import { Clock, CheckCircle, XCircle, Briefcase, ExternalLink, Plus, Pencil } from 'lucide-react'
 import { useUserResource } from '@/hooks/useUserResource'
+import { EmptyState } from '@/components/ui/EmptyState'
 
 interface Job {
   id: string
@@ -22,20 +23,52 @@ interface Job {
 export function MyJobs() {
   const { data: jobs, loading } = useUserResource<Job>('/api/user/jobs')
 
-  if (loading) return <div className="animate-pulse h-20 bg-elevated rounded-lg" />
+  if (loading) {
+    return (
+      <div className="space-y-4 animate-pulse">
+        <div className="flex gap-3">
+          <div className="flex-1 bg-card border border-border rounded-lg px-4 py-3">
+            <div className="h-6 w-8 bg-elevated rounded mx-auto mb-1" />
+            <div className="h-3 w-16 bg-elevated rounded mx-auto" />
+          </div>
+          <div className="flex-1 bg-card border border-border rounded-lg px-4 py-3">
+            <div className="h-6 w-8 bg-elevated rounded mx-auto mb-1" />
+            <div className="h-3 w-16 bg-elevated rounded mx-auto" />
+          </div>
+        </div>
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="bg-card border border-border rounded-lg p-4 flex items-start gap-3">
+            <div className="w-9 h-9 rounded-lg bg-elevated" />
+            <div className="flex-1 space-y-2">
+              <div className="flex gap-2">
+                <div className="h-4 w-20 bg-elevated rounded-full" />
+              </div>
+              <div className="h-4 w-44 bg-elevated rounded" />
+              <div className="h-3 w-36 bg-elevated rounded" />
+              <div className="h-3 w-24 bg-elevated rounded" />
+            </div>
+          </div>
+        ))}
+      </div>
+    )
+  }
 
   if (jobs.length === 0) {
     return (
-      <div className="text-center py-12">
-        <p className="text-sm text-muted mb-4">No has publicado empleos.</p>
-        <Link
-          href="/dashboard/jobs/new"
-          className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-mono font-medium border border-border text-primary rounded-md hover:bg-elevated transition-colors"
-        >
-          <Plus className="w-3.5 h-3.5" />
-          Publicar empleo
-        </Link>
-      </div>
+      <EmptyState
+        icon={Briefcase}
+        title="No has publicado empleos"
+        subtitle="Publica tu primera vacante"
+        action={
+          <Link
+            href="/dashboard/jobs/new"
+            className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-mono font-medium bg-accent text-accent-foreground rounded-md hover:bg-accent/90 transition-colors"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            Publicar empleo
+          </Link>
+        }
+      />
     )
   }
 
@@ -132,7 +165,7 @@ export function MyJobs() {
       <div className="text-center pt-2">
         <Link
           href="/dashboard/jobs/new"
-          className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-mono font-medium border border-border text-primary rounded-md hover:bg-elevated transition-colors"
+          className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-mono font-medium bg-accent text-accent-foreground rounded-md hover:bg-accent/90 transition-colors"
         >
           <Plus className="w-3.5 h-3.5" />
           Publicar empleo

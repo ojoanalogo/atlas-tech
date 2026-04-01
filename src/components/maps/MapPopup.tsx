@@ -59,7 +59,7 @@ export default function MapPopup({
         <div className="px-3 py-2.5 space-y-2">
           <div className="flex items-center justify-between">
             <span className="text-xs font-mono text-[var(--color-muted)]">
-              Proyectos
+              Registros
             </span>
             <span className="text-xs font-mono font-bold text-[var(--color-primary)]">
               {popup.count}
@@ -78,7 +78,7 @@ export default function MapPopup({
             Aún no hay registros
           </p>
           <a
-            href="/directorio/submit"
+            href="/dashboard"
             className="block w-full text-center text-xs font-mono font-semibold px-3 py-1.5 rounded border border-dashed border-accent/40 text-accent hover:bg-accent/10 transition-colors"
           >
             REGISTRAR →
