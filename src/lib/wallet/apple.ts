@@ -105,9 +105,9 @@ export async function generateApplePass(profile: WalletProfile, qrValue: string)
     })
   }
   pass.backFields.push({
-    key: 'powered',
-    label: 'TECH ATLAS',
-    value: 'Tarjeta de presentación digital',
+    key: 'profile',
+    label: 'MI PERFIL',
+    value: qrValue,
   })
 
   // QR code
@@ -115,6 +115,7 @@ export async function generateApplePass(profile: WalletProfile, qrValue: string)
     format: 'PKBarcodeFormatQR',
     message: qrValue,
     messageEncoding: 'iso-8859-1',
+    altText: 'Escanea para ver mi perfil',
   })
 
   return pass.getAsBuffer()

@@ -1,15 +1,15 @@
 import type { Metadata } from 'next'
-import SubmitWizard from '@/components/forms/SubmitWizard'
 import { AuthGuard } from '@/components/auth/AuthGuard'
 import { SINALOA_CITIES } from '@/config'
 import { Breadcrumb } from '@/components/ui/Breadcrumb'
+import SubmitWizard from '@/components/forms/submit-wizard'
 
 export const metadata: Metadata = {
   title: 'Agregar Registro',
   robots: { index: false },
 }
 
-export default function SubmitPage() {
+export default function NewEntryPage() {
   const cities = [
     { id: 'global', name: 'Global (sin ubicación específica)' },
     ...SINALOA_CITIES.map((m) => ({ id: m.id, name: m.name })),
@@ -20,8 +20,8 @@ export default function SubmitPage() {
       <section className="py-4 px-4">
         <div className="max-w-2xl mx-auto">
           <Breadcrumb items={[
-            { label: 'Inicio', href: '/' },
-            { label: 'Directorio', href: '/directorio' },
+            { label: 'Dashboard', href: '/dashboard' },
+            { label: 'Mis Registros', href: '/dashboard' },
             { label: 'Agregar registro' },
           ]} />
 

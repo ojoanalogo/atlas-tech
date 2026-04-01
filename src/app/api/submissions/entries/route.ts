@@ -28,7 +28,13 @@ export async function GET(request: NextRequest) {
 
   try {
     const payload = await getPayloadClient()
-    const entry = await payload.findByID({ collection: 'entries', id, draft: true })
+
+    let entry
+    try {
+      entry = await payload.findByID({ collection: 'entries', id, draft: true })
+    } catch {
+      return NextResponse.json({ error: 'Not found' }, { status: 404 })
+    }
 
     if (!entry || entry.owner !== session.user.id) {
       return NextResponse.json({ error: 'Not found' }, { status: 404 })
