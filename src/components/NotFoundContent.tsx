@@ -25,11 +25,10 @@ export function NotFoundContent() {
   const [currentLine, setCurrentLine] = useState(0)
   const [currentChar, setCurrentChar] = useState(0)
   const [showLinks, setShowLinks] = useState(false)
-  const [typing, setTyping] = useState(true)
+  const typing = currentLine < LINES.length
 
   useEffect(() => {
     if (currentLine >= LINES.length) {
-      setTyping(false)
       const timer = setTimeout(() => setShowLinks(true), 300)
       return () => clearTimeout(timer)
     }
@@ -76,10 +75,10 @@ export function NotFoundContent() {
 
           {/* Typed lines */}
           {displayedLines.map((line, i) => (
-            <p key={i} className="text-secondary leading-relaxed">
+            <p key={LINES[i] ?? i} className="text-secondary leading-relaxed">
               {line}
               {typing && i === currentLine && (
-                <span className="animate-pulse text-accent">▌</span>
+                <span aria-hidden="true" className="animate-pulse text-accent">▌</span>
               )}
             </p>
           ))}
@@ -87,7 +86,7 @@ export function NotFoundContent() {
           {/* Cursor on empty state */}
           {displayedLines.length === 0 && typing && (
             <p className="text-secondary">
-              <span className="animate-pulse text-accent">▌</span>
+              <span aria-hidden="true" className="animate-pulse text-accent">▌</span>
             </p>
           )}
 
