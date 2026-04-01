@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import '@/styles/globals.css'
 import { JetBrains_Mono, Space_Grotesk } from 'next/font/google'
 import { ThemeProvider } from '@/components/providers/ThemeProvider'
@@ -17,6 +18,10 @@ const spaceGrotesk = Space_Grotesk({
   variable: '--font-sans',
   display: 'swap',
 })
+
+export const metadata: Metadata = {
+  title: 'Página no encontrada',
+}
 
 export default function NotFound() {
   return (
