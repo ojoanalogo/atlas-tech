@@ -13,8 +13,12 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
+ARG DATABASE_URI
+ENV DATABASE_URI=${DATABASE_URI}
 ENV NODE_OPTIONS="--max-old-space-size=4096"
+
 RUN pnpm generate:importmap
+RUN npx payload migrate
 RUN pnpm build
 
 # --- Production ---
