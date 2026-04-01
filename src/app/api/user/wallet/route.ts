@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
     ...dbProfile,
     name: session.user.name,
     email: session.user.email,
-    photo: session.user.image,
+    photo: session.user.image ?? null,
   }
 
   const qrValue = getQrValue(session.user.id)
