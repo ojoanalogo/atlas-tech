@@ -13,7 +13,9 @@
     "generate:importmap": "payload generate:importmap",
     "seed": "PAYLOAD_CONFIG_PATH=./payload.config.ts tsx scripts/seed.ts",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit migrate"
+    "db:migrate": "drizzle-kit migrate",
+    "payload:migrate": "payload migrate",
+    "payload:migrate:create": "payload migrate:create"
   },
   "dependencies": {
     "@payloadcms/db-postgres": "^3.80.0",
