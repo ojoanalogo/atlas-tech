@@ -13,9 +13,12 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
+ARG DATABASE_URI
+ENV DATABASE_URI=${DATABASE_URI}
 ENV NODE_OPTIONS="--max-old-space-size=4096"
 
 RUN pnpm generate:importmap
+RUN npx payload migrate --force-accept-warning
 RUN pnpm build
 
 # --- Production ---
@@ -32,8 +35,7 @@ COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
-# Migration assets needed at runtime
-COPY --from=builder --chown=nextjs:nodejs /app/src/migrations ./src/migrations
+# Drizzle migration assets (runtime)
 COPY --from=builder --chown=nextjs:nodejs /app/drizzle ./drizzle
 COPY --from=builder --chown=nextjs:nodejs /app/scripts/migrate.mjs ./scripts/migrate.mjs
 COPY --from=builder --chown=nextjs:nodejs /app/docker-entrypoint.sh ./docker-entrypoint.sh
