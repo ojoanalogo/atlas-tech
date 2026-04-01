@@ -11,7 +11,7 @@ export function RandomEntries() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    fetchPaginated<Entry>('/api/entries', { limit: '3', sort: 'random' })
+    fetchPaginated<Entry>('/api/directory/entries', { limit: '3', sort: 'random' })
       .then((res) => setEntries(res.docs))
       .catch(console.error)
       .finally(() => setLoading(false))

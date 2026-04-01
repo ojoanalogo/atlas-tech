@@ -104,7 +104,7 @@ export default function DirectoryFilter({
   }, [])
 
   useEffect(() => {
-    fetch('/api/entries/counts')
+    fetch('/api/directory/entries/counts')
       .then((res) => res.json())
       .then((data: CountsData) => setCityCounts(data.byCity))
       .catch(console.error)
@@ -348,7 +348,7 @@ export default function DirectoryFilter({
 
         {/* Content area */}
         <PaginatedView<Entry>
-          endpoint="/api/entries"
+          endpoint="/api/directory/entries"
           params={apiParams}
           renderItem={renderEntryItem}
           renderSkeleton={() => <EntryCardSkeleton />}
