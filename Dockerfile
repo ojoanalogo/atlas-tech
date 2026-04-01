@@ -19,6 +19,7 @@ ENV NODE_OPTIONS="--max-old-space-size=4096"
 
 RUN pnpm generate:importmap
 RUN npx payload migrate
+RUN node scripts/migrate.mjs
 RUN pnpm build
 
 # --- Production ---
