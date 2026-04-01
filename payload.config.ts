@@ -33,6 +33,7 @@ export default buildConfig({
       connectionString: process.env.DATABASE_URI || '',
     },
     schemaName: 'payload',
+    push: process.env.NODE_ENV !== 'production',
   }),
   editor: lexicalEditor(),
   sharp,

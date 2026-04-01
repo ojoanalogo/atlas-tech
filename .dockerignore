@@ -3,5 +3,3 @@ node_modules
 .git
 .env
 *.md
-scripts/
-!scripts/migrate.mjs
