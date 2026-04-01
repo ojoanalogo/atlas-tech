@@ -138,7 +138,7 @@ export default async function EntryDetailPage({
     { label: 'Rol', value: entry.role as string | undefined, Icon: UserCheck },
     { label: 'Empresa', value: entry.company as string | undefined, Icon: Building },
     { label: 'Modelo', value: entry.businessModel as string | undefined, Icon: Target },
-  ].filter((d) => d.value !== undefined) as { label: string; value: string | number; Icon: LucideIcon; ValueIcon?: LucideIcon }[]
+  ].filter((d) => d.value != null && d.value !== '') as { label: string; value: string | number; Icon: LucideIcon; ValueIcon?: LucideIcon }[]
 
   /* ---------- Links for sidebar ---------- */
   const track = (url: string | undefined) =>
