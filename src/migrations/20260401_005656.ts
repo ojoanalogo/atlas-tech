@@ -2,6 +2,7 @@ import { MigrateUpArgs, MigrateDownArgs, sql } from '@payloadcms/db-postgres'
 
 export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   await db.execute(sql`
+   CREATE SCHEMA IF NOT EXISTS "payload";
    CREATE TYPE "payload"."enum_users_role" AS ENUM('admin', 'moderator', 'editor');
   CREATE TYPE "payload"."enum_entries_entry_type" AS ENUM('startup', 'community', 'business', 'consultory', 'research-center', 'person');
   CREATE TYPE "payload"."enum_entries_city" AS ENUM('global', 'ahome', 'angostura', 'badiraguato', 'choix', 'concordia', 'cosala', 'culiacan', 'el-fuerte', 'elota', 'escuinapa', 'guasave', 'mazatlan', 'mocorito', 'navolato', 'rosario', 'salvador-alvarado', 'san-ignacio', 'sinaloa-de-leyva');
