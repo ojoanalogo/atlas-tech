@@ -4,3 +4,4 @@ node_modules
 .env
 *.md
 scripts/
+!scripts/migrate.mjs
