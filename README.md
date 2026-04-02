@@ -7,78 +7,82 @@
 
 <br />
 
-<img src="https://img.shields.io/badge/astro-5.x-bc52ee?style=flat-square&logo=astro&logoColor=white" alt="Astro" />
+<img src="https://img.shields.io/badge/next.js-15-000000?style=flat-square&logo=nextdotjs&logoColor=white" alt="Next.js" />
+<img src="https://img.shields.io/badge/payload-3.x-000000?style=flat-square&logo=data:image/svg+xml;base64,PHN2Zy8+" alt="Payload CMS" />
 <img src="https://img.shields.io/badge/react-19-61dafb?style=flat-square&logo=react&logoColor=white" alt="React" />
 <img src="https://img.shields.io/badge/tailwind-4-06b6d4?style=flat-square&logo=tailwindcss&logoColor=white" alt="Tailwind" />
-<img src="https://img.shields.io/badge/cloudflare_pages-f38020?style=flat-square&logo=cloudflarepages&logoColor=white" alt="Cloudflare Pages" />
+<img src="https://img.shields.io/badge/postgresql-4169e1?style=flat-square&logo=postgresql&logoColor=white" alt="PostgreSQL" />
 <img src="https://img.shields.io/github/license/ojoanalogo/atlas-tech?style=flat-square" alt="License" />
 
 </div>
 
 ---
 
-Sitio estatico construido con Astro, React y Tailwind CSS, pensado para ser de bajo costo: los unicos gastos son el dominio y el tiempo invertido.
+Plataforma web construida con Next.js y Payload CMS para gestionar el directorio de startups, empresas, comunidades y personas del ecosistema tech de Sinaloa.
 
-Este repositorio cubre un solo estado por ahora, pero esta disenado para que cualquier persona pueda hacer fork y crear el atlas de su propio estado.
+Este repositorio cubre un solo estado por ahora, pero esta diseñado para que cualquier persona pueda hacer fork y crear el atlas de su propio estado.
 
-## 🚀 Inicio rapido
+## Inicio rapido
 
 ```bash
 pnpm install
-pnpm dev        # servidor de desarrollo
-pnpm build      # build de produccion
-pnpm preview    # preview del build
+cp .env.example .env      # configura tus variables
+pnpm dev                   # servidor de desarrollo en localhost:3000
 ```
 
-También puedes hacer uso de `npm` pero asegurate de eliminar el archivo `pnpm-lock.yaml` y elimina la línea de _packageManager_ en el _package.json_
+El panel de administracion de Payload esta disponible en `/admin`.
 
-## 🗺️ Mapas
+## Como funciona la publicacion de contenido
 
-Los mapas geograficos utilizan archivos tipo **AGEM** (Area Geoestadistica Municipal). Puedes descargarlos desde el **Marco Geoestadistico** de INEGI en la plataforma de Geografia Nacional:
+1. Un usuario se registra en el sitio (Google OAuth o email/password via better-auth)
+2. Desde su dashboard, envia un registro a traves del formulario wizard (startup, empresa, comunidad, persona, etc.)
+3. El registro se guarda como **borrador** en la base de datos via Payload
+4. Un moderador revisa el registro desde el panel de admin (`/admin`) y lo publica o lo rechaza con una nota
+5. Al publicarse, el contenido aparece automaticamente en el directorio publico
+
+Las imagenes (logos, portadas) se suben a almacenamiento S3 compatible (Cloudflare R2 en produccion, MinIO en desarrollo local).
+
+## Variables de entorno
+
+Copia `.env.example` y configura segun tu entorno:
+
+| Variable | Descripcion |
+|---|---|
+| `DATABASE_URI` | Conexion a PostgreSQL (Neon, local, etc.) |
+| `PAYLOAD_SECRET` | Secret para Payload CMS |
+| `S3_*` | Credenciales de almacenamiento S3 (R2 o MinIO) |
+| `MEDIA_URL` | URL publica para servir imagenes |
+| `NEXT_PUBLIC_SITE_URL` | URL del sitio |
+| `BETTER_AUTH_SECRET` | Secret para autenticacion |
+| `GOOGLE_CLIENT_ID/SECRET` | OAuth de Google (opcional) |
+| `APPLE_*` / `GOOGLE_WALLET_*` | Generacion de wallet passes (opcional) |
+
+## Docker
+
+El `Dockerfile` multi-stage construye la app en 3 fases:
+
+1. **deps** — instala dependencias con `pnpm install --frozen-lockfile`
+2. **builder** — genera el import map de Payload, ejecuta migraciones de base de datos, y construye la app Next.js
+3. **runner** — imagen minima de produccion con el output standalone de Next.js
+
+```bash
+docker build --build-arg DATABASE_URI="postgresql://..." -t atlas-tech .
+docker run -p 3000:3000 --env-file .env atlas-tech
+```
+
+> La base de datos debe estar accesible durante el build para que las migraciones se ejecuten.
+
+## Mapas
+
+Los mapas geograficos utilizan archivos tipo **AGEM** (Area Geoestadistica Municipal) de INEGI:
 
 https://www.inegi.org.mx/temas/mg/#mapas
 
-Una vez descargado, coloca el archivo en la carpeta `public/topo/`.
+Coloca el archivo descargado en `public/topo/`.
 
-## 📝 Formulario de registro (SubmitWizard)
-
-El componente `src/components/forms/SubmitWizard.tsx` es un wizard multi-paso para que usuarios envien sus registros (startups, empresas, comunidades, personas, etc.).
-
-Este formulario **requiere un backend** para funcionar. En nuestra implementacion usamos un **flujo de n8n** como webhook que recibe los datos del formulario. Sin embargo, como el sitio es estatico, **los datos se agregan manualmente** al contenido del repositorio para mantener los costos bajos.
-
-Puedes reemplazar el webhook con cualquier backend o servicio que prefieras.
-
-## 📅 Calendario de eventos (EventCalendar)
-
-El componente `src/components/calendar/EventCalendar.tsx` consume un **Google Sheets publicado como CSV**. La hoja debe tener las siguientes columnas en orden:
-
-| Columna     | Formato    | Ejemplo                     |
-| ----------- | ---------- | --------------------------- |
-| title       | texto      | Meetup React Sinaloa        |
-| organizer   | texto      | Comunidad JS                |
-| date        | M/DD/YYYY  | 3/15/2026                   |
-| startTime   | texto      | 18:00                       |
-| endTime     | texto      | 20:00                       |
-| description | texto      | Charla sobre hooks          |
-| url         | URL        | https://...                 |
-| location    | texto      | WeWork Culiacan             |
-| mapsUrl     | URL        | https://maps.google.com/... |
-| isInPerson  | TRUE/FALSE | TRUE                        |
-| meetLink    | URL        | https://meet.google.com/... |
-| image       | URL        | https://...                 |
-| registerUrl | URL        | https://...                 |
-
-Los eventos se mantienen actualizados manualmente en la hoja de Google Sheets.
-
-## ☁️ Hosting
-
-Hospedamos en **Cloudflare Pages** en lugar de GitHub Pages para aprovechar su CDN global con mejor rendimiento. El deploy es automatico desde la rama `main`.
-
-## 🍴 Crea tu propio atlas
+## Crea tu propio atlas
 
 1. Haz fork de este repositorio
-2. Reemplaza los datos de contenido con los de tu estado
+2. Configura tu base de datos PostgreSQL y variables de entorno
 3. Descarga los mapas AGEM de tu estado desde INEGI
-4. Configura tu Google Sheet de eventos
-5. Conecta tu backend para el formulario de registro (o agrega datos manualmente)
-6. Despliega en Cloudflare Pages u otro hosting estatico
+4. Despliega con Docker o en cualquier plataforma compatible con Next.js
