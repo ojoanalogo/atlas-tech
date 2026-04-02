@@ -27,7 +27,6 @@ import {
   Building2,
   Building,
   Clock,
-  Monitor,
   UserCheck,
   Target,
   LayoutList,
@@ -37,12 +36,10 @@ import {
   BadgeCheck,
   ExternalLink as ExternalLinkIcon,
   Info,
-  Wrench,
   Cpu,
-  Cog,
   Tag as TagIcon,
 } from 'lucide-react'
-import { RichText } from '@payloadcms/richtext-lexical/react'
+import Markdown from 'react-markdown'
 import type { LucideIcon } from 'lucide-react'
 import { ENTRY_TYPE_ICON_MAP } from '@/lib/icons'
 import { SocialLinkIcon } from '@/components/icons/SocialIcons'
@@ -114,9 +111,6 @@ export default async function EntryDetailPage({
     entry.technologies as Array<{ technology: string }>,
     'technology',
   )
-  const services = flattenArray(entry.services as Array<{ service: string }>, 'service')
-  const skills = flattenArray(entry.skills as Array<{ skill: string }>, 'skill')
-  const focusAreas = flattenArray(entry.focusAreas as Array<{ area: string }>, 'area')
 
   const coverUrl = extractImageUrl(entry.coverImage)
   const logoUrl = extractImageUrl(entry.logo)
@@ -134,7 +128,6 @@ export default async function EntryDetailPage({
     { label: 'Sector', value: entry.sector as string | undefined, Icon: Building2 },
     { label: 'Miembros', value: entry.memberCount as number | undefined, Icon: Users },
     { label: 'Frecuencia', value: entry.meetupFrequency as string | undefined, Icon: Clock },
-    { label: 'Plataforma', value: entry.platform as string | undefined, Icon: Monitor },
     { label: 'Rol', value: entry.role as string | undefined, Icon: UserCheck },
     { label: 'Empresa', value: entry.company as string | undefined, Icon: Building },
     { label: 'Modelo', value: entry.businessModel as string | undefined, Icon: Target },
@@ -348,21 +341,14 @@ export default async function EntryDetailPage({
                 </ExternalLink>
               )}
               {/* Hiring badge */}
-              {startupLike && entry.hiring && (
-                entry.hiringUrl ? (
-                  <ExternalLink
-                    href={entry.hiringUrl as string}
-                    className="inline-flex items-center gap-2 px-4 py-2 border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 font-mono font-semibold text-sm rounded-lg hover:bg-emerald-500/20 transition-colors"
-                  >
-                    <Briefcase className="w-4 h-4" />
-                    Contratando
-                  </ExternalLink>
-                ) : (
-                  <span className="inline-flex items-center gap-2 px-4 py-2 border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 font-mono font-semibold text-sm rounded-lg">
-                    <Briefcase className="w-4 h-4" />
-                    Contratando
-                  </span>
-                )
+              {startupLike && entry.hiringUrl && (
+                <ExternalLink
+                  href={entry.hiringUrl as string}
+                  className="inline-flex items-center gap-2 px-4 py-2 border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 font-mono font-semibold text-sm rounded-lg hover:bg-emerald-500/20 transition-colors"
+                >
+                  <Briefcase className="w-4 h-4" />
+                  Contratando
+                </ExternalLink>
               )}
               {/* Available for hire badge */}
               {entry.availableForHire && (
@@ -425,7 +411,7 @@ export default async function EntryDetailPage({
                 Acerca de
               </h2>
               <div className="prose prose-sm dark:prose-invert prose-p:text-secondary prose-headings:text-primary prose-a:text-accent max-w-none">
-                <RichText data={entry.body as any} />
+                <Markdown>{entry.body as string}</Markdown>
               </div>
             </div>
           )}
@@ -444,46 +430,6 @@ export default async function EntryDetailPage({
                     className="text-xs font-mono px-2 py-1 rounded bg-accent/10 text-accent border border-accent/20"
                   >
                     {tag}
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Skills (person type) */}
-          {skills.length > 0 && (
-            <div className="bg-card/90 backdrop-blur-sm border border-border rounded-lg p-6">
-              <h2 className="font-mono text-xs text-muted uppercase tracking-wider mb-4 flex items-center gap-2">
-                <Wrench className="w-4 h-4 text-accent" />
-                Habilidades
-              </h2>
-              <div className="flex flex-wrap gap-2">
-                {skills.map((s) => (
-                  <span
-                    key={s}
-                    className="text-xs font-mono px-2 py-1 rounded bg-accent/10 text-accent border border-accent/20"
-                  >
-                    {s}
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Services */}
-          {services.length > 0 && (
-            <div className="bg-card/90 backdrop-blur-sm border border-border rounded-lg p-6">
-              <h2 className="font-mono text-xs text-muted uppercase tracking-wider mb-4 flex items-center gap-2">
-                <Cog className="w-4 h-4 text-accent" />
-                Servicios
-              </h2>
-              <div className="flex flex-wrap gap-2">
-                {services.map((s) => (
-                  <span
-                    key={s}
-                    className="text-xs font-mono px-2 py-1 rounded bg-elevated text-secondary border border-border"
-                  >
-                    {s}
                   </span>
                 ))}
               </div>
@@ -510,25 +456,6 @@ export default async function EntryDetailPage({
             </div>
           )}
 
-          {/* Focus areas (community) — blue color coding */}
-          {focusAreas.length > 0 && (
-            <div className="bg-card/90 backdrop-blur-sm border border-border rounded-lg p-6">
-              <h2 className="font-mono text-xs text-muted uppercase tracking-wider mb-4 flex items-center gap-2">
-                <Target className="w-4 h-4 text-accent" />
-                Areas de enfoque
-              </h2>
-              <div className="flex flex-wrap gap-2">
-                {focusAreas.map((a) => (
-                  <span
-                    key={a}
-                    className="text-xs font-mono px-2 py-1 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20"
-                  >
-                    {a}
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
 
         {/* ============================================================ */}

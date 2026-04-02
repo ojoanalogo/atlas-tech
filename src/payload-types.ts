@@ -276,21 +276,7 @@ export interface Entry {
    * Rejection reason or feedback for the entry owner
    */
   moderationNote?: string | null;
-  body?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
+  body?: string | null;
   foundedYear?: number | null;
   stage?: ('Idea' | 'Bootstrap' | 'Pre-seed' | 'Seed' | 'Serie A' | 'Serie B+' | 'Establecida') | null;
   teamSize?: ('1-5' | '6-15' | '16-50' | '51-200' | '200+') | null;
@@ -319,19 +305,12 @@ export interface Entry {
         | 'Otro'
       )
     | null;
-  services?:
-    | {
-        service: string;
-        id?: string | null;
-      }[]
-    | null;
   technologies?:
     | {
         technology: string;
         id?: string | null;
       }[]
     | null;
-  hiring?: boolean | null;
   hiringUrl?: string | null;
   businessModel?: ('B2B' | 'B2C' | 'B2B2C' | 'Marketplace' | 'SaaS' | 'Freemium' | 'Open Source' | 'Otro') | null;
   memberCount?: number | null;
@@ -340,21 +319,8 @@ export interface Entry {
     | null;
   discord?: string | null;
   telegram?: string | null;
-  platform?: ('Discord' | 'Telegram' | 'Slack' | 'WhatsApp' | 'Presencial' | 'Otro') | null;
-  focusAreas?:
-    | {
-        area: string;
-        id?: string | null;
-      }[]
-    | null;
   role?: string | null;
   company?: string | null;
-  skills?:
-    | {
-        skill: string;
-        id?: string | null;
-      }[]
-    | null;
   availableForHire?: boolean | null;
   availableForMentoring?: boolean | null;
   email?: string | null;
@@ -756,40 +722,20 @@ export interface EntriesSelect<T extends boolean = true> {
   stage?: T;
   teamSize?: T;
   sector?: T;
-  services?:
-    | T
-    | {
-        service?: T;
-        id?: T;
-      };
   technologies?:
     | T
     | {
         technology?: T;
         id?: T;
       };
-  hiring?: T;
   hiringUrl?: T;
   businessModel?: T;
   memberCount?: T;
   meetupFrequency?: T;
   discord?: T;
   telegram?: T;
-  platform?: T;
-  focusAreas?:
-    | T
-    | {
-        area?: T;
-        id?: T;
-      };
   role?: T;
   company?: T;
-  skills?:
-    | T
-    | {
-        skill?: T;
-        id?: T;
-      };
   availableForHire?: T;
   availableForMentoring?: T;
   email?: T;

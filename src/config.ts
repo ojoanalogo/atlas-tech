@@ -274,7 +274,7 @@ export interface AtlasCategory {
   slug: string
 }
 
-const DISPLAY_CATEGORIES: AtlasEntryType[] = ['startup', 'consultory', 'community', 'person', 'research-center']
+const DISPLAY_CATEGORIES: AtlasEntryType[] = ['startup', 'business', 'consultory', 'community', 'person', 'research-center']
 
 export const ATLAS_CATEGORIES: AtlasCategory[] = DISPLAY_CATEGORIES.map((type) => ({
   type,

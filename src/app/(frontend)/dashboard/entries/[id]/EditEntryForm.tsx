@@ -1,19 +1,17 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { AuthGuard } from '@/components/auth/AuthGuard'
 import { Breadcrumb } from '@/components/ui/Breadcrumb'
 import { EntryBadge } from '@/components/entries/EntryBadge'
-import { XCircle, X, Plus, ArrowLeft, Save, CheckCircle } from 'lucide-react'
+import { XCircle, X, Plus, ArrowLeft, Save, CheckCircle, Loader2 } from 'lucide-react'
 import {
   SINALOA_CITIES,
   STAGE_OPTIONS,
   TEAM_SIZE_OPTIONS,
   SECTOR_OPTIONS,
   MEETUP_FREQUENCY_OPTIONS,
-  PLATFORM_OPTIONS,
-  FOCUS_AREA_OPTIONS,
   BUSINESS_MODEL_OPTIONS,
   ENTRY_TYPE_CONFIG,
   isStartupLike,
@@ -55,24 +53,22 @@ interface EntryData {
   stage?: string
   teamSize?: string
   sector?: string
-  services?: { service: string; id?: string }[]
   technologies?: { technology: string; id?: string }[]
-  hiring?: boolean
   hiringUrl?: string
   businessModel?: string
   // community
   memberCount?: number
   meetupFrequency?: string
-  platform?: string
-  focusAreas?: { area: string; id?: string }[]
   // person
   role?: string
   company?: string
-  skills?: { skill: string; id?: string }[]
   email?: string
   portfolio?: string
   availableForHire?: boolean
   availableForMentoring?: boolean
+  body?: string | null
+  logo?: { id: number; url?: string; alt?: string } | number | null
+  coverImage?: { id: number; url?: string; alt?: string } | number | null
 }
 
 export function EditEntryForm() {
@@ -105,7 +101,6 @@ export function EditEntryForm() {
   const [stage, setStage] = useState('')
   const [teamSize, setTeamSize] = useState('')
   const [sector, setSector] = useState('')
-  const [services, setServices] = useState('')
   const [technologies, setTechnologies] = useState('')
   const [hiring, setHiring] = useState(false)
   const [hiringUrl, setHiringUrl] = useState('')
@@ -113,17 +108,24 @@ export function EditEntryForm() {
   // community
   const [memberCount, setMemberCount] = useState('')
   const [meetupFrequency, setMeetupFrequency] = useState('')
-  const [platform, setPlatform] = useState('')
-  const [focusAreas, setFocusAreas] = useState<string[]>([])
-  const [focusAreaInput, setFocusAreaInput] = useState('')
   // person
   const [role, setRole] = useState('')
   const [company, setCompany] = useState('')
-  const [skills, setSkills] = useState('')
   const [email, setEmail] = useState('')
   const [portfolio, setPortfolio] = useState('')
   const [availableForHire, setAvailableForHire] = useState(false)
   const [availableForMentoring, setAvailableForMentoring] = useState(false)
+
+  // Body (markdown)
+  const [bodyMarkdown, setBodyMarkdown] = useState('')
+
+  // Images
+  const [logoPreview, setLogoPreview] = useState<string | null>(null)
+  const [coverPreview, setCoverPreview] = useState<string | null>(null)
+  const [uploadingImages, setUploadingImages] = useState(false)
+  const [uploadError, setUploadError] = useState<string | null>(null)
+  const logoRef = useRef<HTMLInputElement>(null)
+  const coverRef = useRef<HTMLInputElement>(null)
 
   // Fetch entry
   useEffect(() => {
@@ -155,22 +157,28 @@ export function EditEntryForm() {
         setStage(data.stage || '')
         setTeamSize(data.teamSize || '')
         setSector(data.sector || '')
-        setServices(data.services?.map((s) => s.service).join(', ') || '')
         setTechnologies(data.technologies?.map((t) => t.technology).join(', ') || '')
-        setHiring(data.hiring || false)
+        setHiring(Boolean(data.hiringUrl))
         setHiringUrl(data.hiringUrl || '')
         setBusinessModel(data.businessModel || '')
         setMemberCount(data.memberCount?.toString() || '')
         setMeetupFrequency(data.meetupFrequency || '')
-        setPlatform(data.platform || '')
-        setFocusAreas(data.focusAreas?.map((f) => f.area) || [])
         setRole(data.role || '')
         setCompany(data.company || '')
-        setSkills(data.skills?.map((s) => s.skill).join(', ') || '')
         setEmail(data.email || '')
         setPortfolio(data.portfolio || '')
         setAvailableForHire(data.availableForHire || false)
         setAvailableForMentoring(data.availableForMentoring || false)
+
+        setBodyMarkdown(data.body || '')
+
+        // Set existing image previews
+        if (data.logo && typeof data.logo === 'object' && 'url' in data.logo) {
+          setLogoPreview(data.logo.url || null)
+        }
+        if (data.coverImage && typeof data.coverImage === 'object' && 'url' in data.coverImage) {
+          setCoverPreview(data.coverImage.url || null)
+        }
       } catch {
         setError('Error de conexion')
       } finally {
@@ -200,22 +208,48 @@ export function EditEntryForm() {
     setTags(tags.filter((t) => t !== tag))
   }
 
-  function addFocusArea(area: string) {
-    const a = area.trim()
-    if (a && !focusAreas.includes(a) && focusAreas.length < 10) {
-      setFocusAreas([...focusAreas, a])
-      setFocusAreaInput('')
+  async function uploadImage(file: File): Promise<number> {
+    const formData = new FormData()
+    formData.append('file', file)
+    const res = await fetch('/api/media/upload', {
+      method: 'POST',
+      body: formData,
+    })
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}))
+      throw new Error(data.error || 'Error al subir imagen')
     }
-  }
-
-  function removeFocusArea(area: string) {
-    setFocusAreas(focusAreas.filter((a) => a !== area))
+    const data = await res.json()
+    return data.id
   }
 
   const handleSave = useCallback(async () => {
     if (!entry) return
     setSaving(true)
     setSaved(false)
+    setUploadError(null)
+
+    // Upload new images if selected
+    let logoId: number | undefined
+    let coverImageId: number | undefined
+
+    const logoFile = logoRef.current?.files?.[0]
+    const coverFile = coverRef.current?.files?.[0]
+
+    if (logoFile || coverFile) {
+      setUploadingImages(true)
+      try {
+        if (logoFile) logoId = await uploadImage(logoFile)
+        if (coverFile) coverImageId = await uploadImage(coverFile)
+      } catch (err) {
+        const message = err instanceof Error ? err.message : 'Error al subir imagenes'
+        setUploadError(message)
+        setUploadingImages(false)
+        setSaving(false)
+        return
+      }
+      setUploadingImages(false)
+    }
 
     const body: Record<string, unknown> = {
       id: entry.id,
@@ -229,18 +263,19 @@ export function EditEntryForm() {
       github: github || undefined,
       youtube: youtube || undefined,
       tags: tags.length > 0 ? tags.map((t) => ({ tag: t })) : undefined,
+      body: bodyMarkdown.trim() || undefined,
     }
+
+    if (logoId) body.logo = logoId
+    if (coverImageId) body.coverImage = coverImageId
 
     if (isStartupLike(entry.entryType)) {
       body.foundedYear = foundedYear ? Number(foundedYear) : undefined
       body.stage = stage || undefined
       body.teamSize = teamSize || undefined
       body.sector = sector || undefined
-      const svcArr = csvToArray(services)
-      body.services = svcArr.length > 0 ? svcArr.map((s) => ({ service: s })) : undefined
       const techArr = csvToArray(technologies)
       body.technologies = techArr.length > 0 ? techArr.map((t) => ({ technology: t })) : undefined
-      body.hiring = hiring
       body.hiringUrl = hiring && hiringUrl ? hiringUrl : undefined
       body.businessModel = businessModel || undefined
     }
@@ -248,8 +283,6 @@ export function EditEntryForm() {
     if (entry.entryType === 'community') {
       body.memberCount = memberCount ? Number(memberCount) : undefined
       body.meetupFrequency = meetupFrequency || undefined
-      body.platform = platform || undefined
-      body.focusAreas = focusAreas.length > 0 ? focusAreas.map((a) => ({ area: a })) : undefined
       body.discord = discord || undefined
       body.telegram = telegram || undefined
     }
@@ -257,8 +290,6 @@ export function EditEntryForm() {
     if (entry.entryType === 'person') {
       body.role = role || undefined
       body.company = company || undefined
-      const skillArr = csvToArray(skills)
-      body.skills = skillArr.length > 0 ? skillArr.map((s) => ({ skill: s })) : undefined
       body.email = email || undefined
       body.portfolio = portfolio || undefined
       body.availableForHire = availableForHire
@@ -285,10 +316,9 @@ export function EditEntryForm() {
     }
   }, [
     entry, name, tagline, city, website, x, instagram, linkedin, github, youtube,
-    discord, telegram, tags, foundedYear, stage, teamSize, sector, services,
+    discord, telegram, tags, bodyMarkdown, foundedYear, stage, teamSize, sector,
     technologies, hiring, hiringUrl, businessModel, memberCount, meetupFrequency,
-    platform, focusAreas, role, company, skills, email, portfolio,
-    availableForHire, availableForMentoring,
+    role, company, email, portfolio, availableForHire, availableForMentoring,
   ])
 
   return (
@@ -374,6 +404,88 @@ export function EditEntryForm() {
                   }}
                   className="space-y-8"
                 >
+                  {/* ── Images ── */}
+                  <div className="space-y-4">
+                    <h2 className="text-lg font-sans font-bold text-primary">Imagenes</h2>
+                    <div className="space-y-3">
+                      <div>
+                        <span className={`${labelClass} block mb-1`}>Logo</span>
+                        {logoPreview && !logoRef.current?.files?.[0] && (
+                          <div className="mb-2 relative w-20 h-20">
+                            <img src={logoPreview} alt="Logo actual" className="w-20 h-20 rounded-lg border border-border object-cover" />
+                          </div>
+                        )}
+                        <input
+                          ref={logoRef}
+                          type="file"
+                          accept="image/jpeg,image/png,image/webp,image/gif"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0]
+                            if (file) {
+                              setLogoPreview(URL.createObjectURL(file))
+                            }
+                          }}
+                          className="w-full text-sm text-muted font-mono file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border file:border-border file:text-sm file:font-mono file:font-semibold file:bg-card file:text-primary hover:file:border-accent file:transition-colors file:cursor-pointer"
+                        />
+                        {logoRef.current?.files?.[0] && logoPreview && (
+                          <div className="mt-2 relative w-20 h-20">
+                            <img src={logoPreview} alt="Logo preview" className="w-20 h-20 rounded-lg border border-border object-cover" />
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setLogoPreview(entry?.logo && typeof entry.logo === 'object' && 'url' in entry.logo ? entry.logo.url || null : null)
+                                if (logoRef.current) logoRef.current.value = ''
+                              }}
+                              className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-red-500 text-white flex items-center justify-center hover:bg-red-600 transition-colors"
+                            >
+                              <X className="w-3 h-3" />
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                      <div>
+                        <span className={`${labelClass} block mb-1`}>Imagen de portada</span>
+                        {coverPreview && !coverRef.current?.files?.[0] && (
+                          <div className="mb-2 relative">
+                            <img src={coverPreview} alt="Portada actual" className="w-full max-h-48 rounded-lg border border-border object-cover" />
+                          </div>
+                        )}
+                        <input
+                          ref={coverRef}
+                          type="file"
+                          accept="image/jpeg,image/png,image/webp,image/gif"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0]
+                            if (file) {
+                              setCoverPreview(URL.createObjectURL(file))
+                            }
+                          }}
+                          className="w-full text-sm text-muted font-mono file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border file:border-border file:text-sm file:font-mono file:font-semibold file:bg-card file:text-primary hover:file:border-accent file:transition-colors file:cursor-pointer"
+                        />
+                        {coverRef.current?.files?.[0] && coverPreview && (
+                          <div className="mt-2 relative">
+                            <img src={coverPreview} alt="Cover preview" className="w-full max-h-48 rounded-lg border border-border object-cover" />
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setCoverPreview(entry?.coverImage && typeof entry.coverImage === 'object' && 'url' in entry.coverImage ? entry.coverImage.url || null : null)
+                                if (coverRef.current) coverRef.current.value = ''
+                              }}
+                              className="absolute top-2 right-2 w-6 h-6 rounded-full bg-red-500 text-white flex items-center justify-center hover:bg-red-600 transition-colors"
+                            >
+                              <X className="w-3 h-3" />
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    {uploadError && (
+                      <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-sm text-red-700 dark:text-red-400">
+                        {uploadError}
+                      </div>
+                    )}
+                  </div>
+
                   {/* ── Basic info ── */}
                   <div className="space-y-4">
                     <h2 className="text-lg font-sans font-bold text-primary">Informacion basica</h2>
@@ -427,6 +539,24 @@ export function EditEntryForm() {
                     </div>
                   </div>
 
+                  {/* ���─ Body (Markdown) ── */}
+                  <div className="space-y-4">
+                    <h2 className="text-lg font-sans font-bold text-primary">Descripcion</h2>
+                    <label className="block">
+                      <span className={labelClass}>Contenido (Markdown)</span>
+                      <textarea
+                        value={bodyMarkdown}
+                        onChange={(e) => setBodyMarkdown(e.target.value)}
+                        rows={8}
+                        placeholder="Describe tu entrada en detalle. Puedes usar Markdown: **negritas**, *italicas*, ## encabezados, - listas, [enlaces](url)"
+                        className={`${inputClass} resize-y`}
+                      />
+                      <p className="text-xs text-muted mt-1 font-mono">
+                        Soporta: encabezados (#), **negritas**, *italicas*, `codigo`, [enlaces](url), listas (- o 1.)
+                      </p>
+                    </label>
+                  </div>
+
                   {/* ── Type-specific: Startup-like ── */}
                   {isStartupLike(entry.entryType) && (
                     <div className="space-y-4">
@@ -472,16 +602,6 @@ export function EditEntryForm() {
                               <option key={o.value} value={o.value}>{o.label}</option>
                             ))}
                           </select>
-                        </label>
-                        <label className="block">
-                          <span className={labelClass}>Servicios</span>
-                          <input
-                            type="text"
-                            value={services}
-                            onChange={(e) => setServices(e.target.value)}
-                            placeholder="ej. Desarrollo web, Consultoria IT (separados por coma)"
-                            className={inputClass}
-                          />
                         </label>
                         <label className="block">
                           <span className={labelClass}>Tecnologias</span>
@@ -554,77 +674,6 @@ export function EditEntryForm() {
                             ))}
                           </select>
                         </label>
-                        <label className="block">
-                          <span className={labelClass}>Plataforma principal</span>
-                          <select value={platform} onChange={(e) => setPlatform(e.target.value)} className={selectClass}>
-                            <option value="">Selecciona</option>
-                            {PLATFORM_OPTIONS.map((o) => (
-                              <option key={o.value} value={o.value}>{o.label}</option>
-                            ))}
-                          </select>
-                        </label>
-                        <div className="block">
-                          <span className={`${labelClass} block mb-1`}>Areas de enfoque</span>
-                          <div className="flex gap-2 flex-wrap mb-2">
-                            {FOCUS_AREA_OPTIONS.map((o) => (
-                              <button
-                                key={o.value}
-                                type="button"
-                                onClick={() => addFocusArea(o.value)}
-                                disabled={focusAreas.includes(o.value) || focusAreas.length >= 10}
-                                className={`text-xs font-mono px-2 py-1 rounded border transition-colors disabled:opacity-40 ${
-                                  focusAreas.includes(o.value)
-                                    ? 'border-accent bg-accent/10 text-accent'
-                                    : 'border-border bg-card text-muted hover:border-accent/50 hover:text-accent'
-                                }`}
-                              >
-                                {o.label}
-                              </button>
-                            ))}
-                          </div>
-                          <div className="flex gap-2">
-                            <input
-                              type="text"
-                              value={focusAreaInput}
-                              onChange={(e) => setFocusAreaInput(e.target.value)}
-                              onKeyDown={(e) => {
-                                if (e.key === 'Enter') {
-                                  e.preventDefault()
-                                  addFocusArea(focusAreaInput)
-                                }
-                              }}
-                              placeholder="Otra area personalizada"
-                              className={`flex-1 px-3 py-2 rounded-lg border border-border bg-card text-primary font-mono text-base sm:text-sm placeholder:text-muted/50 focus:outline-hidden focus:border-accent transition-colors`}
-                            />
-                            <button
-                              type="button"
-                              onClick={() => addFocusArea(focusAreaInput)}
-                              disabled={focusAreas.length >= 10}
-                              className="px-3 py-2 rounded-lg border border-border bg-card text-muted hover:text-accent hover:border-accent transition-colors disabled:opacity-40"
-                            >
-                              <Plus className="w-4 h-4" />
-                            </button>
-                          </div>
-                          {focusAreas.length > 0 && (
-                            <div className="flex flex-wrap gap-2 mt-2">
-                              {focusAreas.map((area) => (
-                                <span
-                                  key={area}
-                                  className="inline-flex items-center gap-1 text-xs font-mono px-2 py-1 rounded bg-accent/10 text-accent border border-accent/20"
-                                >
-                                  {area}
-                                  <button
-                                    type="button"
-                                    onClick={() => removeFocusArea(area)}
-                                    className="hover:text-red-400 transition-colors"
-                                  >
-                                    <X className="w-3 h-3" />
-                                  </button>
-                                </span>
-                              ))}
-                            </div>
-                          )}
-                        </div>
                       </div>
                     </div>
                   )}
@@ -651,16 +700,6 @@ export function EditEntryForm() {
                             value={company}
                             onChange={(e) => setCompany(e.target.value)}
                             placeholder="Empresa actual"
-                            className={inputClass}
-                          />
-                        </label>
-                        <label className="block">
-                          <span className={labelClass}>Habilidades</span>
-                          <input
-                            type="text"
-                            value={skills}
-                            onChange={(e) => setSkills(e.target.value)}
-                            placeholder="ej. React, Node.js, Python (separadas por coma)"
                             className={inputClass}
                           />
                         </label>
@@ -853,11 +892,11 @@ export function EditEntryForm() {
                     </button>
                     <button
                       type="submit"
-                      disabled={saving || !name.trim() || !city}
+                      disabled={saving || uploadingImages || !name.trim() || !city}
                       className="flex items-center gap-2 px-4 py-2 text-sm font-mono font-medium bg-accent text-accent-foreground rounded-md hover:bg-accent/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <Save className="w-4 h-4" />
-                      {saving ? 'Guardando...' : 'Guardar cambios'}
+                      {uploadingImages ? 'Subiendo imagenes...' : saving ? 'Guardando...' : 'Guardar cambios'}
                     </button>
                   </div>
                 </form>

@@ -8,8 +8,6 @@ import {
   TEAM_SIZE_OPTIONS,
   SECTOR_OPTIONS,
   MEETUP_FREQUENCY_OPTIONS,
-  PLATFORM_OPTIONS,
-  FOCUS_AREA_OPTIONS,
   BUSINESS_MODEL_OPTIONS,
   isStartupLike as isStartupLikeType,
 } from '../config'
@@ -194,10 +192,10 @@ export const Entries: CollectionConfig = {
         condition: (data) => data._status === 'draft',
       },
     },
-    // --- Rich text body ---
+    // --- Body (Markdown) ---
     {
       name: 'body',
-      type: 'richText',
+      type: 'textarea',
     },
 
     // --- Startup / Business / Consultory fields ---
@@ -233,14 +231,6 @@ export const Entries: CollectionConfig = {
       },
     },
     {
-      name: 'services',
-      type: 'array',
-      admin: {
-        condition: (_, siblingData) => isStartupLike(siblingData),
-      },
-      fields: [{ name: 'service', type: 'text', required: true }],
-    },
-    {
       name: 'technologies',
       type: 'array',
       admin: {
@@ -249,18 +239,10 @@ export const Entries: CollectionConfig = {
       fields: [{ name: 'technology', type: 'text', required: true }],
     },
     {
-      name: 'hiring',
-      type: 'checkbox',
-      defaultValue: false,
-      admin: {
-        condition: (_, siblingData) => isStartupLike(siblingData),
-      },
-    },
-    {
       name: 'hiringUrl',
       type: 'text',
       admin: {
-        condition: (_, siblingData) => isStartupLike(siblingData) && Boolean(siblingData.hiring),
+        condition: (_, siblingData) => isStartupLike(siblingData),
       },
     },
     {
@@ -302,22 +284,6 @@ export const Entries: CollectionConfig = {
         condition: (_, siblingData) => isCommunity(siblingData),
       },
     },
-    {
-      name: 'platform',
-      type: 'select',
-      options: PLATFORM_OPTIONS,
-      admin: {
-        condition: (_, siblingData) => isCommunity(siblingData),
-      },
-    },
-    {
-      name: 'focusAreas',
-      type: 'array',
-      admin: {
-        condition: (_, siblingData) => isCommunity(siblingData),
-      },
-      fields: [{ name: 'area', type: 'text', required: true }],
-    },
 
     // --- Person fields ---
     {
@@ -333,14 +299,6 @@ export const Entries: CollectionConfig = {
       admin: {
         condition: (_, siblingData) => isPerson(siblingData),
       },
-    },
-    {
-      name: 'skills',
-      type: 'array',
-      admin: {
-        condition: (_, siblingData) => isPerson(siblingData),
-      },
-      fields: [{ name: 'skill', type: 'text', required: true }],
     },
     {
       name: 'availableForHire',

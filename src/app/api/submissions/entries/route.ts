@@ -9,9 +9,9 @@ const ENTRY_ALLOWED_FIELDS = [
   'entryType', 'name', 'slug', 'tagline', 'city', 'state', 'country',
   'logo', 'coverImage', 'tags', 'website', 'x', 'instagram', 'linkedin',
   'github', 'youtube', 'publishDate', 'body', 'foundedYear', 'stage',
-  'teamSize', 'sector', 'services', 'technologies', 'hiring', 'hiringUrl',
+  'teamSize', 'sector', 'technologies', 'hiringUrl',
   'businessModel', 'memberCount', 'meetupFrequency', 'discord', 'telegram',
-  'platform', 'focusAreas', 'role', 'company', 'skills', 'availableForHire',
+  'role', 'company', 'availableForHire',
   'availableForMentoring', 'email', 'portfolio',
 ] as const
 

@@ -14,19 +14,14 @@ export interface WizardState {
   stage: string;
   teamSize: string;
   sector: string;
-  services: string;
   technologies: string;
   hiring: boolean;
   hiringUrl: string;
   memberCount: string;
   meetupFrequency: string;
-  platform: string;
-  focusAreas: string[];
-  focusAreaInput: string;
   businessModel: string;
   role: string;
   company: string;
-  skills: string;
   email: string;
   portfolio: string;
   availableForHire: boolean;
@@ -69,7 +64,7 @@ export type WizardAction =
   | { type: "CLEAR_RESULT" }
   | { type: "RESET" };
 
-const TOTAL_STEPS = 6;
+const TOTAL_STEPS = 5;
 
 const initialState: WizardState = {
   step: 0,
@@ -82,19 +77,14 @@ const initialState: WizardState = {
   stage: "",
   teamSize: "",
   sector: "",
-  services: "",
   technologies: "",
   hiring: false,
   hiringUrl: "",
   memberCount: "",
   meetupFrequency: "",
-  platform: "",
-  focusAreas: [],
-  focusAreaInput: "",
   businessModel: "",
   role: "",
   company: "",
-  skills: "",
   email: "",
   portfolio: "",
   availableForHire: false,
@@ -164,7 +154,7 @@ function buildPayload(state: WizardState) {
     entryType: state.entryType,
     name: state.name,
     tagline: state.tagline || undefined,
-    description: state.description,
+    body: state.description.trim() || undefined,
     city: state.city,
     website: state.website || undefined,
     x: state.x || undefined,
@@ -174,23 +164,18 @@ function buildPayload(state: WizardState) {
     youtube: state.youtube || undefined,
     discord: state.discord || undefined,
     telegram: state.telegram || undefined,
-    tags: state.tags.length > 0 ? state.tags : undefined,
+    tags: state.tags.length > 0 ? state.tags.map((t) => ({ tag: t })) : undefined,
     foundedYear: state.foundedYear ? Number(state.foundedYear) : undefined,
     stage: state.stage || undefined,
     teamSize: state.teamSize || undefined,
     sector: state.sector || undefined,
-    services: csvToArray(state.services),
-    technologies: csvToArray(state.technologies),
-    hiring: state.hiring || undefined,
+    technologies: csvToArray(state.technologies)?.map((t) => ({ technology: t })),
     hiringUrl: state.hiringUrl || undefined,
     memberCount: state.memberCount ? Number(state.memberCount) : undefined,
     meetupFrequency: state.meetupFrequency || undefined,
-    platform: state.platform || undefined,
-    focusAreas: state.focusAreas.length > 0 ? state.focusAreas : undefined,
     businessModel: state.businessModel || undefined,
     role: state.role || undefined,
     company: state.company || undefined,
-    skills: csvToArray(state.skills),
     email: state.email || undefined,
     portfolio: state.portfolio || undefined,
     availableForHire: state.availableForHire || undefined,
