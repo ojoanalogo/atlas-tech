@@ -3,6 +3,7 @@ import { JetBrains_Mono, Space_Grotesk } from 'next/font/google'
 import { ThemeProvider } from '@/components/providers/ThemeProvider'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
+import { InfoBanner } from '@/components/layout/InfoBanner'
 import { MatrixBackground } from '@/components/layout/MatrixBackground'
 
 const jetbrainsMono = JetBrains_Mono({
@@ -25,6 +26,7 @@ export default function FrontendLayout({ children }: { children: React.ReactNode
           <div className="font-sans w-full min-h-screen flex flex-col text-secondary selection:bg-accent selection:text-accent-foreground relative overflow-hidden">
             <MatrixBackground movementDirection="up-left" movementSpeed={0.04} highlight={false} />
             <div className="relative z-10 flex flex-col flex-1">
+              <InfoBanner />
               <Header />
               <main id="main" className="flex-1 md:px-6 lg:px-8">
                 {children}

@@ -69,7 +69,7 @@ function renderEntryItem(entry: Entry) {
   const coverImage = typeof entry.coverImage === 'object' && entry.coverImage !== null ? entry.coverImage as Media : null
 
   return (
-    <div className="entry-item animate-in">
+    <div className="entry-item animate-in h-full">
       <EntryCard
         slug={entry.slug}
         name={entry.name}

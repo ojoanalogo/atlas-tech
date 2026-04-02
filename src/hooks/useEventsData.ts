@@ -53,7 +53,7 @@ function eventDocToTechEvent(doc: Event): TechEvent {
     id: String(doc.id),
     title: doc.title,
     organizer: doc.organizer || '',
-    date: doc.date || '',
+    date: (doc.date || '').split('T')[0],
     startTime: doc.startTime || '',
     endTime: doc.endTime || '',
     description: '',
