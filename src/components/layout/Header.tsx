@@ -46,7 +46,7 @@ export function Header() {
     <>
       {/* Floating bar */}
       <div className="sticky top-0 z-50 px-3">
-        <header className="mx-auto max-w-7xl mt-3 rounded-2xl border border-border bg-card/80 backdrop-blur-[16px] shadow-[0_8px_32px_rgba(0,0,0,0.15),0_0_0_1px_rgba(26,122,79,0.1)]">
+        <header className="mx-auto max-w-7xl mt-3 rounded-2xl border border-border bg-card/80 backdrop-blur-lg shadow-[0_8px_32px_rgba(0,0,0,0.15),0_0_0_1px_rgba(26,122,79,0.1)]">
           <a
             href="#main"
             className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-100 focus:px-4 focus:py-2 focus:bg-accent focus:text-accent-foreground focus:rounded-md focus:text-sm focus:font-mono"

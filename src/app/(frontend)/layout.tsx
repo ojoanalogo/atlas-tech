@@ -1,4 +1,5 @@
 import '@/styles/globals.css'
+import Script from 'next/script'
 import { JetBrains_Mono, Space_Grotesk } from 'next/font/google'
 import { ThemeProvider } from '@/components/providers/ThemeProvider'
 import { Header } from '@/components/layout/Header'
@@ -21,6 +22,16 @@ const spaceGrotesk = Space_Grotesk({
 export default function FrontendLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="es-MX" className={`${jetbrainsMono.variable} ${spaceGrotesk.variable}`} suppressHydrationWarning>
+      <head>
+        {process.env.NODE_ENV === 'production' && (
+          <Script
+            defer
+            src="https://analytics.molecula.digital/script.js"
+            data-website-id="87276dcc-091a-468d-a36f-4f1be4c4e1bc"
+            strategy="afterInteractive"
+          />
+        )}
+      </head>
       <body className="bg-background">
         <ThemeProvider>
           <div className="font-sans w-full min-h-screen flex flex-col text-secondary selection:bg-accent selection:text-accent-foreground relative overflow-hidden">
