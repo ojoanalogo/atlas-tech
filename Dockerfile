@@ -14,7 +14,9 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 ARG DATABASE_URI
+ARG SENTRY_AUTH_TOKEN
 ENV DATABASE_URI=${DATABASE_URI}
+ENV SENTRY_AUTH_TOKEN=${SENTRY_AUTH_TOKEN}
 ENV NODE_OPTIONS="--max-old-space-size=4096"
 
 RUN pnpm generate:importmap
@@ -35,6 +37,8 @@ RUN adduser --system --uid 1001 nextjs
 COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+COPY --from=builder --chown=nextjs:nodejs /app/sentry.server.config.ts ./
+COPY --from=builder --chown=nextjs:nodejs /app/sentry.edge.config.ts ./
 
 USER nextjs
 
