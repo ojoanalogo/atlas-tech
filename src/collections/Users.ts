@@ -3,10 +3,12 @@ import { isAdmin, isAdminOrModerator } from '../access/roles'
 
 export const Users: CollectionConfig = {
   slug: 'users',
+  labels: { singular: 'Usuario CMS', plural: 'Usuarios CMS' },
   auth: true,
   admin: {
     useAsTitle: 'email',
     defaultColumns: ['email', 'role', 'createdAt'],
+    description: 'Administra los usuarios del panel de administración',
   },
   access: {
     create: isAdmin,
@@ -17,12 +19,13 @@ export const Users: CollectionConfig = {
   fields: [
     {
       name: 'role',
+      label: 'Rol',
       type: 'select',
       required: true,
       defaultValue: 'editor',
       options: [
-        { label: 'Admin', value: 'admin' },
-        { label: 'Moderator', value: 'moderator' },
+        { label: 'Administrador', value: 'admin' },
+        { label: 'Moderador', value: 'moderator' },
         { label: 'Editor', value: 'editor' },
       ],
       access: {
@@ -31,6 +34,7 @@ export const Users: CollectionConfig = {
     },
     {
       name: 'displayName',
+      label: 'Nombre para mostrar',
       type: 'text',
     },
   ],

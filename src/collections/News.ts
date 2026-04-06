@@ -4,10 +4,12 @@ import { revalidateEntry } from './hooks/revalidateOnPublish'
 
 export const News: CollectionConfig = {
   slug: 'news',
+  labels: { singular: 'Noticia', plural: 'Noticias' },
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'author', '_status', 'publishDate'],
     listSearchableFields: ['title', 'excerpt'],
+    description: 'Publica artículos, noticias y actualizaciones para la comunidad de Atlas Tech',
   },
   access: {
     create: isAdminOrEditor,
@@ -25,18 +27,14 @@ export const News: CollectionConfig = {
   },
   fields: [
     {
-      name: 'title',
-      type: 'text',
-      required: true,
-    },
-    {
       name: 'slug',
+      label: 'Slug',
       type: 'text',
       required: true,
       unique: true,
       admin: {
         position: 'sidebar',
-        description: 'URL slug. Auto-generated from title if left empty.',
+        description: 'Se genera automáticamente a partir del título si se deja vacío.',
       },
       hooks: {
         beforeValidate: [
@@ -55,46 +53,74 @@ export const News: CollectionConfig = {
       },
     },
     {
-      name: 'excerpt',
-      type: 'textarea',
-      admin: {
-        description: 'Short summary for listings and SEO (max 200 chars)',
-      },
-      maxLength: 200,
-    },
-    {
-      name: 'coverImage',
-      type: 'upload',
-      relationTo: 'media',
-    },
-    {
-      name: 'body',
-      type: 'richText',
-      required: true,
-    },
-    {
       name: 'author',
+      label: 'Autor',
       type: 'relationship',
       relationTo: 'users',
       admin: { position: 'sidebar' },
     },
     {
       name: 'publishDate',
+      label: 'Fecha de publicación',
       type: 'date',
       required: true,
       admin: { position: 'sidebar', date: { pickerAppearance: 'dayOnly' } },
     },
     {
-      name: 'tags',
-      type: 'array',
-      maxRows: 10,
-      fields: [{ name: 'tag', type: 'text', required: true }],
-    },
-    {
       name: 'featured',
+      label: 'Destacada',
       type: 'checkbox',
       defaultValue: false,
       admin: { position: 'sidebar' },
+    },
+    {
+      type: 'tabs',
+      tabs: [
+        {
+          label: 'Contenido',
+          fields: [
+            {
+              name: 'title',
+              label: 'Título',
+              type: 'text',
+              required: true,
+            },
+            {
+              name: 'excerpt',
+              label: 'Extracto',
+              type: 'textarea',
+              admin: {
+                description: 'Resumen corto para listados y SEO (máx. 200 caracteres)',
+              },
+              maxLength: 200,
+            },
+            {
+              name: 'coverImage',
+              label: 'Imagen de portada',
+              type: 'upload',
+              relationTo: 'media',
+            },
+            {
+              name: 'body',
+              label: 'Contenido',
+              type: 'richText',
+              required: true,
+            },
+          ],
+        },
+        {
+          label: 'Etiquetas',
+          fields: [
+            {
+              name: 'tags',
+              label: 'Etiquetas',
+              type: 'array',
+              maxRows: 10,
+              fields: [{ name: 'tag', label: 'Etiqueta', type: 'text', required: true }],
+            },
+          ],
+        },
+      ],
     },
   ],
 }

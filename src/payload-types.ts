@@ -126,6 +126,8 @@ export interface UserAuthOperations {
   };
 }
 /**
+ * Sube y gestiona imágenes para el sitio
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "media".
  */
@@ -172,6 +174,8 @@ export interface Media {
   };
 }
 /**
+ * Administra los usuarios del panel de administración
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users".
  */
@@ -199,18 +203,18 @@ export interface User {
   collection: 'users';
 }
 /**
+ * Gestiona startups, empresas, comunidades y personas en el directorio
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "entries".
  */
 export interface Entry {
   id: number;
   entryType: 'startup' | 'community' | 'business' | 'consultory' | 'research-center' | 'person';
-  name: string;
   /**
-   * URL-friendly identifier. Auto-generated from name if left empty.
+   * Se genera automáticamente a partir del nombre si se deja vacío.
    */
   slug: string;
-  tagline?: string | null;
   city:
     | 'global'
     | 'ahome'
@@ -233,50 +237,46 @@ export interface Entry {
     | 'sinaloa-de-leyva';
   state?: string | null;
   country?: string | null;
-  logo?: (number | null) | Media;
-  coverImage?: (number | null) | Media;
-  tags?:
-    | {
-        tag: string;
-        id?: string | null;
-      }[]
-    | null;
   verified?: boolean | null;
   featured?: boolean | null;
-  /**
-   * Full URL (https://...)
-   */
-  website?: string | null;
-  /**
-   * X/Twitter handle
-   */
-  x?: string | null;
-  /**
-   * Instagram handle
-   */
-  instagram?: string | null;
-  /**
-   * LinkedIn URL or handle
-   */
-  linkedin?: string | null;
-  /**
-   * GitHub username
-   */
-  github?: string | null;
-  /**
-   * YouTube channel URL
-   */
-  youtube?: string | null;
   publishDate?: string | null;
   /**
-   * better-auth user ID of the entry owner
+   * ID de usuario better-auth del propietario
    */
   owner?: string | null;
   /**
-   * Rejection reason or feedback for the entry owner
+   * Razón de rechazo o retroalimentación para el propietario
    */
   moderationNote?: string | null;
+  name: string;
+  tagline?: string | null;
+  logo?: (number | null) | Media;
+  coverImage?: (number | null) | Media;
   body?: string | null;
+  /**
+   * URL completa (https://...)
+   */
+  website?: string | null;
+  /**
+   * Handle de X/Twitter
+   */
+  x?: string | null;
+  /**
+   * Handle de Instagram
+   */
+  instagram?: string | null;
+  /**
+   * URL o handle de LinkedIn
+   */
+  linkedin?: string | null;
+  /**
+   * Usuario de GitHub
+   */
+  github?: string | null;
+  /**
+   * URL del canal de YouTube
+   */
+  youtube?: string | null;
   foundedYear?: number | null;
   stage?: ('Idea' | 'Bootstrap' | 'Pre-seed' | 'Seed' | 'Serie A' | 'Serie B+' | 'Establecida') | null;
   teamSize?: ('1-5' | '6-15' | '16-50' | '51-200' | '200+') | null;
@@ -325,26 +325,37 @@ export interface Entry {
   availableForMentoring?: boolean | null;
   email?: string | null;
   /**
-   * Portfolio URL
+   * URL del portafolio
    */
   portfolio?: string | null;
+  tags?:
+    | {
+        tag: string;
+        id?: string | null;
+      }[]
+    | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
 }
 /**
+ * Publica artículos, noticias y actualizaciones para la comunidad de Atlas Tech
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "news".
  */
 export interface News {
   id: number;
-  title: string;
   /**
-   * URL slug. Auto-generated from title if left empty.
+   * Se genera automáticamente a partir del título si se deja vacío.
    */
   slug: string;
+  author?: (number | null) | User;
+  publishDate: string;
+  featured?: boolean | null;
+  title: string;
   /**
-   * Short summary for listings and SEO (max 200 chars)
+   * Resumen corto para listados y SEO (máx. 200 caracteres)
    */
   excerpt?: string | null;
   coverImage?: (number | null) | Media;
@@ -363,20 +374,19 @@ export interface News {
     };
     [k: string]: unknown;
   };
-  author?: (number | null) | User;
-  publishDate: string;
   tags?:
     | {
         tag: string;
         id?: string | null;
       }[]
     | null;
-  featured?: boolean | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
 }
 /**
+ * Publica ofertas de empleo y oportunidades laborales
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "jobs".
  */
@@ -384,7 +394,7 @@ export interface Job {
   id: number;
   title: string;
   /**
-   * URL slug. Auto-generated from title if left empty.
+   * Se genera automáticamente a partir del título si se deja vacío.
    */
   slug: string;
   description: {
@@ -428,7 +438,7 @@ export interface Job {
       )
     | null;
   /**
-   * Flexible format: "$15k/mo", "Voluntario", "Equity", etc.
+   * Formato libre: "$15k/mes", "Voluntario", "Equity", etc.
    */
   compensation?: string | null;
   tags?:
@@ -438,23 +448,23 @@ export interface Job {
       }[]
     | null;
   /**
-   * URL or email for applicants to contact
+   * URL o correo para que los postulantes se comuniquen
    */
   contactUrl: string;
   /**
-   * better-auth user ID of the poster
+   * ID de usuario better-auth del publicador
    */
   postedBy?: string | null;
   /**
-   * Rejection reason or feedback for the job poster
+   * Razón de rechazo o retroalimentación para el publicador
    */
   moderationNote?: string | null;
   /**
-   * Link to the company/org that posted this job (optional)
+   * Empresa u organización que publicó este empleo (opcional)
    */
   entry?: (number | null) | Entry;
   /**
-   * Job listing expiration date (default: 30 days from creation)
+   * Fecha de expiración de la oferta (por defecto: 30 días)
    */
   expiresAt: string;
   updatedAt: string;
@@ -462,6 +472,8 @@ export interface Job {
   _status?: ('draft' | 'published') | null;
 }
 /**
+ * Agenda y promueve eventos y meetups de la comunidad
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "events".
  */
@@ -486,32 +498,32 @@ export interface Event {
   } | null;
   date: string;
   /**
-   * e.g. 10:00 AM
+   * Ej. 10:00 AM
    */
   startTime?: string | null;
   /**
-   * e.g. 12:00 PM
+   * Ej. 12:00 PM
    */
   endTime?: string | null;
   /**
-   * Venue name or address
+   * Nombre del lugar o dirección
    */
   location?: string | null;
   /**
-   * Google Maps link
+   * Link de Google Maps
    */
   mapsUrl?: string | null;
   modality: 'in-person' | 'online' | 'hybrid';
   /**
-   * Video call link (Zoom, Meet, etc.)
+   * Link de Zoom, Meet, etc.
    */
   meetLink?: string | null;
   /**
-   * Event page URL
+   * Página del evento
    */
   url?: string | null;
   /**
-   * Registration link
+   * Link de registro
    */
   registerUrl?: string | null;
   image?: (number | null) | Media;
@@ -692,32 +704,26 @@ export interface UsersSelect<T extends boolean = true> {
  */
 export interface EntriesSelect<T extends boolean = true> {
   entryType?: T;
-  name?: T;
   slug?: T;
-  tagline?: T;
   city?: T;
   state?: T;
   country?: T;
-  logo?: T;
-  coverImage?: T;
-  tags?:
-    | T
-    | {
-        tag?: T;
-        id?: T;
-      };
   verified?: T;
   featured?: T;
+  publishDate?: T;
+  owner?: T;
+  moderationNote?: T;
+  name?: T;
+  tagline?: T;
+  logo?: T;
+  coverImage?: T;
+  body?: T;
   website?: T;
   x?: T;
   instagram?: T;
   linkedin?: T;
   github?: T;
   youtube?: T;
-  publishDate?: T;
-  owner?: T;
-  moderationNote?: T;
-  body?: T;
   foundedYear?: T;
   stage?: T;
   teamSize?: T;
@@ -740,6 +746,12 @@ export interface EntriesSelect<T extends boolean = true> {
   availableForMentoring?: T;
   email?: T;
   portfolio?: T;
+  tags?:
+    | T
+    | {
+        tag?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -749,20 +761,20 @@ export interface EntriesSelect<T extends boolean = true> {
  * via the `definition` "news_select".
  */
 export interface NewsSelect<T extends boolean = true> {
-  title?: T;
   slug?: T;
+  author?: T;
+  publishDate?: T;
+  featured?: T;
+  title?: T;
   excerpt?: T;
   coverImage?: T;
   body?: T;
-  author?: T;
-  publishDate?: T;
   tags?:
     | T
     | {
         tag?: T;
         id?: T;
       };
-  featured?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;

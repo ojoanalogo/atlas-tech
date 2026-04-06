@@ -25,10 +25,12 @@ const isPerson = (siblingData: Record<string, unknown>) =>
 
 export const Entries: CollectionConfig = {
   slug: 'entries',
+  labels: { singular: 'Registro', plural: 'Registros' },
   admin: {
     useAsTitle: 'name',
     defaultColumns: ['name', 'entryType', 'city', '_status', 'updatedAt'],
     listSearchableFields: ['name', 'tagline', 'tags'],
+    description: 'Gestiona startups, empresas, comunidades y personas en el directorio',
   },
   access: {
     create: isAdminOrModerator,
@@ -45,9 +47,10 @@ export const Entries: CollectionConfig = {
     afterChange: [revalidateEntry],
   },
   fields: [
-    // --- Base fields ---
+    // --- Sidebar fields ---
     {
       name: 'entryType',
+      label: 'Tipo de registro',
       type: 'select',
       required: true,
       options: entryTypeOptions,
@@ -56,18 +59,14 @@ export const Entries: CollectionConfig = {
       },
     },
     {
-      name: 'name',
-      type: 'text',
-      required: true,
-    },
-    {
       name: 'slug',
+      label: 'Slug',
       type: 'text',
       required: true,
       unique: true,
       admin: {
         position: 'sidebar',
-        description: 'URL-friendly identifier. Auto-generated from name if left empty.',
+        description: 'Se genera automáticamente a partir del nombre si se deja vacío.',
       },
       hooks: {
         beforeValidate: [
@@ -86,11 +85,8 @@ export const Entries: CollectionConfig = {
       },
     },
     {
-      name: 'tagline',
-      type: 'text',
-    },
-    {
       name: 'city',
+      label: 'Ciudad',
       type: 'select',
       required: true,
       options: CITY_SELECT_OPTIONS,
@@ -100,236 +96,299 @@ export const Entries: CollectionConfig = {
     },
     {
       name: 'state',
+      label: 'Estado',
       type: 'text',
       defaultValue: 'Sinaloa',
       admin: { position: 'sidebar' },
     },
     {
       name: 'country',
+      label: 'País',
       type: 'text',
       defaultValue: 'México',
       admin: { position: 'sidebar' },
     },
     {
-      name: 'logo',
-      type: 'upload',
-      relationTo: 'media',
-    },
-    {
-      name: 'coverImage',
-      type: 'upload',
-      relationTo: 'media',
-    },
-    {
-      name: 'tags',
-      type: 'array',
-      maxRows: 10,
-      fields: [
-        {
-          name: 'tag',
-          type: 'text',
-          required: true,
-        },
-      ],
-    },
-    {
       name: 'verified',
+      label: 'Verificado',
       type: 'checkbox',
       defaultValue: false,
       admin: { position: 'sidebar' },
     },
     {
       name: 'featured',
+      label: 'Destacado',
       type: 'checkbox',
       defaultValue: false,
       admin: { position: 'sidebar' },
     },
-    // --- Social links ---
-    {
-      name: 'website',
-      type: 'text',
-      admin: { description: 'Full URL (https://...)' },
-    },
-    {
-      type: 'row',
-      fields: [
-        { name: 'x', type: 'text', admin: { width: '50%', description: 'X/Twitter handle' } },
-        { name: 'instagram', type: 'text', admin: { width: '50%', description: 'Instagram handle' } },
-      ],
-    },
-    {
-      type: 'row',
-      fields: [
-        { name: 'linkedin', type: 'text', admin: { width: '50%', description: 'LinkedIn URL or handle' } },
-        { name: 'github', type: 'text', admin: { width: '50%', description: 'GitHub username' } },
-      ],
-    },
-    {
-      name: 'youtube',
-      type: 'text',
-      admin: { description: 'YouTube channel URL' },
-    },
     {
       name: 'publishDate',
+      label: 'Fecha de publicación',
       type: 'date',
       admin: { position: 'sidebar' },
     },
     {
       name: 'owner',
+      label: 'Propietario',
       type: 'text',
       index: true,
       admin: {
         position: 'sidebar',
-        description: 'better-auth user ID of the entry owner',
+        description: 'ID de usuario better-auth del propietario',
       },
     },
     {
       name: 'moderationNote',
+      label: 'Nota de moderación',
       type: 'textarea',
       admin: {
         position: 'sidebar',
-        description: 'Rejection reason or feedback for the entry owner',
+        description: 'Razón de rechazo o retroalimentación para el propietario',
         condition: (data) => data._status === 'draft',
       },
     },
-    // --- Body (Markdown) ---
+    // --- Tabs ---
     {
-      name: 'body',
-      type: 'textarea',
-    },
-
-    // --- Startup / Business / Consultory fields ---
-    {
-      name: 'foundedYear',
-      type: 'number',
-      admin: {
-        condition: (_, siblingData) => isStartupLike(siblingData),
-      },
-    },
-    {
-      name: 'stage',
-      type: 'select',
-      options: STAGE_OPTIONS,
-      admin: {
-        condition: (_, siblingData) => isStartupLike(siblingData),
-      },
-    },
-    {
-      name: 'teamSize',
-      type: 'select',
-      options: TEAM_SIZE_OPTIONS,
-      admin: {
-        condition: (_, siblingData) => isStartupLike(siblingData),
-      },
-    },
-    {
-      name: 'sector',
-      type: 'select',
-      options: SECTOR_OPTIONS,
-      admin: {
-        condition: (_, siblingData) => isStartupLike(siblingData),
-      },
-    },
-    {
-      name: 'technologies',
-      type: 'array',
-      admin: {
-        condition: (_, siblingData) => isStartupLike(siblingData),
-      },
-      fields: [{ name: 'technology', type: 'text', required: true }],
-    },
-    {
-      name: 'hiringUrl',
-      type: 'text',
-      admin: {
-        condition: (_, siblingData) => isStartupLike(siblingData),
-      },
-    },
-    {
-      name: 'businessModel',
-      type: 'select',
-      options: BUSINESS_MODEL_OPTIONS,
-      admin: {
-        condition: (_, siblingData) => isStartupLike(siblingData),
-      },
-    },
-
-    // --- Community fields ---
-    {
-      name: 'memberCount',
-      type: 'number',
-      admin: {
-        condition: (_, siblingData) => isCommunity(siblingData),
-      },
-    },
-    {
-      name: 'meetupFrequency',
-      type: 'select',
-      options: MEETUP_FREQUENCY_OPTIONS,
-      admin: {
-        condition: (_, siblingData) => isCommunity(siblingData),
-      },
-    },
-    {
-      name: 'discord',
-      type: 'text',
-      admin: {
-        condition: (_, siblingData) => isCommunity(siblingData),
-      },
-    },
-    {
-      name: 'telegram',
-      type: 'text',
-      admin: {
-        condition: (_, siblingData) => isCommunity(siblingData),
-      },
-    },
-
-    // --- Person fields ---
-    {
-      name: 'role',
-      type: 'text',
-      admin: {
-        condition: (_, siblingData) => isPerson(siblingData),
-      },
-    },
-    {
-      name: 'company',
-      type: 'text',
-      admin: {
-        condition: (_, siblingData) => isPerson(siblingData),
-      },
-    },
-    {
-      name: 'availableForHire',
-      type: 'checkbox',
-      defaultValue: false,
-      admin: {
-        condition: (_, siblingData) => isPerson(siblingData),
-      },
-    },
-    {
-      name: 'availableForMentoring',
-      type: 'checkbox',
-      defaultValue: false,
-      admin: {
-        condition: (_, siblingData) => isPerson(siblingData),
-      },
-    },
-    {
-      name: 'email',
-      type: 'email',
-      admin: {
-        condition: (_, siblingData) => isPerson(siblingData),
-      },
-    },
-    {
-      name: 'portfolio',
-      type: 'text',
-      admin: {
-        condition: (_, siblingData) => isPerson(siblingData),
-        description: 'Portfolio URL',
-      },
+      type: 'tabs',
+      tabs: [
+        {
+          label: 'General',
+          fields: [
+            {
+              name: 'name',
+              label: 'Nombre',
+              type: 'text',
+              required: true,
+            },
+            {
+              name: 'tagline',
+              label: 'Eslogan',
+              type: 'text',
+            },
+            {
+              name: 'logo',
+              label: 'Logo',
+              type: 'upload',
+              relationTo: 'media',
+            },
+            {
+              name: 'coverImage',
+              label: 'Imagen de portada',
+              type: 'upload',
+              relationTo: 'media',
+            },
+            {
+              name: 'body',
+              label: 'Descripción',
+              type: 'textarea',
+            },
+          ],
+        },
+        {
+          label: 'Enlaces',
+          fields: [
+            {
+              name: 'website',
+              label: 'Sitio web',
+              type: 'text',
+              admin: { description: 'URL completa (https://...)' },
+            },
+            {
+              type: 'row',
+              fields: [
+                { name: 'x', label: 'X / Twitter', type: 'text', admin: { width: '50%', description: 'Handle de X/Twitter' } },
+                { name: 'instagram', label: 'Instagram', type: 'text', admin: { width: '50%', description: 'Handle de Instagram' } },
+              ],
+            },
+            {
+              type: 'row',
+              fields: [
+                { name: 'linkedin', label: 'LinkedIn', type: 'text', admin: { width: '50%', description: 'URL o handle de LinkedIn' } },
+                { name: 'github', label: 'GitHub', type: 'text', admin: { width: '50%', description: 'Usuario de GitHub' } },
+              ],
+            },
+            {
+              name: 'youtube',
+              label: 'YouTube',
+              type: 'text',
+              admin: { description: 'URL del canal de YouTube' },
+            },
+          ],
+        },
+        {
+          label: 'Detalles',
+          fields: [
+            // --- Startup / Business / Consultory fields ---
+            {
+              name: 'foundedYear',
+              label: 'Año de fundación',
+              type: 'number',
+              admin: {
+                condition: (_, siblingData) => isStartupLike(siblingData),
+              },
+            },
+            {
+              name: 'stage',
+              label: 'Etapa',
+              type: 'select',
+              options: STAGE_OPTIONS,
+              admin: {
+                condition: (_, siblingData) => isStartupLike(siblingData),
+              },
+            },
+            {
+              name: 'teamSize',
+              label: 'Tamaño del equipo',
+              type: 'select',
+              options: TEAM_SIZE_OPTIONS,
+              admin: {
+                condition: (_, siblingData) => isStartupLike(siblingData),
+              },
+            },
+            {
+              name: 'sector',
+              label: 'Sector',
+              type: 'select',
+              options: SECTOR_OPTIONS,
+              admin: {
+                condition: (_, siblingData) => isStartupLike(siblingData),
+              },
+            },
+            {
+              name: 'technologies',
+              label: 'Tecnologías',
+              type: 'array',
+              admin: {
+                condition: (_, siblingData) => isStartupLike(siblingData),
+              },
+              fields: [{ name: 'technology', label: 'Tecnología', type: 'text', required: true }],
+            },
+            {
+              name: 'hiringUrl',
+              label: 'URL de contratación',
+              type: 'text',
+              admin: {
+                condition: (_, siblingData) => isStartupLike(siblingData),
+              },
+            },
+            {
+              name: 'businessModel',
+              label: 'Modelo de negocio',
+              type: 'select',
+              options: BUSINESS_MODEL_OPTIONS,
+              admin: {
+                condition: (_, siblingData) => isStartupLike(siblingData),
+              },
+            },
+            // --- Community fields ---
+            {
+              name: 'memberCount',
+              label: 'Número de miembros',
+              type: 'number',
+              admin: {
+                condition: (_, siblingData) => isCommunity(siblingData),
+              },
+            },
+            {
+              name: 'meetupFrequency',
+              label: 'Frecuencia de meetups',
+              type: 'select',
+              options: MEETUP_FREQUENCY_OPTIONS,
+              admin: {
+                condition: (_, siblingData) => isCommunity(siblingData),
+              },
+            },
+            {
+              name: 'discord',
+              label: 'Discord',
+              type: 'text',
+              admin: {
+                condition: (_, siblingData) => isCommunity(siblingData),
+              },
+            },
+            {
+              name: 'telegram',
+              label: 'Telegram',
+              type: 'text',
+              admin: {
+                condition: (_, siblingData) => isCommunity(siblingData),
+              },
+            },
+            // --- Person fields ---
+            {
+              name: 'role',
+              label: 'Rol',
+              type: 'text',
+              admin: {
+                condition: (_, siblingData) => isPerson(siblingData),
+              },
+            },
+            {
+              name: 'company',
+              label: 'Empresa',
+              type: 'text',
+              admin: {
+                condition: (_, siblingData) => isPerson(siblingData),
+              },
+            },
+            {
+              name: 'availableForHire',
+              label: 'Disponible para contratar',
+              type: 'checkbox',
+              defaultValue: false,
+              admin: {
+                condition: (_, siblingData) => isPerson(siblingData),
+              },
+            },
+            {
+              name: 'availableForMentoring',
+              label: 'Disponible para mentoría',
+              type: 'checkbox',
+              defaultValue: false,
+              admin: {
+                condition: (_, siblingData) => isPerson(siblingData),
+              },
+            },
+            {
+              name: 'email',
+              label: 'Correo electrónico',
+              type: 'email',
+              admin: {
+                condition: (_, siblingData) => isPerson(siblingData),
+              },
+            },
+            {
+              name: 'portfolio',
+              label: 'Portafolio',
+              type: 'text',
+              admin: {
+                condition: (_, siblingData) => isPerson(siblingData),
+                description: 'URL del portafolio',
+              },
+            },
+          ],
+        },
+        {
+          label: 'Etiquetas',
+          fields: [
+            {
+              name: 'tags',
+              label: 'Etiquetas',
+              type: 'array',
+              maxRows: 10,
+              fields: [
+                {
+                  name: 'tag',
+                  label: 'Etiqueta',
+                  type: 'text',
+                  required: true,
+                },
+              ],
+            },
+          ],
+        },
+      ],
     },
   ],
 }

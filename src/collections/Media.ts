@@ -3,6 +3,10 @@ import { isAuthenticated, isAdminOrModerator } from '../access/roles'
 
 export const Media: CollectionConfig = {
   slug: 'media',
+  labels: { singular: 'Imagen', plural: 'Imágenes' },
+  admin: {
+    description: 'Sube y gestiona imágenes para el sitio',
+  },
   access: {
     read: () => true,
     create: isAuthenticated,
@@ -35,6 +39,7 @@ export const Media: CollectionConfig = {
   fields: [
     {
       name: 'alt',
+      label: 'Texto alternativo',
       type: 'text',
       required: true,
     },

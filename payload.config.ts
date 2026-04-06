@@ -1,6 +1,7 @@
 import { buildConfig } from 'payload'
+import { es } from '@payloadcms/translations/languages/es'
 import { postgresAdapter } from '@payloadcms/db-postgres'
-import { lexicalEditor } from '@payloadcms/richtext-lexical'
+import { lexicalEditor, FixedToolbarFeature } from '@payloadcms/richtext-lexical'
 import { s3Storage } from '@payloadcms/storage-s3'
 import path from 'path'
 import { fileURLToPath } from 'url'
@@ -22,6 +23,17 @@ export default buildConfig({
     importMap: {
       baseDir: path.resolve(dirname),
     },
+    components: {
+      views: {
+        dashboard: {
+          Component: '/src/components/payload/Dashboard',
+        },
+      },
+    },
+  },
+  i18n: {
+    supportedLanguages: { es },
+    fallbackLanguage: 'es',
   },
   collections: [Media, Users, Entries, News, Jobs, Events],
   secret: process.env.PAYLOAD_SECRET || '',
@@ -35,7 +47,9 @@ export default buildConfig({
     schemaName: 'payload',
     push: process.env.NODE_ENV !== 'production',
   }),
-  editor: lexicalEditor(),
+  editor: lexicalEditor({
+    features: ({ defaultFeatures }) => [...defaultFeatures, FixedToolbarFeature()],
+  }),
   sharp,
   plugins: [
     s3Storage({
