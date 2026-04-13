@@ -54,14 +54,14 @@ function EventCard({ ev }: { ev: TechEvent }) {
             <EventTypeBadge isInPerson={ev.isInPerson} />
           </span>
         </div>
-        <div className="flex items-center gap-2 mt-0.5">
+        <div className="flex items-center gap-2 mt-0.5 overflow-hidden">
           {ev.organizer && (
-            <span className="text-xs font-mono text-muted truncate">
+            <span className="text-xs font-mono text-muted truncate min-w-0">
               {ev.organizer}
             </span>
           )}
           {ev.startTime && (
-            <span className="text-xs font-mono text-muted">
+            <span className="text-xs font-mono text-muted shrink-0 whitespace-nowrap">
               · {ev.startTime}
             </span>
           )}

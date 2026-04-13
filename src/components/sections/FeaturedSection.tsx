@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { EntryCard } from '@/components/entries/EntryCard'
 import FeaturedCarousel from '@/components/entries/FeaturedCarousel'
-import { getCityName, type AtlasEntryType } from '@/config'
+import { type AtlasEntryType } from '@/config'
 
 interface FeaturedEntry {
   slug: string
@@ -22,18 +22,6 @@ export function FeaturedSection({ entries }: FeaturedSectionProps) {
   if (entries.length === 0) return null
 
   const displayEntries = entries.slice(0, 6)
-
-  const carouselEntries = displayEntries.map((entry) => ({
-    slug: entry.slug,
-    name: entry.name,
-    tagline: entry.tagline ?? undefined,
-    entryType: entry.entryType,
-    logoSrc: typeof entry.logo === 'object' && entry.logo?.url ? entry.logo.url : undefined,
-    coverSrc: typeof entry.coverImage === 'object' && entry.coverImage?.url ? entry.coverImage.url : undefined,
-    city: entry.city,
-    cityName: getCityName(entry.city),
-    tags: (entry.tags || []).map((t) => (typeof t === 'string' ? t : t.tag)),
-  }))
 
   return (
     <section className="py-4 px-4">
@@ -70,7 +58,7 @@ export function FeaturedSection({ entries }: FeaturedSectionProps) {
 
         {/* Mobile carousel */}
         <div className="sm:hidden">
-          <FeaturedCarousel entries={carouselEntries} />
+          <FeaturedCarousel entries={displayEntries} />
         </div>
 
         {/* Desktop grid */}

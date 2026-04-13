@@ -45,7 +45,7 @@ export default buildConfig({
       connectionString: process.env.DATABASE_URI || '',
     },
     schemaName: 'payload',
-    push: process.env.NODE_ENV !== 'production',
+    push: false,
   }),
   editor: lexicalEditor({
     features: ({ defaultFeatures }) => [...defaultFeatures, FixedToolbarFeature()],

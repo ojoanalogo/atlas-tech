@@ -181,7 +181,7 @@ export interface Media {
  */
 export interface User {
   id: number;
-  role: 'admin' | 'moderator' | 'editor';
+  role: 'admin' | 'editor';
   displayName?: string | null;
   updatedAt: string;
   createdAt: string;
@@ -497,13 +497,7 @@ export interface Event {
     [k: string]: unknown;
   } | null;
   date: string;
-  /**
-   * Ej. 10:00 AM
-   */
   startTime?: string | null;
-  /**
-   * Ej. 12:00 PM
-   */
   endTime?: string | null;
   /**
    * Nombre del lugar o dirección

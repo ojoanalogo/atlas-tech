@@ -41,7 +41,7 @@ export function EntryCard({ slug, name, tagline, entryType, logo, coverImage, ci
         <div className="absolute top-2 left-2"><EntryBadge entryType={entryType} /></div>
       </div>
       <div className="p-4 space-y-2 flex-1 flex flex-col">
-        <h3 className="font-semibold text-primary text-sm line-clamp-1 group-hover:text-accent transition-colors">{name}</h3>
+        <h3 className="font-semibold text-primary text-sm group-hover:text-accent transition-colors">{name}</h3>
         {tagline && <p className="text-secondary text-sm mt-1 line-clamp-2">{tagline}</p>}
         <p className="text-muted text-2xs font-mono mt-2 flex items-center gap-1"><MapPin className="w-3 h-3 shrink-0" />{getCityName(city)}</p>
         {displayTags.length > 0 && (

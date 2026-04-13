@@ -482,14 +482,14 @@ export default async function EntryDetailPage({
                   </span>
                 </div>
                 {details.map((detail) => (
-                  <div key={detail.label} className="flex items-center justify-between">
-                    <span className="text-sm text-muted flex items-center gap-1.5">
-                      <detail.Icon className="w-3.5 h-3.5 text-muted" />
+                  <div key={detail.label} className="flex items-start justify-between gap-3">
+                    <span className="text-sm text-muted flex items-center gap-1.5 shrink-0">
+                      <detail.Icon className="w-3.5 h-3.5 text-muted shrink-0" />
                       {detail.label}
                     </span>
-                    <span className="text-sm font-mono text-primary flex items-center gap-1.5">
+                    <span className="text-sm font-mono text-primary flex items-center gap-1.5 text-right">
                       {detail.ValueIcon && (
-                        <detail.ValueIcon className="w-3.5 h-3.5 text-accent" />
+                        <detail.ValueIcon className="w-3.5 h-3.5 text-accent shrink-0" />
                       )}
                       {detail.value}
                     </span>

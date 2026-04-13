@@ -1,5 +1,5 @@
 import type { CollectionConfig } from 'payload'
-import { isAdmin, isAdminOrModerator } from '../access/roles'
+import { isAdmin, isAdminOrEditor } from '../access/roles'
 
 export const Users: CollectionConfig = {
   slug: 'users',
@@ -12,7 +12,7 @@ export const Users: CollectionConfig = {
   },
   access: {
     create: isAdmin,
-    read: isAdminOrModerator,
+    read: isAdminOrEditor,
     update: isAdmin,
     delete: isAdmin,
   },
@@ -25,7 +25,6 @@ export const Users: CollectionConfig = {
       defaultValue: 'editor',
       options: [
         { label: 'Administrador', value: 'admin' },
-        { label: 'Moderador', value: 'moderator' },
         { label: 'Editor', value: 'editor' },
       ],
       access: {

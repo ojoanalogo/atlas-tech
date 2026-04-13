@@ -55,14 +55,14 @@ export const Events: CollectionConfig = {
         {
           name: 'startTime',
           label: 'Hora de inicio',
-          type: 'text',
-          admin: { width: '50%', description: 'Ej. 10:00 AM' },
+          type: 'date',
+          admin: { width: '50%', date: { pickerAppearance: 'timeOnly', displayFormat: 'hh:mm a' } },
         },
         {
           name: 'endTime',
           label: 'Hora de fin',
-          type: 'text',
-          admin: { width: '50%', description: 'Ej. 12:00 PM' },
+          type: 'date',
+          admin: { width: '50%', date: { pickerAppearance: 'timeOnly', displayFormat: 'hh:mm a' } },
         },
       ],
     },

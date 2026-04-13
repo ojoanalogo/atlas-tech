@@ -1,6 +1,6 @@
 import type { Access, FieldAccess } from 'payload'
 
-export type Role = 'admin' | 'moderator' | 'editor'
+export type Role = 'admin' | 'editor'
 
 /** Check if the logged-in user has one of the given roles */
 export const hasRole = (...roles: Role[]): Access => ({ req: { user } }) => {
@@ -16,9 +16,6 @@ export const hasRoleField = (...roles: Role[]): FieldAccess => ({ req: { user } 
 
 /** Admin-only access */
 export const isAdmin: Access = hasRole('admin')
-
-/** Admin or moderator */
-export const isAdminOrModerator: Access = hasRole('admin', 'moderator')
 
 /** Admin or editor */
 export const isAdminOrEditor: Access = hasRole('admin', 'editor')

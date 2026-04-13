@@ -48,15 +48,38 @@ function getImageUrl(image: Event['image']): string | null {
   return null
 }
 
+function lexicalToPlainText(data: Event['description']): string {
+  if (!data?.root?.children) return ''
+  function extractText(node: { text?: string; children?: any[]; type?: string }): string {
+    if (typeof node.text === 'string') return node.text
+    if (Array.isArray(node.children)) return node.children.map(extractText).join('')
+    return ''
+  }
+  return data.root.children.map((child: any) => extractText(child)).join('\n').trim()
+}
+
+function formatTimeField(value: string | null | undefined): string {
+  if (!value) return ''
+  if (value.includes('T')) {
+    const date = new Date(value)
+    const h = date.getUTCHours()
+    const m = date.getUTCMinutes()
+    const ampm = h >= 12 ? 'PM' : 'AM'
+    const h12 = h % 12 || 12
+    return `${h12}:${String(m).padStart(2, '0')} ${ampm}`
+  }
+  return value
+}
+
 function eventDocToTechEvent(doc: Event): TechEvent {
   return {
     id: String(doc.id),
     title: doc.title,
     organizer: doc.organizer || '',
     date: (doc.date || '').split('T')[0],
-    startTime: doc.startTime || '',
-    endTime: doc.endTime || '',
-    description: '',
+    startTime: formatTimeField(doc.startTime),
+    endTime: formatTimeField(doc.endTime),
+    description: lexicalToPlainText(doc.description),
     url: doc.url || '',
     location: doc.location || '',
     mapsUrl: doc.mapsUrl || '',
