@@ -15,7 +15,7 @@ import type { AtlasEntryType } from "@/config";
 interface CarouselEntry {
   slug: string;
   name: string;
-  tagline?: string;
+  tagline?: string | null;
   entryType: AtlasEntryType;
   logo?: { url: string; alt?: string } | null;
   coverImage?: { url: string; alt?: string } | null;
@@ -50,7 +50,7 @@ export default function FeaturedCarousel({ entries }: { entries: CarouselEntry[]
             <EntryCard
               slug={entry.slug}
               name={entry.name}
-              tagline={entry.tagline}
+              tagline={entry.tagline ?? undefined}
               entryType={entry.entryType}
               logo={entry.logo}
               coverImage={entry.coverImage}
