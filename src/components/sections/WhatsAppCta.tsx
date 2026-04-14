@@ -5,7 +5,7 @@ export function WhatsAppCta() {
   return (
     <section className="py-8">
       <div className="max-w-7xl mx-auto">
-        <div className="bg-card border border-border rounded-lg p-6 md:p-8 flex flex-col md:flex-row items-center gap-4 md:gap-8">
+        <div className="bg-card border border-border rounded-lg p-6 md:p-8 flex flex-col lg:flex-row items-center gap-4 lg:gap-8">
           <div className="flex items-center gap-3 shrink-0">
             <div className="w-10 h-10 rounded-full bg-accent/10 border border-accent/20 flex items-center justify-center">
               <MessageCircle className="w-5 h-5 text-accent" />
@@ -19,7 +19,7 @@ export function WhatsAppCta() {
               </p>
             </div>
           </div>
-          <p className="text-sm text-secondary text-center md:text-left flex-1">
+          <p className="text-sm text-secondary text-center lg:text-left flex-1">
             Comparte ideas, encuentra colaboradores y entérate de todo lo que pasa en el ecosistema.
           </p>
           <a

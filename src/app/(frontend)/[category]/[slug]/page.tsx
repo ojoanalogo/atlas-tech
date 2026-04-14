@@ -261,13 +261,13 @@ export default async function EntryDetailPage({
         className={
           isCompactLayout
             ? 'max-w-3xl mx-auto'
-            : 'grid lg:grid-cols-[1fr_20rem] gap-8'
+            : 'xl:grid xl:grid-cols-[1fr_20rem] xl:gap-8'
         }
       >
         {/* ============================================================ */}
         {/*  Main column                                                 */}
         {/* ============================================================ */}
-        <div className="space-y-8">
+        <div className={`space-y-8${!isCompactLayout ? ' max-w-3xl mx-auto xl:max-w-none xl:mx-0' : ''}`}>
           {/* Cover image with aspect-video */}
           {coverUrl && (
             <div className="relative">
@@ -462,7 +462,7 @@ export default async function EntryDetailPage({
         {/*  Sidebar (only in full layout)                               */}
         {/* ============================================================ */}
         {!isCompactLayout && (
-          <div className="space-y-4">
+          <div className="space-y-4 mt-8 xl:mt-0 max-w-3xl mx-auto xl:max-w-none xl:mx-0">
             {/* Details card */}
             <div className="bg-card/90 backdrop-blur-sm border border-border rounded-lg p-5">
               <h2 className="font-mono text-xs text-muted uppercase tracking-wider mb-4 flex items-center gap-2">
@@ -525,29 +525,31 @@ export default async function EntryDetailPage({
         )}
       </div>
 
-      <WhatsAppCta />
+      <div className={!isCompactLayout ? 'max-w-3xl mx-auto xl:max-w-none xl:mx-0' : ''}>
+        <WhatsAppCta />
 
-      {/* Suggestions */}
-      {suggestions.length > 0 && (
-        <section className="mt-12">
-          <h2 className="text-lg font-bold text-primary mb-4">Mira mas</h2>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {suggestions.map((s) => (
-              <EntryCard
-                key={String(s.id)}
-                slug={s.slug as string}
-                name={s.name as string}
-                tagline={s.tagline as string | undefined}
-                entryType={s.entryType as AtlasEntryType}
-                logo={s.logo as any}
-                coverImage={s.coverImage as any}
-                city={s.city as string}
-                tags={s.tags as any}
-              />
-            ))}
-          </div>
-        </section>
-      )}
+        {/* Suggestions */}
+        {suggestions.length > 0 && (
+          <section className="mt-12">
+            <h2 className="text-lg font-bold text-primary mb-4">Mira mas</h2>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {suggestions.map((s) => (
+                <EntryCard
+                  key={String(s.id)}
+                  slug={s.slug as string}
+                  name={s.name as string}
+                  tagline={s.tagline as string | undefined}
+                  entryType={s.entryType as AtlasEntryType}
+                  logo={s.logo as any}
+                  coverImage={s.coverImage as any}
+                  city={s.city as string}
+                  tags={s.tags as any}
+                />
+              ))}
+            </div>
+          </section>
+        )}
+      </div>
     </article>
   )
 }

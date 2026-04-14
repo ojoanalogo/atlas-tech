@@ -10,7 +10,7 @@ services:
       POSTGRES_PASSWORD: atlas_local
       POSTGRES_DB: atlas
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres-data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U atlas"]
       interval: 5s
@@ -26,7 +26,7 @@ services:
       MINIO_ROOT_USER: minioadmin
       MINIO_ROOT_PASSWORD: minioadmin
     volumes:
-      - minio_data:/data
+      - minio-data:/data
     command: server /data --console-address ":9001"
     healthcheck:
       test: ["CMD", "mc", "ready", "local"]
@@ -48,5 +48,5 @@ services:
       "
 
 volumes:
-  postgres_data:
-  minio_data:
+  postgres-data:
+  minio-data:
