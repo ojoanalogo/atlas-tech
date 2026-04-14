@@ -35,20 +35,20 @@ export function CategorySection({ counts }: CategorySectionProps) {
         </div>
 
         {/* Grid for sm+ */}
-        <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+        <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 xl:gap-3">
           {ATLAS_CATEGORIES.map((category) => {
             const Icon = ENTRY_TYPE_ICON_MAP[category.icon]
             return (
               <Link
                 key={category.type}
                 href={`/${category.slug}`}
-                className="group bg-card border border-border rounded-lg p-5 hover:border-accent/50 transition-all duration-300"
+                className="group bg-card border border-border rounded-lg p-5 xl:p-4 hover:border-accent/50 transition-all duration-300"
               >
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center group-hover:bg-accent/20 transition-colors">
-                    {Icon && <Icon className="w-5 h-5 text-accent" />}
+                <div className="flex items-center gap-3 mb-3 xl:mb-2">
+                  <div className="w-10 h-10 xl:w-8 xl:h-8 rounded-lg bg-accent/10 flex items-center justify-center group-hover:bg-accent/20 transition-colors">
+                    {Icon && <Icon className="w-5 h-5 xl:w-4 xl:h-4 text-accent" />}
                   </div>
-                  <span className="text-2xl font-mono font-bold text-primary">
+                  <span className="text-2xl xl:text-xl font-mono font-bold text-primary">
                     {counts[category.type] || 0}
                   </span>
                 </div>
