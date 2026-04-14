@@ -267,7 +267,7 @@ export default async function EntryDetailPage({
         {/* ============================================================ */}
         {/*  Main column                                                 */}
         {/* ============================================================ */}
-        <div className={`space-y-8${!isCompactLayout ? ' max-w-3xl mx-auto xl:max-w-none xl:mx-0' : ''}`}>
+        <div className={`space-y-8${!isCompactLayout ? ' max-w-3xl mx-auto lg:max-w-none' : ''}`}>
           {/* Cover image with aspect-video */}
           {coverUrl && (
             <div className="relative">
@@ -462,7 +462,7 @@ export default async function EntryDetailPage({
         {/*  Sidebar (only in full layout)                               */}
         {/* ============================================================ */}
         {!isCompactLayout && (
-          <div className="space-y-4 mt-8 xl:mt-0 max-w-3xl mx-auto xl:max-w-none xl:mx-0">
+          <div className="space-y-4 mt-8 xl:mt-0 max-w-3xl mx-auto lg:max-w-none">
             {/* Details card */}
             <div className="bg-card/90 backdrop-blur-sm border border-border rounded-lg p-5">
               <h2 className="font-mono text-xs text-muted uppercase tracking-wider mb-4 flex items-center gap-2">
@@ -525,7 +525,7 @@ export default async function EntryDetailPage({
         )}
       </div>
 
-      <div className={!isCompactLayout ? 'max-w-3xl mx-auto xl:max-w-none xl:mx-0' : ''}>
+      <div className={!isCompactLayout ? 'max-w-3xl mx-auto lg:max-w-none' : ''}>
         <WhatsAppCta />
 
         {/* Suggestions */}
